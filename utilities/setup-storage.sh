@@ -254,7 +254,7 @@ ${BOLD}EXAMPLES${NC}
 ${BOLD}SECURITY${NC}
   - Always set umask 077 before running this script
   - Use a secure, non-shared directory for --output-dir
-  - The <tenant>-external-config.json file should be handed over to the control plane or MSP Admin UI
+  - The <tenant>-external-config.json file should be handed over to the control plane or LOB Admin UI
 
 ${BOLD}ARCHITECTURE${NC}
   Storage Cluster:
@@ -263,7 +263,7 @@ ${BOLD}ARCHITECTURE${NC}
     - RGW User: <tenant>-noobaa-user (if object storage enabled)
     - Backing Bucket: <tenant>-backing-bucket (if object storage enabled)
 
-  Tenant Cluster (configured via MSP Admin UI):
+  Tenant Cluster (configured via LOB Admin UI):
     - Ceph CSI drivers for block storage
     - StorageClass → uses RBD CSI provisioner
     - NooBaa → BackingStore pointing to main RGW (if object storage enabled)
@@ -1246,7 +1246,7 @@ else
     if [ "$MODE" = "odf" ]; then
         # ODF mode: use create-external-cluster-resources.py
         print_info "Running create-external-cluster-resources.py in toolbox..."
-        print_info "This generates the external-cluster-details JSON for control plane or MSP Admin UI deployment"
+        print_info "This generates the external-cluster-details JSON for control plane or LOB Admin UI deployment"
         
         # Auto-detect the Python script location (varies by ODF version)
         print_info "Detecting create-external-cluster-resources.py location..."
@@ -1636,11 +1636,11 @@ Log File:          ${LOG_FILE}
 
 NEXT STEPS
 ----------
-1. Hand over these files to the control plane or MSP Admin UI:
+1. Hand over these files to the control plane or LOB Admin UI:
    - ${OUTPUT_JSON}
    - ${RGW_CREDS_FILE}
 
-2. MSP Admin UI will deploy ODF client on tenant cluster with:
+2. LOB Admin UI will deploy ODF client on tenant cluster with:
    - Block storage (RBD)
    - Object storage (NooBaa with RGW backend)
 
@@ -1661,7 +1661,7 @@ Storage Cluster:
       ├── RGW User: ${RGW_USER_NAME} (${RGW_USER_QUOTA} quota)
       └── Backing Bucket: ${BACKING_BUCKET}
 
-Tenant Cluster (configured by MSP Admin UI):
+Tenant Cluster (configured by LOB Admin UI):
   ├── Ceph CSI drivers for block storage
   ├── StorageClass → RBD CSI provisioner
   └── NooBaa → BackingStore pointing to main RGW
@@ -1694,10 +1694,10 @@ Log File:          ${LOG_FILE}
 
 NEXT STEPS
 ----------
-1. Hand over the external-config.json file to the control plane or MSP Admin UI:
+1. Hand over the external-config.json file to the control plane or LOB Admin UI:
    ${OUTPUT_JSON}
 
-2. MSP Admin UI will deploy ODF client on tenant cluster during
+2. LOB Admin UI will deploy ODF client on tenant cluster during
    cluster-as-a-service creation workflow
 
 3. Verify on tenant cluster (after deployment):
@@ -1713,7 +1713,7 @@ Storage Cluster:
       ├── CSI Node User: client.${CSI_RBD_NODE_USER}
       └── CSI Provisioner User: client.${CSI_RBD_PROV_USER}
 
-Tenant Cluster (configured by MSP Admin UI):
+Tenant Cluster (configured by LOB Admin UI):
   ├── Ceph CSI drivers
   ├── StorageClass → RBD CSI provisioner
   └── Block storage only (no object/file storage)
@@ -1750,14 +1750,14 @@ if [ "$ENABLE_OBJECT_STORAGE" = true ]; then
     print_info "  Summary:         ${OUTPUT_DIR}/${TENANT_NAME}-summary.txt"
     echo ""
     print_header "Next Steps:"
-    print_info "  1. Hand over these files to the control plane or MSP Admin UI:"
+    print_info "  1. Hand over these files to the control plane or LOB Admin UI:"
     print_info "     - ${OUTPUT_DIR}/${TENANT_NAME}-external-config.json (includes RGW credentials)"
     if [ "$RGW_PROTOCOL" = "https" ] && [ -f "${OUTPUT_DIR}/${TENANT_NAME}-ca-bundle.crt" ]; then
         print_info "     - ${OUTPUT_DIR}/${TENANT_NAME}-ca-bundle.crt (for HTTPS verification)"
     fi
     print_info "     - ${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt (reference/backup)"
     print_info ""
-    print_info "  2. MSP Admin UI will deploy ODF client on tenant cluster with:"
+    print_info "  2. LOB Admin UI will deploy ODF client on tenant cluster with:"
     print_info "     - Block storage (RBD)"
     print_info "     - Object storage (NooBaa with RGW backend)"
     print_header "============================================================"
@@ -1778,10 +1778,10 @@ else
     print_info "  Summary:         ${OUTPUT_DIR}/${TENANT_NAME}-summary.txt"
     echo ""
     print_header "Next Steps:"
-    print_info "  1. Hand over the external-config.json file to the control plane or MSP Admin UI:"
+    print_info "  1. Hand over the external-config.json file to the control plane or LOB Admin UI:"
     print_info "     ${OUTPUT_DIR}/${TENANT_NAME}-external-config.json"
     print_info ""
-    print_info "  2. MSP Admin UI will deploy ODF client on tenant cluster"
+    print_info "  2. LOB Admin UI will deploy ODF client on tenant cluster"
     print_info "     during cluster-as-a-service creation workflow"
     print_header "========================================================"
     echo ""
