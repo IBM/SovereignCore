@@ -48,6 +48,16 @@
 set -euo pipefail
 
 ###############################################################################
+# GREP COMPATIBILITY (macOS/Linux)
+###############################################################################
+# Detect GNU grep (supports -P for Perl regex) vs BSD grep (macOS default)
+if command -v ggrep &>/dev/null; then
+    GREP_CMD="ggrep"
+else
+    GREP_CMD="grep"
+fi
+
+###############################################################################
 # DEFAULTS
 ###############################################################################
 TENANT_NAME=""
@@ -399,7 +409,7 @@ detect_rgw_zone() {
     fi
     
     # Get default zone
-    default_zone=$(echo "$zone_list" | grep -oP '"default_info":\s*"\K[^"]+' | head -1)
+    default_zone=$(echo "$zone_list" | $GREP_CMD -oP '"default_info":\s*"\K[^"]+' | head -1)
     
     if [ -n "$default_zone" ]; then
         print_debug "Using default zone from zone list"
@@ -536,17 +546,11 @@ else
             print_success "Main CephObjectStore exists: odf-storagecluster-cephobjectstore"
             
             # Try to get external route first (for curl access from outside cluster)
-            print_info "Looking for RGW endpoint..."
-            MAIN_RGW_ENDPOINT=$(oc get route odf-storagecluster-cephobjectstore-secure \
+            # Note: Only HTTP is supported, skip HTTPS route check
+            print_info "Looking for RGW endpoint (HTTP only)..."
+            MAIN_RGW_ENDPOINT=$(oc get route odf-storagecluster-cephobjectstore \
                                 -n "$NAMESPACE" -o jsonpath='{.spec.host}' 2>/dev/null || echo "")
-            RGW_PROTOCOL="https"
-            
-            if [ -z "$MAIN_RGW_ENDPOINT" ]; then
-                print_debug "Secure route not found, trying non-secure route..."
-                MAIN_RGW_ENDPOINT=$(oc get route odf-storagecluster-cephobjectstore \
-                                    -n "$NAMESPACE" -o jsonpath='{.spec.host}' 2>/dev/null || echo "")
-                RGW_PROTOCOL="http"
-            fi
+            RGW_PROTOCOL="http"
             
             # Fallback to service endpoint if no routes exist
             if [ -z "$MAIN_RGW_ENDPOINT" ]; then
@@ -554,14 +558,16 @@ else
                 MAIN_RGW_ENDPOINT=$(oc get cephobjectstore odf-storagecluster-cephobjectstore \
                                     -n "$NAMESPACE" -o jsonpath='{.status.info.endpoint}' 2>/dev/null || echo "")
                 
-                # If endpoint has protocol, extract it
+                # Strip protocol if present (we only support HTTP)
                 if [[ "$MAIN_RGW_ENDPOINT" =~ ^https?:// ]]; then
-                    RGW_PROTOCOL=$(echo "$MAIN_RGW_ENDPOINT" | grep -oP '^https?')
                     MAIN_RGW_ENDPOINT=$(echo "$MAIN_RGW_ENDPOINT" | sed 's|^https\?://||')
                 fi
                 
                 # Remove port if present (we'll use standard ports)
                 MAIN_RGW_ENDPOINT=$(echo "$MAIN_RGW_ENDPOINT" | sed 's|:[0-9]*$||')
+                
+                # Force HTTP protocol
+                RGW_PROTOCOL="http"
             fi
             
             if [ -z "$MAIN_RGW_ENDPOINT" ]; then
@@ -922,8 +928,8 @@ else
             
             # Fallback to grep if jq fails
             if [ -z "$RGW_ACCESS_KEY" ] || [ -z "$RGW_SECRET_KEY" ]; then
-                RGW_ACCESS_KEY=$(echo "$RGW_USER_INFO" | grep -oP '"access_key":\s*"\K[^"]+' | head -1)
-                RGW_SECRET_KEY=$(echo "$RGW_USER_INFO" | grep -oP '"secret_key":\s*"\K[^"]+' | head -1)
+                RGW_ACCESS_KEY=$(echo "$RGW_USER_INFO" | $GREP_CMD -oP '"access_key":\s*"\K[^"]+' | head -1)
+                RGW_SECRET_KEY=$(echo "$RGW_USER_INFO" | $GREP_CMD -oP '"secret_key":\s*"\K[^"]+' | head -1)
             fi
         else
             # Create new RGW user in the correct zone with full capabilities
@@ -953,8 +959,8 @@ else
             
             # Fallback to grep if jq fails
             if [ -z "$RGW_ACCESS_KEY" ] || [ -z "$RGW_SECRET_KEY" ]; then
-                RGW_ACCESS_KEY=$(echo "$RGW_USER_OUTPUT" | grep -oP '"access_key":\s*"\K[^"]+' | head -1)
-                RGW_SECRET_KEY=$(echo "$RGW_USER_OUTPUT" | grep -oP '"secret_key":\s*"\K[^"]+' | head -1)
+                RGW_ACCESS_KEY=$(echo "$RGW_USER_OUTPUT" | $GREP_CMD -oP '"access_key":\s*"\K[^"]+' | head -1)
+                RGW_SECRET_KEY=$(echo "$RGW_USER_OUTPUT" | $GREP_CMD -oP '"secret_key":\s*"\K[^"]+' | head -1)
             fi
             
             if [ -z "$RGW_ACCESS_KEY" ] || [ -z "$RGW_SECRET_KEY" ]; then
@@ -966,8 +972,8 @@ else
                 
                 # Final fallback to grep
                 if [ -z "$RGW_ACCESS_KEY" ] || [ -z "$RGW_SECRET_KEY" ]; then
-                    RGW_ACCESS_KEY=$(echo "$RGW_USER_INFO" | grep -oP '"access_key":\s*"\K[^"]+' | head -1)
-                    RGW_SECRET_KEY=$(echo "$RGW_USER_INFO" | grep -oP '"secret_key":\s*"\K[^"]+' | head -1)
+                    RGW_ACCESS_KEY=$(echo "$RGW_USER_INFO" | $GREP_CMD -oP '"access_key":\s*"\K[^"]+' | head -1)
+                    RGW_SECRET_KEY=$(echo "$RGW_USER_INFO" | $GREP_CMD -oP '"secret_key":\s*"\K[^"]+' | head -1)
                 fi
             fi
         fi
