@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Mirror modelcar images from RedHat modelcar-catalog registry to target registry
+# Mirror modelcar images from Red Hat modelcar-catalog registry to target registry
 # Source: https://quay.io/repository/redhat-ai-services/modelcar-catalog
 
 set -e
