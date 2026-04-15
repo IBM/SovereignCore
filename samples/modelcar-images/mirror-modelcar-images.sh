@@ -45,18 +45,34 @@ usage() {
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -r|--target-registry)
+            if [ -z "$2" ] || [[ "$2" == -* ]]; then
+                echo "Error: Option $1 requires a value"
+                usage
+            fi
             TARGET_REGISTRY="$2"
             shift 2
             ;;
         -t|--tag)
+            if [ -z "$2" ] || [[ "$2" == -* ]]; then
+                echo "Error: Option $1 requires a value"
+                usage
+            fi
             TARGET_TAG="$2"
             shift 2
             ;;
         -s|--source-registry)
+            if [ -z "$2" ] || [[ "$2" == -* ]]; then
+                echo "Error: Option $1 requires a value"
+                usage
+            fi
             SOURCE_REGISTRY="$2"
             shift 2
             ;;
         -i|--images)
+            if [ -z "$2" ] || [[ "$2" == -* ]]; then
+                echo "Error: Option $1 requires a value"
+                usage
+            fi
             SPECIFIC_TAGS="$2"
             shift 2
             ;;
