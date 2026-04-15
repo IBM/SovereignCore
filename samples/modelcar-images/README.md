@@ -6,7 +6,7 @@ This directory contains scripts to upload modelcar images for IBM Sovereign Core
 
 [Modelcar](https://kserve.github.io/website/docs/model-serving/storage/providers/oci) images are OCI-compliant container images that contain model files in a standardized format. These scripts help you:
 
-1. Mirror pre-built modelcar images from RedHat's catalog to your registry
+1. Mirror pre-built modelcar images from Red Hat's catalog to your registry
 2. Build custom modelcar images from Hugging Face models and push them to your registry
 
 Modelcars are uploaded to the `aiiaas-models` repository in your Quay registry.
@@ -15,7 +15,7 @@ Modelcars are uploaded to the `aiiaas-models` repository in your Quay registry.
 
 ### 1. [mirror-modelcar-images.sh](./mirror-modelcar-images.sh)
 
-Mirrors modelcar images from the RedHat AI Services modelcar-catalog registry to your target Quay registry using `skopeo copy`.
+Mirrors modelcar images from the Red Hat AI Services modelcar-catalog registry to your target Quay registry using `skopeo copy`.
 
 **Source Registry:** https://quay.io/repository/redhat-ai-services/modelcar-catalog
 
@@ -165,4 +165,4 @@ Then run the build script:
 ## References
 
 - [Serving Models with OCI Images](https://kserve.github.io/website/docs/model-serving/storage/providers/oci)
-- [RedHat AI Services Modelcar Catalog](https://quay.io/repository/redhat-ai-services/modelcar-catalog)
+- [Red Hat AI Services Modelcar Catalog](https://quay.io/repository/redhat-ai-services/modelcar-catalog)
