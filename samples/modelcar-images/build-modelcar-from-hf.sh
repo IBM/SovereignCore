@@ -121,10 +121,19 @@ echo "--- Step 1: Preparing Model Files ---"
 should_download=true
 
 if [ "$SKIP_DOWNLOAD" = true ]; then
-    if [ -d "$MODEL_DIR" ] && [ "$(ls -A $MODEL_DIR)" ]; then
-        echo "SKIP_DOWNLOAD is set. Found existing files in $MODEL_DIR"
-        echo "Skipping download step"
-        should_download=false
+    if [ -d "$MODEL_DIR" ]; then
+        shopt -s nullglob dotglob
+        model_dir_contents=("$MODEL_DIR"/*)
+        shopt -u nullglob dotglob
+
+        if [ ${#model_dir_contents[@]} -gt 0 ]; then
+            echo "SKIP_DOWNLOAD is set. Found existing files in $MODEL_DIR"
+            echo "Skipping download step"
+            should_download=false
+        else
+            echo "Warning: SKIP_DOWNLOAD is set, but $MODEL_DIR is missing or empty"
+            echo "Proceeding with download..."
+        fi
     else
         echo "Warning: SKIP_DOWNLOAD is set, but $MODEL_DIR is missing or empty"
         echo "Proceeding with download..."
