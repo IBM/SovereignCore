@@ -14,7 +14,7 @@ IMAGE_TAG="v1"
 SKIP_DOWNLOAD=false
 
 usage() {
-    echo "Usage: $0 -r TARGET_REGISTRY [MODEL_ID] [OPTIONS]"
+    echo "Usage: $0 [MODEL_ID] -r TARGET_REGISTRY [OPTIONS]"
     echo ""
     echo "Required:"
     echo "  -r, --target-registry URL Target registry URL (e.g., registry-quay-quay-enterprise.apps.example.com)"
