@@ -134,7 +134,8 @@ if [ -n "$SPECIFIC_TAGS" ]; then
     echo "Mirroring specific images..."
     IFS=',' read -ra TAGS <<< "$SPECIFIC_TAGS"
     for tag in "${TAGS[@]}"; do
-        tag=$(echo "$tag" | xargs) # Trim whitespace
+        tag="${tag#"${tag%%[![:space:]]*}"}"
+        tag="${tag%"${tag##*[![:space:]]}"}"
         mirror_image "$tag"
     done
 else
