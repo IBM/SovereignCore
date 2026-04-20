@@ -811,6 +811,39 @@ else
         print_warning "Ceph cluster has warnings — proceeding anyway"
     fi
     
+    # Fix 1: Configure client mode to allow both secure and legacy connections (Native mode only)
+    if [ "$MODE" = "native" ]; then
+        print_info "Checking Ceph client mode configuration..."
+        CURRENT_CLIENT_MODE=$(ceph_exec ceph config get mon ms_mon_client_mode 2>/dev/null || echo "")
+        
+        # Check if both secure and crc are present (space or comma separated, any order)
+        if echo "$CURRENT_CLIENT_MODE" | grep -q "secure" && echo "$CURRENT_CLIENT_MODE" | grep -q "crc"; then
+            print_success "Client mode already configured: ${CURRENT_CLIENT_MODE}"
+        else
+            print_info "Configuring Ceph client mode to support secure and legacy connections..."
+            if ceph_exec ceph config set global ms_mon_client_mode "secure,crc" 2>&1; then
+                print_success "Client mode configured: secure,crc"
+                
+                # Restart ceph-mon.target to apply the changes
+                print_info "Restarting ceph-mon.target to apply configuration..."
+                if ceph_exec systemctl restart ceph-mon.target 2>&1; then
+                    print_success "ceph-mon.target restarted successfully"
+                    
+                    # Wait a moment for the service to stabilize
+                    sleep 5
+                    
+                    # Verify the setting
+                    CLIENT_MODE=$(ceph_exec ceph config get mon ms_mon_client_mode 2>/dev/null || echo "not set")
+                    print_info "Verified client mode: ${CLIENT_MODE}"
+                else
+                    print_warning "Failed to restart ceph-mon.target. You may need to restart it manually."
+                fi
+            else
+                print_warning "Failed to set client mode, but continuing..."
+            fi
+        fi
+    fi
+    
     print_success "Phase 2 Complete: Ceph health check passed"
     echo ""
 fi
@@ -886,6 +919,15 @@ else
         print_success "CSI RBD node user created"
     fi
     
+    # Fix 2: Update CSI RBD node user capabilities to include "auth ls" (Native mode only)
+    if [ "$MODE" = "native" ]; then
+        print_info "Updating CSI RBD node user capabilities..."
+        ceph_exec ceph auth caps "client.${CSI_RBD_NODE_USER}" \
+            mon 'profile rbd, allow command "auth ls"' \
+            osd 'profile rbd'
+        print_success "CSI RBD node user capabilities updated"
+    fi
+    
     # CSI RBD provisioner user
     print_info "Creating CSI RBD provisioner user: ${CSI_RBD_PROV_USER}"
     if ceph_exec ceph auth get "client.${CSI_RBD_PROV_USER}" &>/dev/null; then
@@ -898,7 +940,54 @@ else
         print_success "CSI RBD provisioner user created"
     fi
     
-    print_success "Phase 4 Complete: Ceph users created"
+    # Fix 2: Update CSI RBD provisioner user capabilities to include "auth ls" (Native mode only)
+    if [ "$MODE" = "native" ]; then
+        print_info "Updating CSI RBD provisioner user capabilities..."
+        ceph_exec ceph auth caps "client.${CSI_RBD_PROV_USER}" \
+            mon 'profile rbd, allow command "auth ls"' \
+            mgr 'allow rw' \
+            osd 'profile rbd'
+        print_success "CSI RBD provisioner user capabilities updated"
+        
+        # Fix 2: Verify CSI users can run auth ls command
+        print_info "Verifying CSI user permissions..."
+        
+        # Test CSI provisioner key
+        print_info "Testing CSI provisioner key can run 'auth ls'..."
+        if ceph_exec ceph auth get "client.${CSI_RBD_PROV_USER}" -o /tmp/csi-prov.keyring 2>&1; then
+            AUTH_LS_TEST=$(ceph_exec ceph -n "client.${CSI_RBD_PROV_USER}" -k /tmp/csi-prov.keyring auth ls 2>&1 || echo "PERMISSION_DENIED")
+            if echo "$AUTH_LS_TEST" | grep -q "PERMISSION_DENIED\|permission denied\|Error EACCES"; then
+                print_error "CSI provisioner user cannot run 'auth ls' command"
+                print_error "Output: ${AUTH_LS_TEST}"
+                ceph_exec rm -f /tmp/csi-prov.keyring
+                exit 1
+            else
+                print_success "CSI provisioner user can run 'auth ls' command"
+            fi
+            ceph_exec rm -f /tmp/csi-prov.keyring
+        else
+            print_warning "Could not retrieve CSI provisioner keyring for testing"
+        fi
+        
+        # Test CSI node key
+        print_info "Testing CSI node key can run 'auth ls'..."
+        if ceph_exec ceph auth get "client.${CSI_RBD_NODE_USER}" -o /tmp/csi-node.keyring 2>&1; then
+            AUTH_LS_TEST=$(ceph_exec ceph -n "client.${CSI_RBD_NODE_USER}" -k /tmp/csi-node.keyring auth ls 2>&1 || echo "PERMISSION_DENIED")
+            if echo "$AUTH_LS_TEST" | grep -q "PERMISSION_DENIED\|permission denied\|Error EACCES"; then
+                print_error "CSI node user cannot run 'auth ls' command"
+                print_error "Output: ${AUTH_LS_TEST}"
+                ceph_exec rm -f /tmp/csi-node.keyring
+                exit 1
+            else
+                print_success "CSI node user can run 'auth ls' command"
+            fi
+            ceph_exec rm -f /tmp/csi-node.keyring
+        else
+            print_warning "Could not retrieve CSI node keyring for testing"
+        fi
+    fi
+    
+    print_success "Phase 4 Complete: Ceph users created and verified"
     echo ""
 fi
 
