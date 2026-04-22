@@ -14,6 +14,7 @@ spec:
       spec:
         object-templates:
         - complianceType: musthave
+          recreateOption: Always
           objectDefinition:
             apiVersion: postgresql.k8s.enterprisedb.io/v1
             kind: ClusterImageCatalog
