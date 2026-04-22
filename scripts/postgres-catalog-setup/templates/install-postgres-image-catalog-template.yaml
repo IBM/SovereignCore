@@ -1,0 +1,48 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: install-postgres-image-catalog-<version>
+  namespace: postgres-service-broker
+spec:
+  disabled: false
+  policy-templates:
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: create-postgres-image-catalog-<version>
+      spec:
+        object-templates:
+        - complianceType: musthave
+          objectDefinition:
+            apiVersion: postgresql.k8s.enterprisedb.io/v1
+            kind: ClusterImageCatalog
+            metadata:
+              labels:
+                app.kubernetes.io/managed-by: postgres-service-broker
+              name: postgresql-image-catalog-<version>
+            spec:
+              images:
+              - image: <image_path_in_quay>
+                major: 16
+              - image: <image_path_in_quay>
+                major: 17
+              - image: <image_path_in_quay>
+                major: 18
+          recreateOption: Always
+        remediationAction: enforce
+        severity: high
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: binding-install-postgres-image-catalog-<version>
+  namespace: postgres-service-broker
+placementRef:
+  apiGroup: cluster.open-cluster-management.io
+  kind: Placement
+  name: placement-install-postgres-operator-olm
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: install-postgres-image-catalog-<version>

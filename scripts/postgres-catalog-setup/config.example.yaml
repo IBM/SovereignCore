@@ -1,0 +1,33 @@
+# PostgreSQL Image Catalog Configuration
+# This configuration file defines the PostgreSQL images to be included in the catalog
+
+# Catalog version - used in Policy names and generated YAML filename
+# Format: semantic version (e.g., 1.0.0, 2.1.0)
+catalog_version: "1.0.0"
+
+# PostgreSQL images - list of PostgreSQL versions and their image paths
+# You can add or remove versions as needed
+postgres_images:
+  # PostgreSQL 16
+  - major: 16
+    image: "quay.io/myorg/postgres:16-v1.0.0"
+  
+  # PostgreSQL 17
+  - major: 17
+    image: "quay.io/myorg/postgres:17-v1.0.0"
+  
+  # PostgreSQL 18
+  - major: 18
+    image: "quay.io/myorg/postgres:18-v1.0.0"
+  
+  # Add more versions as needed:
+  # - major: 19
+  #   image: "quay.io/myorg/postgres:19-v1.0.0"
+
+# Notes:
+# - Ensure you have authenticated to the registry using 'podman login' before running the script
+# - All images will be verified for existence before generating the catalog
+# - The 'major' field must be an integer representing the PostgreSQL major version
+# - The 'image' field must be a valid OCI image reference
+
+# Made with Bob
