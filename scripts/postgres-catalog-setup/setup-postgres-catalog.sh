@@ -92,11 +92,7 @@ spec:
             spec:
               images:
               - image: <image_path_in_quay>
-                major: 16
-              - image: <image_path_in_quay>
-                major: 17
-              - image: <image_path_in_quay>
-                major: 18
+                major: <major_version>
           recreateOption: Always
         remediationAction: enforce
         severity: high
