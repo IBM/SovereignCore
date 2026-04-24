@@ -226,37 +226,38 @@ TEMPLATE_CONTENT=$(cat "$TEMPLATE_FILE")
 # Replace <version> placeholders
 YAML_CONTENT="${TEMPLATE_CONTENT//<version>/$CATALOG_VERSION}"
 
-# Build the images section
-IMAGES_YAML=""
+# Write the template content with version replaced to a temporary file
+TEMP_FILE=$(mktemp)
+echo "$YAML_CONTENT" > "$TEMP_FILE"
+
+# Define the path to the images array in the YAML structure
+IMAGES_PATH='.spec.policy-templates[0].objectDefinition.spec.object-templates[0].objectDefinition.spec.images'
+
+# Clear the images array first
+if ! yq eval "${IMAGES_PATH} = []" -i "$TEMP_FILE"; then
+    log_error "Failed to initialize images array using yq"
+    rm -f "$TEMP_FILE"
+    exit 1
+fi
+
+# Add each image to the array
 for i in $(seq 0 $((IMAGES_COUNT - 1))); do
     MAJOR=$(yq eval ".postgres_images[$i].major" "$CONFIG_FILE")
     IMAGE=$(yq eval ".postgres_images[$i].image" "$CONFIG_FILE")
     
-    IMAGES_YAML+="              - image: $IMAGE"$'\n'
-    IMAGES_YAML+="                major: $MAJOR"$'\n'
+    if ! yq eval "${IMAGES_PATH} += [{\"image\": \"$IMAGE\", \"major\": $MAJOR}]" -i "$TEMP_FILE"; then
+        log_error "Failed to add image entry using yq: $IMAGE (major: $MAJOR)"
+        rm -f "$TEMP_FILE"
+        exit 1
+    fi
 done
 
-# Remove trailing newline
-IMAGES_YAML="${IMAGES_YAML%$'\n'}"
-
-# Replace the images section in the template
-# Find the line with "images:" and replace the placeholder section
-TEMP_FILE=$(mktemp)
-echo "$YAML_CONTENT" > "$TEMP_FILE"
-
-# Use awk to replace the images section
-awk -v images="$IMAGES_YAML" '
-/^[[:space:]]*images:/ {
-    print
-    # Skip the placeholder lines
-    getline; while (/^[[:space:]]*- image: <image_path_in_quay>/ || /^[[:space:]]*major:/) getline
-    print images
-    next
-}
-{ print }
-' "$TEMP_FILE" > "$OUTPUT_FILE"
-
-rm "$TEMP_FILE"
+# Move the temporary file to the output file
+if ! mv "$TEMP_FILE" "$OUTPUT_FILE"; then
+    log_error "Failed to create output file: $OUTPUT_FILE"
+    rm -f "$TEMP_FILE"
+    exit 1
+fi
 
 log_info "✓ YAML file generated successfully"
 
