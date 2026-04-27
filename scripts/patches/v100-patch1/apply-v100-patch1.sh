@@ -15,7 +15,6 @@ NC='\033[0m' # No Color
 function main() {
 
 # need to validate parameters
-#TODO validate install folder
     if [ -z "$INSTALL_FOLDER" ]; then
         log_error "Install folder not specified. Please rerun script in format: ./apply-v100-patch1.sh <path to install-folder> <path to manifest-file>"
         exit 1
