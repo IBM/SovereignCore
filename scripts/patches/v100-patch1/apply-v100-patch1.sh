@@ -2,12 +2,6 @@
 
 set -e
 
-# determine location in dir structure
-# let's assume we live in the partner-install directory with the other IBM scripts
-patch_dir=`dirname $0`
-cd "${patch_dir}"
-export patch_dir=`pwd`
-
 INSTALL_FOLDER=$1
 MANIFEST=$2
 export WORKSPACE_DIR="./v100-patch1-mirror-workspace"
@@ -40,7 +34,7 @@ function main() {
         exit 1
     fi
     if [ ! -f "$INSTALL_FOLDER/partner-install/mcsp/resources/charts/bootstrap-cd-pipeline/mirror/scripts/mirror.sh" ]; then
-        log_error "place this script and the manifest file in the SovereignCore/partner-install directory and re-run"
+        log_error "Make sure the install folder path points to the SovereignCore directory and re-run"
         exit 1
     fi
 
