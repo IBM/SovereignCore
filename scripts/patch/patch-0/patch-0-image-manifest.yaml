@@ -1,0 +1,9 @@
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v2alpha1
+mirror:
+  additionalImages:
+    - name: icr.io/automation-saas-platform-dev/cuga-service-broker:main-<>
+    - name: icr.io/automation-saas-platform-dev/cuga-operator:main-<>
+    - name: icr.io/automation-saas-platform-dev/cuga:<>
+
+#TODO update image tages/digests
