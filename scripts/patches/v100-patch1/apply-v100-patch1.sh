@@ -10,7 +10,7 @@ export patch_dir=`pwd`
 
 INSTALL_FOLDER=$1
 MANIFEST=$2
-export WORKSPACE_DIR="./patch-mirror-workspace"
+export WORKSPACE_DIR="./v100-patch1-mirror-workspace"
 
 # Color codes for output
 RED='\033[0;31m'
