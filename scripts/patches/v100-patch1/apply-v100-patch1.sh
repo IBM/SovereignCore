@@ -23,7 +23,7 @@ function main() {
 # need to validate parameters
 #TODO validate install folder
     if [ -z "$INSTALL_FOLDER" ]; then
-        log_error "Install folder not specified. Please rerun script in format: ./patch-0.sh <path to install-folder> <path to manifest-file>"
+        log_error "Install folder not specified. Please rerun script in format: ./apply-v100-patch1.sh <path to install-folder> <path to manifest-file>"
         exit 1
     fi
     if [ ! -d "$INSTALL_FOLDER" ]; then
@@ -32,7 +32,7 @@ function main() {
     fi
     
     if [ -z "$MANIFEST" ]; then
-        log_error "Manifest file not specified. Please rerun script in format: ./patch-0.sh <path to install-folder> <path to manifest-file>"
+        log_error "Manifest file not specified. Please rerun script in format: ./apply-v100-patch1.sh <path to install-folder> <path to manifest-file>"
         exit 1
     fi
     if [ ! -f "$MANIFEST" ]; then
