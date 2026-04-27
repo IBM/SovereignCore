@@ -523,14 +523,6 @@ The script uses these Quay API endpoints:
 
 ## Additional Scripts
 
-### test-oauth-token.sh
-
-Test if an OAuth token is valid:
-
-```bash
-./test-oauth-token.sh <oauth-token>
-```
-
 ### add-org-to-read-user.sh
 
 Add new organizations to existing read-only user:
@@ -558,7 +550,6 @@ For issues or questions:
 quay-user-management/
 ├── create-read-only-account.sh    # Main script
 ├── add-org-to-read-user.sh        # Add organizations to existing user
-├── test-oauth-token.sh            # Test OAuth token validity
 ├── .env.example                   # Configuration template
 ├── .env                           # Your configuration (create from .env.example)
 ├── README.md                      # This file
