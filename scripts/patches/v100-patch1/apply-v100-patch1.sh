@@ -5,6 +5,8 @@ set -e
 INSTALL_FOLDER=$1
 MANIFEST=$2
 export WORKSPACE_DIR="./v100-patch1-mirror-workspace"
+export VALUES_FILE_DYNAMIC="${INSTALL_FOLDER}/partner-install/mcsp/resources/charts/bootstrap-cd-pipeline/values-dynamic.yaml"
+export SECRETS_FILE="${INSTALL_FOLDER}/partner-install/mcsp/resources/charts/bootstrap-cd-pipeline/secrets.yaml"
 
 # Color codes for output
 RED='\033[0;31m'
@@ -36,16 +38,22 @@ function main() {
         log_error "Make sure the install folder path points to the SovereignCore directory and re-run"
         exit 1
     fi
+    log_info "Validations passed"
 
-    #source necessary mirror.sh functions
-    source ${INSTALL_FOLDER}/partner-install/mcsp/resources/charts/bootstrap-cd-pipeline/mirror/scripts/mirror.sh
+    #source necessary template.env values
     source ${INSTALL_FOLDER}/partner-install/mcsp/resources/charts/bootstrap-cd-pipeline/template.env
+
+    # extract variables from values.yaml and secrets.yaml
+    QUAY_REGISTRY=$(yq -r '.registry.domain // ""' "$VALUES_FILE_DYNAMIC")
+    QUAY_USERNAME=$(yq -r '.registry.username // ""' "$SECRETS_FILE")
+    QUAY_PASSWORD=$(yq -r '.registry.password // ""' "$SECRETS_FILE")
+    QUAY_ORGANIZATION="sovcloud"
 
     ROOT_DIR=$(yq '.workingDir' "${INSTALL_FOLDER}/config/global.yaml")
     export KUBECONFIG="${ROOT_DIR}/ocp-cluster/auth/kubeconfig"
 
 # need to mirror images based on image manifest file
-    # call the mirror.sh mirror_images function, directly point it to the manifest file   
+    # call the mirror.sh mirror_images function, directly point it to the manifest file  
     if mirror_images "$MANIFEST"; then
         log_info "Successfully mirrored images from $MANIFEST"
     else
@@ -85,6 +93,51 @@ refresh_cuga_argo() {
     done
 }
 
+mirror_images() {
+    local manifest_file=$1
+    local manifest_name=$(basename "$manifest_file" .yaml)
+    
+    log_info "=========================================="
+    log_info "Mirroring images from: $manifest_file"
+    log_info "=========================================="
+    
+    if [ ! -f "$manifest_file" ]; then
+        log_error "Manifest file not found: $manifest_file"
+        return 1
+    fi
+    
+    # Set workspace directory
+    local workspace_dir="${WORKSPACE_DIR:-./mirror-workspace}"
+    mkdir -p "$workspace_dir"
+
+    # Get oc-mirror auth file directory
+    local auth_file_dir="${AUTH_FILE_DIR}"
+    
+    # Build the oc-mirror command
+    local target_registry="docker://${QUAY_REGISTRY}/${QUAY_ORGANIZATION}"
+    local workspace_path="file://$(realpath $workspace_dir)"
+    
+    log_info "Target registry: $target_registry"
+    log_info "Workspace: $workspace_path"
+    log_info ""
+    log_info "Running oc-mirror..."
+    
+    # Run oc-mirror
+    if oc-mirror --v2 --dest-tls-verify=false \
+        --authfile "$auth_file_dir" \
+        --config "$manifest_file" \
+        --retry-times 5 \
+        --retry-delay 10s \
+        --workspace "$workspace_path" \
+        "$target_registry"; then
+        log_info "✓ Successfully mirrored images from $manifest_name"
+
+        return 0
+    else
+        log_error "✗ Failed to mirror images from $manifest_name"
+        return 1
+    fi
+}
 
 # Function to print colored messages
 log_info() {
