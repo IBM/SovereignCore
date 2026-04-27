@@ -4,24 +4,23 @@ This directory contains scripts to automate the creation of teams in Quay organi
 
 ## Overview
 
-This setup uses a **two-step workflow**:
+The `create-read-only-account.sh` script provides a **streamlined workflow**:
 
-### Step 1: Create User and Grant Permissions (`create-read-only-account.sh`)
 1. Checks if the team user exists, and creates it if not (with auto-generated password)
 2. Creates a "sovereign-core-read" team in each Quay organization (or uses existing teams)
 3. Adds the specified user to each team
 4. Automatically discovers all repositories in each organization
 5. Grants read permissions to the team for all repositories in that organization
 6. Saves authentication credentials to a JSON file
+7. **Automatically generates Kubernetes pull secret** (when using OAuth auto-generation)
 
-### Step 2: Generate Pull Secret (`generate-pull-secret.sh`)
-1. Uses an application token or OAuth token (created by the user in Quay UI)
-2. Generates a Kubernetes pull secret in `dockerconfigjson` format
-
-**Why two steps?**
-- The auto-generated password from Step 1 is for initial login only
-- Application tokens and OAuth tokens provide better security and can be easily rotated
-- Tokens can have specific scopes and expiration dates
+**Key Features:**
+- **One-step setup** when using OAuth auto-generation (Hub Cluster access required)
+- Automatically generates read-only OAuth token for the team user
+- Temporarily elevates the `sovereign-core-read` team in `default-org` to organization admin during team-user OAuth token generation, then reverts it to `member`
+- Automatically creates Kubernetes pull secret with the OAuth token
+- No manual token creation needed in Quay UI
+- For existing API token authentication, manual token creation is still required
 
 ## Prerequisites
 
@@ -91,13 +90,16 @@ If `QUAY_API_TOKEN` is not set, the script will automatically generate OAuth tok
 - Must be logged in to Hub Cluster via `oc login`
 - Hub Cluster must have `quay-oauth-credentials` secret in the specified namespace
 - Superuser credentials must have appropriate permissions
+- The `default-org` organization must contain the `sovereign-core-read` team, because the script temporarily updates that team's org-wide role to `admin` while creating the team user's OAuth token
 
 **How OAuth Auto-generation Works:**
 1. Script retrieves OAuth client credentials from Hub Cluster secret
 2. Generates OAuth token for superuser with required scopes
 3. Uses generated token as `QUAY_API_TOKEN` for API operations
-4. After creating team user, generates `repo:read` OAuth token for that user
-5. Saves team user's OAuth token in the credentials file
+4. Before generating the team user's `repo:read` OAuth token, temporarily updates the `default-org/sovereign-core-read` team role to `admin`
+5. Generates `repo:read` OAuth token for that user
+6. Reverts the `default-org/sovereign-core-read` team role back to `member`
+7. Saves team user's OAuth token in the credentials file
 
 #### Optional Variables
 
@@ -184,28 +186,11 @@ export QUAY_SUPER_PASSWORD=your-password
 
 ## Usage
 
-### Complete Workflow (Two Steps)
+### Complete Workflow
 
-#### Step 1: Create User and Grant Permissions
+#### Option A: Using OAuth Auto-generation (Recommended - One Step)
 
-**Option A: Using Existing API Token**
-
-```bash
-# 1. Prepare environment
-cp .env.example .env
-vim .env  # Edit with your values (set QUAY_API_TOKEN)
-
-# 2. Load environment variables
-source .env
-
-# 3. (Optional) Validate configuration
-./create-read-only-account.sh --dry-run
-
-# 4. Run the script
-./create-read-only-account.sh
-```
-
-**Option B: Using OAuth Auto-generation**
+This option automatically generates the OAuth token and Kubernetes pull secret in a single run.
 
 ```bash
 # 1. Login to Hub Cluster
@@ -223,44 +208,53 @@ source .env
 
 # 5. Run the script
 ./create-read-only-account.sh
-```
 
-**Output**: The script will save authentication credentials to `generated/auth-<team-user-name>.json`
-
-**Note**: When using OAuth auto-generation, the credentials file will include an `oauth_token` field with the team user's OAuth token (scope: `repo:read`).
-
-#### Step 2: Create Token and Generate Pull Secret
-
-```bash
-# 1. Log in to Quay UI
-# Open the URL shown in the script output
-# Use credentials from generated/auth-<team-user-name>.json
-
-# 2. Create an application token or OAuth token in Quay UI
-# Copy the generated token
-
-# 3. Set one token for pull secret generation
-export TEAM_USER_APP_TOKEN=<your-application-token>
-# or
-export TEAM_USER_OAUTH_TOKEN=<your-oauth-token>
-
-# If both TEAM_USER_APP_TOKEN and TEAM_USER_OAUTH_TOKEN are set,
-# generate-pull-secret.sh uses TEAM_USER_OAUTH_TOKEN.
-
-# 4. (Optional) Set custom namespace if needed
-# export NAMESPACE=your-namespace  # Default: acm-service-broker
-
-# 5. Generate pull secret
-./generate-pull-secret.sh
-```
-
-**Output**: The script will generate `generated/pull-secret-<team-user-name>.yaml`
-
-#### Step 3: Apply to Kubernetes
-
-```bash
+# 6. Apply the generated pull secret to Kubernetes
 kubectl apply -f generated/pull-secret-<team-user-name>.yaml
 ```
+
+**Output**:
+- Authentication credentials: `generated/auth-<team-user-name>.json` (includes `oauth_token` field)
+- Kubernetes pull secret: `generated/pull-secret-<team-user-name>.yaml` (automatically generated)
+
+**Note**: The script automatically generates a read-only OAuth token (scope: `repo:read`) and creates the Kubernetes pull secret in one step. During token creation, it temporarily sets the `default-org/sovereign-core-read` team role to `admin` and then reverts it to `member`.
+
+#### Option B: Using Existing API Token (Manual Token Creation Required)
+
+When using an existing API token, you need to manually create an application token or OAuth token in Quay UI.
+
+```bash
+# 1. Prepare environment
+cp .env.example .env
+vim .env  # Edit with your values (set QUAY_API_TOKEN)
+
+# 2. Load environment variables
+source .env
+
+# 3. (Optional) Validate configuration
+./create-read-only-account.sh --dry-run
+
+# 4. Run the script
+./create-read-only-account.sh
+
+# 5. Create an application token or OAuth token in Quay UI
+#    a. Log in to Quay (URL shown in script output)
+#    b. Use credentials from generated/auth-<team-user-name>.json
+#    c. Go to: Account Settings → Application Tokens or OAuth Applications
+#    d. Generate a new token
+#    e. Copy the token
+
+# 6. Manually create the pull secret using kubectl
+kubectl create secret docker-registry quay-pull-secret-<team-user-name> \
+  --docker-server=<quay-url> \
+  --docker-username='$oauthtoken' \
+  --docker-password=<your-token> \
+  --namespace=acm-service-broker
+```
+
+**Output**:
+- Authentication credentials: `generated/auth-<team-user-name>.json`
+- Pull secret must be created manually
 
 ### Command-Line Options
 
@@ -276,47 +270,56 @@ Options:
 ```
 
 **Note on --no-revoke-token:**
-- Only applies when using OAuth auto-generation (Option 2)
+- Only applies when using OAuth auto-generation
 - Saves the generated token to `.env` file for future use
 - Useful for repeated operations without regenerating tokens
 - Token is saved with superuser privileges, so protect `.env` appropriately
 
-#### generate-pull-secret.sh
-
-```
-Options:
-  -o, --output-dir DIR      Output directory for generated files (default: ./generated)
-  -h, --help                Show help message
-
-Environment Variables:
-  NAMESPACE                 Kubernetes namespace for secret (default: acm-service-broker)
-```
+**Environment Variables:**
+- `NAMESPACE`: Kubernetes namespace for the pull secret (default: `acm-service-broker`)
+  - Only used when OAuth token is auto-generated
+  - Set before running the script: `export NAMESPACE=your-namespace`
 
 ### Examples
 
-#### Example 1: Complete Setup with API Token
+#### Example 1: One-Step Setup with OAuth Auto-generation (Recommended)
 
 ```bash
-# Step 1: Create user and grant permissions
-export QUAY_URL=https://quay.example.com
-export QUAY_API_TOKEN=your-superuser-token
-export TEAM_USER_NAME=readonly-user
+# Login to Hub Cluster
+oc login https://api.your-cluster.example.com:6443
+
+# Create .env file with superuser credentials
+cat > .env <<EOF
+QUAY_URL=https://quay.example.com
+QUAY_SUPER_USER=admin
+QUAY_SUPER_PASSWORD=your-superuser-password
+TEAM_USER_NAME=readonly-user
+QUAY_NAMESPACE=quay-enterprise
+EOF
+
+# Run the script (automatically generates OAuth token and pull secret)
+source .env
 ./create-read-only-account.sh
 
-# Step 2: Create a token in Quay UI
-# (Follow the instructions shown by the script)
-
-# Step 3: Generate pull secret
-export TEAM_USER_APP_TOKEN=<token-from-quay-ui>
-# or
-export TEAM_USER_OAUTH_TOKEN=<oauth-token-from-quay-ui>
-./generate-pull-secret.sh
-
-# Step 4: Apply to Kubernetes
+# Apply to Kubernetes
 kubectl apply -f generated/pull-secret-readonly-user.yaml
 ```
 
-#### Example 2: Using .env File
+#### Example 2: Custom Namespace for Pull Secret
+
+```bash
+# Set custom namespace before running
+export NAMESPACE=production
+
+# Run the script
+source .env
+./create-read-only-account.sh
+
+# Apply to custom namespace
+kubectl apply -f generated/pull-secret-readonly-user.yaml
+```
+
+#### Example 3: Using Existing API Token
 
 ```bash
 # Create .env file
@@ -326,50 +329,12 @@ QUAY_API_TOKEN=your-superuser-token
 TEAM_USER_NAME=readonly-user
 EOF
 
-# Step 1: Create user and grant permissions
+# Run the script
 source .env
 ./create-read-only-account.sh
 
-# Step 2: Create a token in Quay UI
-# (Follow the instructions shown by the script)
-
-# Step 3: Generate pull secret with custom namespace
-export TEAM_USER_APP_TOKEN=<token-from-quay-ui>
-# or
-export TEAM_USER_OAUTH_TOKEN=<oauth-token-from-quay-ui>
-export NAMESPACE=production  # Optional: defaults to acm-service-broker
-./generate-pull-secret.sh
-
-# Step 4: Apply to Kubernetes
-kubectl apply -f generated/pull-secret-readonly-user.yaml
-```
-
-#### Example 3: Using OAuth Auto-generation
-
-```bash
-# Step 1: Login to Hub Cluster
-oc login https://api.your-cluster.example.com:6443
-
-# Step 2: Create .env file with superuser credentials
-cat > .env <<EOF
-QUAY_URL=https://quay.example.com
-QUAY_SUPER_USER=admin
-QUAY_SUPER_PASSWORD=your-superuser-password
-TEAM_USER_NAME=readonly-user
-QUAY_NAMESPACE=quay-enterprise
-EOF
-
-# Step 3: Create user and grant permissions (OAuth token auto-generated)
-source .env
-./create-read-only-account.sh
-
-# Step 4: Use the auto-generated OAuth token from credentials file
-# The oauth_token field in generated/auth-readonly-user.json can be used directly
-export TEAM_USER_OAUTH_TOKEN=$(jq -r '.oauth_token' generated/auth-readonly-user.json)
-./generate-pull-secret.sh
-
-# Step 5: Apply to Kubernetes
-kubectl apply -f generated/pull-secret-readonly-user.yaml
+# Follow the instructions to create a token in Quay UI
+# Then manually create the pull secret
 ```
 
 #### Example 4: Dry Run (Validation Only)
@@ -383,17 +348,23 @@ source .env
 
 ```bash
 ./create-read-only-account.sh --output-dir /tmp/quay-secrets
-./generate-pull-secret.sh --output-dir /tmp/quay-secrets
 ```
 
 ## Output
 
 ### Generated Files
 
+**When using OAuth auto-generation:**
 ```
 generated/
-├── auth-<team-user-name>.json           # Authentication credentials (from Step 1)
-└── pull-secret-<team-user-name>.yaml    # Kubernetes pull secret (from Step 2)
+├── auth-<team-user-name>.json           # Authentication credentials with OAuth token
+└── pull-secret-<team-user-name>.yaml    # Kubernetes pull secret (automatically generated)
+```
+
+**When using existing API token:**
+```
+generated/
+└── auth-<team-user-name>.json           # Authentication credentials only
 ```
 
 ### Authentication File Format
@@ -421,7 +392,7 @@ generated/
 }
 ```
 
-**Note**: The `oauth_token` field is only present when OAuth auto-generation is used. This token has `repo:read` scope and can be used directly with `generate-pull-secret.sh`.
+**Note**: The `oauth_token` field is only present when OAuth auto-generation is used. This token has `repo:read` scope and is automatically used to generate the Kubernetes pull secret.
 
 ### Pull Secret Format
 
@@ -780,7 +751,49 @@ export CURL_OPTS="--connect-timeout 60 --max-time 600"
 
 ## Integration with CI/CD
 
-### Example: GitHub Actions
+### Example: GitHub Actions (with OAuth Auto-generation)
+
+```yaml
+name: Setup Quay Teams
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq
+      
+      - name: Setup OpenShift CLI
+        uses: redhat-actions/oc-installer@v1
+      
+      - name: Login to Hub Cluster
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+      
+      - name: Create Teams and Generate Pull Secret
+        env:
+          QUAY_URL: ${{ secrets.QUAY_URL }}
+          QUAY_SUPER_USER: ${{ secrets.QUAY_SUPER_USER }}
+          QUAY_SUPER_PASSWORD: ${{ secrets.QUAY_SUPER_PASSWORD }}
+          TEAM_USER_NAME: ${{ secrets.TEAM_USER_NAME }}
+          NAMESPACE: ${{ secrets.NAMESPACE }}
+        run: |
+          cd scripts/quay-user-management
+          ./create-read-only-account.sh
+      
+      - name: Apply to Kubernetes
+        run: |
+          kubectl apply -f scripts/quay-user-management/generated/pull-secret-${TEAM_USER_NAME}.yaml
+```
+
+**Note**: This example uses OAuth auto-generation, which automatically creates the pull secret. No manual token creation is needed.
+
+### Example: GitHub Actions (with Existing API Token)
 
 ```yaml
 name: Setup Quay Teams
@@ -806,51 +819,50 @@ jobs:
           cd scripts/quay-user-management
           ./create-read-only-account.sh
       
-      - name: Generate Pull Secret
+      - name: Create Pull Secret Manually
         env:
           QUAY_URL: ${{ secrets.QUAY_URL }}
           TEAM_USER_NAME: ${{ secrets.TEAM_USER_NAME }}
-          TEAM_USER_APP_TOKEN: ${{ secrets.TEAM_USER_APP_TOKEN }}
-          TEAM_USER_OAUTH_TOKEN: ${{ secrets.TEAM_USER_OAUTH_TOKEN }}
+          TEAM_USER_TOKEN: ${{ secrets.TEAM_USER_TOKEN }}
+          NAMESPACE: ${{ secrets.NAMESPACE }}
         run: |
-          cd scripts/quay-user-management
-          ./generate-pull-secret.sh
-      
-      - name: Apply to Kubernetes
-        run: |
-          kubectl apply -f scripts/quay-user-management/generated/pull-secret-${TEAM_USER_NAME}.yaml
+          kubectl create secret docker-registry quay-pull-secret-${TEAM_USER_NAME} \
+            --docker-server=${QUAY_URL#https://} \
+            --docker-username='$oauthtoken' \
+            --docker-password=${TEAM_USER_TOKEN} \
+            --namespace=${NAMESPACE:-acm-service-broker}
 ```
 
-**Note**: You need to manually create an application token or OAuth token in Quay UI first, then add it as `TEAM_USER_APP_TOKEN` or `TEAM_USER_OAUTH_TOKEN` secret in GitHub. If both are set, `TEAM_USER_OAUTH_TOKEN` is used.
+**Note**: When using existing API token, you need to manually create a token in Quay UI and add it as `TEAM_USER_TOKEN` secret in GitHub.
 
-### Example: GitLab CI
+### Example: GitLab CI (with OAuth Auto-generation)
 
 ```yaml
 setup-quay-teams:
   stage: setup
   image: alpine:latest
   before_script:
-    - apk add --no-cache curl jq bash
+    - apk add --no-cache curl jq bash openshift-client
+    - oc login --token=${OC_TOKEN} --server=${OC_SERVER}
   script:
     - cd scripts/quay-user-management
     - ./create-read-only-account.sh
-    - ./generate-pull-secret.sh
     - kubectl apply -f generated/pull-secret-${TEAM_USER_NAME}.yaml
   variables:
     QUAY_URL: ${QUAY_URL}
-    QUAY_API_TOKEN: ${QUAY_API_TOKEN}
+    QUAY_SUPER_USER: ${QUAY_SUPER_USER}
+    QUAY_SUPER_PASSWORD: ${QUAY_SUPER_PASSWORD}
     TEAM_USER_NAME: ${TEAM_USER_NAME}
-    TEAM_USER_APP_TOKEN: ${TEAM_USER_APP_TOKEN}
-    TEAM_USER_OAUTH_TOKEN: ${TEAM_USER_OAUTH_TOKEN}
+    NAMESPACE: ${NAMESPACE}
   only:
     - main
 ```
 
-**Note**: You need to manually create an application token or OAuth token in Quay UI first, then add it as `TEAM_USER_APP_TOKEN` or `TEAM_USER_OAUTH_TOKEN` variable in GitLab CI/CD settings. If both are set, `TEAM_USER_OAUTH_TOKEN` is used.
+**Note**: This example uses OAuth auto-generation for a fully automated workflow.
 
 ## API Endpoints Used
 
-### create-read-only-account.sh
+The `create-read-only-account.sh` script uses the following Quay API endpoints:
 
 - `GET /api/v1/user/` - Get user information and organizations
 - `GET /api/v1/users/{username}` - Check if user exists
@@ -862,22 +874,24 @@ setup-quay-teams:
 - `GET /api/v1/repository?namespace={orgname}&page={page}` - List organization repositories (with pagination)
 - `PUT /api/v1/repository/{namespace}/{repository}/permissions/team/{teamname}` - Grant team permissions
 - `GET /api/v1/repository/{namespace}/{repository}/permissions/team/{teamname}` - Check existing team permissions
+- `GET /api/v1/user/authorizations` - List user's OAuth tokens (for token revocation)
+- `DELETE /api/v1/user/authorizations/{uuid}` - Revoke specific OAuth token by UUID
+- `POST /oauth/authorizeapp` - Generate OAuth token (when using OAuth auto-generation)
 
-### generate-pull-secret.sh
-
-This script does not use Quay API endpoints. It only generates a Kubernetes secret using the provided credentials.
+**Note**: Pull secret generation is now integrated into `create-read-only-account.sh` and does not require additional API calls.
 
 ## Directory Structure
 
 ```
 quay-user-management/
-├── create-read-only-account.sh    # Step 1: Create user and grant permissions
-├── generate-pull-secret.sh        # Step 2: Generate pull secret
+├── create-read-only-account.sh    # Main script: Create user, grant permissions, and generate pull secret
+├── test-oauth-token.sh            # Utility: Test OAuth token validity
+├── add-org-to-read-user.sh        # Utility: Add organization to existing read user
 ├── .env.example                   # Environment variables template
 ├── README.md                      # This file
 └── generated/                     # Generated files (created by scripts)
-    ├── auth-<team-user-name>.json           # Authentication credentials
-    └── pull-secret-<team-user-name>.yaml    # Kubernetes pull secret
+    ├── auth-<team-user-name>.json           # Authentication credentials (with OAuth token if auto-generated)
+    └── pull-secret-<team-user-name>.yaml    # Kubernetes pull secret (auto-generated with OAuth)
 ```
 
 ## Comparison with Other Scripts

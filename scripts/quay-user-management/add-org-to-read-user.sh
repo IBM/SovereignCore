@@ -9,8 +9,13 @@ set -e
 # Default values
 DRY_RUN=false
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OUTPUT_DIR="${SCRIPT_DIR}/generated"
 MAX_RETRIES=3
 RETRY_DELAY=2
+QUAY_NAMESPACE="${QUAY_NAMESPACE:-quay-enterprise}"
+AUTO_GENERATED_TOKEN=false
+REVOKE_TOKEN=true
+OAUTH_TOKEN_UUID=""
 
 # Colors for output
 RED='\033[0;31m'
@@ -28,6 +33,7 @@ usage() {
     echo ""
     echo "Options:"
     echo "  -d, --dry-run             Validate configuration without making changes"
+    echo "  -D, --debug               Enable debug output"
     echo "  -h, --help                Show this help message"
     echo ""
     echo "Arguments:"
@@ -37,19 +43,31 @@ usage() {
     echo "  QUAY_URL                  Quay registry URL (e.g., https://quay.example.com)"
     echo "  TEAM_USER_NAME            Username to add to teams (must already exist)"
     echo ""
-    echo "Authentication:"
+    echo "Authentication (Option 1 - API Token):"
     echo "  QUAY_API_TOKEN            Admin API token for authentication"
+    echo ""
+    echo "Authentication (Option 2 - OAuth Token Generation):"
+    echo "  QUAY_SUPER_USER           Superuser username for OAuth token generation"
+    echo "  QUAY_SUPER_PASSWORD       Superuser password for OAuth token generation"
+    echo "  QUAY_NAMESPACE            Quay namespace in OpenShift (default: quay-enterprise)"
     echo ""
     echo "Optional Environment Variables:"
     echo "  CURL_OPTS                 Additional curl options (e.g., '--insecure --connect-timeout 30')"
+    echo "  DEBUG                     Enable debug output (true/false, or use --debug flag)"
     echo ""
     echo "Examples:"
-    echo "  # Set environment variables"
+    echo "  # Using API Token"
     echo "  export QUAY_URL=https://quay.example.com"
     echo "  export QUAY_API_TOKEN=your-admin-token"
     echo "  export TEAM_USER_NAME=readonly-user"
+    echo "  $0 my-new-org"
     echo ""
-    echo "  # Add user to single organization"
+    echo "  # Using OAuth Token Generation (auto-generates and revokes token)"
+    echo "  export QUAY_URL=https://quay.example.com"
+    echo "  export QUAY_SUPER_USER=admin"
+    echo "  export QUAY_SUPER_PASSWORD=your-password"
+    echo "  export QUAY_NAMESPACE=quay-enterprise"
+    echo "  export TEAM_USER_NAME=readonly-user"
     echo "  $0 my-new-org"
     echo ""
     echo "  # Add user to multiple organizations"
@@ -58,10 +76,14 @@ usage() {
     echo "  # Dry run to validate"
     echo "  $0 --dry-run my-new-org"
     echo ""
+    echo "  # Enable debug output"
+    echo "  $0 --debug my-new-org"
+    echo ""
     echo "Prerequisites:"
     echo "  - curl: HTTP client"
     echo "  - jq: JSON processor"
     echo "  - base64: Base64 encoder"
+    echo "  - oc: OpenShift CLI (for OAuth token generation)"
     echo "  - User must be created first (use create-read-only-account.sh)"
     echo ""
     exit 1
@@ -72,15 +94,310 @@ log_info() {
 }
 
 log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
+    echo -e "${YELLOW}[WARN]${NC} $1" >&2
 }
 
 log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+    echo -e "${RED}[ERROR]${NC} $1" >&2
 }
 
 log_debug() {
-    echo -e "${BLUE}[DEBUG]${NC} $1"
+    if [ "${DEBUG}" = true ]; then
+        echo -e "${BLUE}[DEBUG]${NC} $1" >&2
+    fi
+}
+
+# Function to save OAuth token to .env file
+save_token_to_env() {
+    local token="$1"
+    local env_file="${SCRIPT_DIR}/.env"
+    
+    if [ -z "$token" ]; then
+        log_error "No token provided to save"
+        return 1
+    fi
+    
+    log_debug "Saving token to ${env_file}..."
+    
+    # Create or update .env file
+    if [ -f "$env_file" ]; then
+        # Check if QUAY_API_TOKEN already exists
+        if grep -q "^QUAY_API_TOKEN=" "$env_file"; then
+            # Update existing token
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                # macOS
+                sed -i '' "s|^QUAY_API_TOKEN=.*|QUAY_API_TOKEN=\"${token}\"|" "$env_file"
+            else
+                # Linux
+                sed -i "s|^QUAY_API_TOKEN=.*|QUAY_API_TOKEN=\"${token}\"|" "$env_file"
+            fi
+        else
+            # Append new token
+            echo "" >> "$env_file"
+            echo "# Auto-generated OAuth token" >> "$env_file"
+            echo "QUAY_API_TOKEN=\"${token}\"" >> "$env_file"
+        fi
+    else
+        # Create new .env file
+        cat > "$env_file" <<EOF
+# Quay Configuration
+# Auto-generated OAuth token
+QUAY_API_TOKEN="${token}"
+EOF
+    fi
+    
+    if [ $? -eq 0 ]; then
+        log_debug "✓ Token saved successfully"
+        return 0
+    else
+        log_error "Failed to save token to ${env_file}"
+        return 1
+    fi
+}
+
+# Function to get OAuth token UUID for revocation
+get_token_uuid() {
+    local token="$1"
+    local expected_scope="$2"
+    
+    if [ -z "$token" ]; then
+        log_error "No token provided for UUID retrieval"
+        return 1
+    fi
+    
+    if [ -z "$expected_scope" ]; then
+        log_error "No scope provided for UUID matching"
+        return 1
+    fi
+    
+    log_debug "Retrieving OAuth token UUID..."
+    log_debug "  Expected scope: ${expected_scope}"
+    
+    # Get list of user authorizations
+    local response
+    local http_code
+    
+    response=$(curl -s -w "\n%{http_code}" $CURL_OPTS -X GET \
+        -H "Authorization: Bearer ${token}" \
+        "${QUAY_URL}/api/v1/user/authorizations" 2>&1)
+    
+    http_code=$(echo "$response" | tail -n1)
+    response=$(echo "$response" | sed '$d')
+    
+    if [ "$http_code" -ne 200 ]; then
+        log_error "Failed to retrieve user authorizations (HTTP $http_code)"
+        log_debug "Response: $response"
+        return 1
+    fi
+    
+    # Parse JSON response and find matching token UUID
+    # Find the last token with matching scope (most recent)
+    # Sort scopes before comparison to handle different ordering
+    local uuid
+    log_debug "Sorting and comparing scopes (order-independent matching)..."
+    uuid=$(echo "$response" | jq -r --arg scope "$expected_scope" '
+        ($scope | split(" ") | sort | join(" ")) as $sorted_expected |
+        .authorizations
+        | map(select(.scopes | map(.scope) | sort | join(" ") == $sorted_expected))
+        | last
+        | .uuid // empty
+    ')
+    
+    if [ -z "$uuid" ]; then
+        log_warn "No OAuth token found with matching scope: ${expected_scope}"
+        log_debug "Expected scope (sorted): $(echo "$expected_scope" | tr ' ' '\n' | sort | tr '\n' ' ')"
+        log_debug "Available tokens:"
+        echo "$response" | jq -r '.authorizations[] | "  UUID: \(.uuid), Scopes: \(.scopes | map(.scope) | join(" "))"' >&2
+        return 1
+    fi
+    
+    log_debug "✓ Found matching OAuth token UUID: ${uuid}"
+    echo "$uuid"
+    return 0
+}
+
+# Function to revoke OAuth token
+revoke_oauth_token() {
+    local token="$1"
+    local uuid="$2"
+    
+    if [ -z "$token" ]; then
+        log_error "No token provided for revocation"
+        return 1
+    fi
+    
+    if [ -z "$uuid" ]; then
+        log_error "No UUID provided for revocation"
+        log_error "Cannot revoke token without UUID"
+        return 1
+    fi
+    
+    log_debug "Attempting to revoke OAuth token..."
+    log_debug "  UUID: ${uuid}"
+    
+    # Make revoke request using DELETE API
+    local response
+    local http_code
+    
+    response=$(curl -s -w "\n%{http_code}" $CURL_OPTS -X DELETE \
+        -H "Authorization: Bearer ${token}" \
+        "${QUAY_URL}/api/v1/user/authorizations/${uuid}" 2>&1)
+    
+    http_code=$(echo "$response" | tail -n1)
+    response=$(echo "$response" | sed '$d')
+    
+    if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+        log_info "✓ OAuth token revoked successfully"
+        return 0
+    else
+        log_warn "Failed to revoke OAuth token (HTTP $http_code)"
+        log_debug "Response: $response"
+        return 1
+    fi
+}
+
+# Cleanup function to revoke auto-generated tokens
+cleanup() {
+    local exit_code=$?
+    
+    # Only process if token was auto-generated
+    if [ "$AUTO_GENERATED_TOKEN" = true ]; then
+        if [ "$REVOKE_TOKEN" = false ]; then
+            # Save token to .env file for reuse
+            if [ "$DRY_RUN" = true ]; then
+                log_info "Dry run: Would save OAuth token to .env file"
+                log_info "  Token would be saved as: QUAY_API_TOKEN=<generated-token>"
+                log_info "  Next run would use this token automatically"
+            else
+                log_info "Saving OAuth token to .env file for reuse..."
+                if save_token_to_env "$QUAY_API_TOKEN"; then
+                    log_info "✓ OAuth token saved to ${SCRIPT_DIR}/.env"
+                    log_info "  Next time, the script will use this token automatically"
+                    log_info "  To use the saved token, run: source .env && ./add-org-to-read-user.sh"
+                    log_warn "  Note: OAuth tokens may expire. If authentication fails, regenerate the token."
+                else
+                    log_warn "Failed to save OAuth token to .env file"
+                    log_warn "You may need to regenerate the token on next run"
+                fi
+            fi
+        else
+            # Revoke token
+            if [ "$DRY_RUN" = true ]; then
+                log_info "Dry run: Would revoke auto-generated OAuth token"
+            else
+                log_info "Revoking auto-generated OAuth token..."
+                if [ -n "$OAUTH_TOKEN_UUID" ]; then
+                    if ! revoke_oauth_token "$QUAY_API_TOKEN" "$OAUTH_TOKEN_UUID"; then
+                        log_warn "Failed to revoke OAuth token. Please revoke it manually if needed."
+                    fi
+                else
+                    log_warn "No token UUID available. Cannot revoke token automatically."
+                    log_warn "Please revoke the token manually from Quay UI if needed."
+                fi
+            fi
+        fi
+    fi
+    
+    exit $exit_code
+}
+
+# Set up cleanup trap
+trap cleanup EXIT INT TERM
+
+# Function to get OAuth credentials from Hub Cluster
+get_oauth_credentials_from_hub() {
+    log_info "Fetching OAuth credentials from Hub Cluster..."
+    
+    # Check if oc command is available
+    if ! command -v oc &> /dev/null; then
+        log_error "'oc' command not found. Please install OpenShift CLI."
+        return 1
+    fi
+    
+    # Check if logged in to OpenShift
+    if ! oc whoami &> /dev/null; then
+        log_error "Not logged in to OpenShift Cluster. Please run 'oc login'."
+        return 1
+    fi
+    
+    # Extract OAuth credentials from secret
+    local secret_output
+    if ! secret_output=$(oc extract -n "${QUAY_NAMESPACE}" secret/quay-oauth-credentials --to=- 2>&1); then
+        log_error "Failed to get OAuth credentials"
+        log_error "Namespace: ${QUAY_NAMESPACE}"
+        log_error "Secret: quay-oauth-credentials"
+        log_debug "Error: $secret_output"
+        return 1
+    fi
+    
+    # Parse client-id
+    OAUTH_CLIENT_ID=$(echo "$secret_output" | awk '/^# client-id$/{getline; print}')
+    if [ -z "$OAUTH_CLIENT_ID" ]; then
+        log_error "Failed to extract Client ID"
+        return 1
+    fi
+    
+    # Parse redirect-uri
+    OAUTH_REDIRECT_URI=$(echo "$secret_output" | awk '/^# redirect-uri$/{getline; print}')
+    if [ -z "$OAUTH_REDIRECT_URI" ]; then
+        log_error "Failed to extract Redirect URI"
+        return 1
+    fi
+    
+    log_info "✓ OAuth credentials retrieved successfully"
+    log_debug "  Client ID: ${OAUTH_CLIENT_ID}"
+    log_debug "  Redirect URI: ${OAUTH_REDIRECT_URI}"
+    
+    return 0
+}
+
+# Function to generate OAuth token
+generate_oauth_token() {
+    local username="$1"
+    local password="$2"
+    local scopes="$3"
+    local client_id="$4"
+    local redirect_uri="$5"
+    
+    log_debug "Generating OAuth token..."
+    log_debug "  Username: ${username}"
+    log_debug "  Scopes: ${scopes}"
+    
+    # Create Basic Auth header
+    local auth_header=$(echo -n "${username}:${password}" | base64)
+    
+    # Prepare request data
+    local request_data="response_type=token&client_id=${client_id}&scope=${scopes}&redirect_uri=${redirect_uri}"
+    
+    # Make OAuth request and capture full response including headers
+    local response
+    response=$(curl -s -v -X POST $CURL_OPTS \
+        -d "$request_data" \
+        -H "Authorization: Basic ${auth_header}" \
+        -H "Content-Type: application/x-www-form-urlencoded" \
+        "${QUAY_URL}/oauth/authorizeapp" 2>&1)
+    
+    # Extract access token from Location header
+    local token=$(echo "$response" | grep -i "^< location:" | sed -n 's/.*access_token=\([^&]*\).*/\1/p' | tr -d '\r\n')
+    
+    if [ -z "$token" ]; then
+        log_error "Failed to generate OAuth token"
+        log_debug "Response: $response"
+        
+        # Check for common errors
+        if echo "$response" | grep -q "401"; then
+            log_error "Authentication failed. Please check username and password."
+        elif echo "$response" | grep -q "400"; then
+            log_error "Invalid request. Please verify Client ID is whitelisted."
+        fi
+        
+        return 1
+    fi
+    
+    log_debug "✓ OAuth token generated successfully"
+    
+    echo "$token"
+    return 0
 }
 
 # Parse arguments
@@ -89,6 +406,10 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         -d|--dry-run)
             DRY_RUN=true
+            shift 1
+            ;;
+        -D|--debug)
+            DEBUG=true
             shift 1
             ;;
         -h|--help)
@@ -147,12 +468,63 @@ fi
 # Validate authentication
 log_info "Validating authentication..."
 
+# Check if API token is provided or if we need to generate one
 if [ -z "$QUAY_API_TOKEN" ]; then
-    log_error "QUAY_API_TOKEN environment variable is required"
-    exit 1
+    log_info "QUAY_API_TOKEN not provided. Checking for OAuth token generation credentials..."
+    
+    # Check if OAuth credentials are provided
+    if [ -z "$QUAY_SUPER_USER" ] || [ -z "$QUAY_SUPER_PASSWORD" ]; then
+        log_error "Authentication required. Please provide either:"
+        log_error "  1. QUAY_API_TOKEN environment variable, or"
+        log_error "  2. QUAY_SUPER_USER and QUAY_SUPER_PASSWORD for OAuth token generation"
+        exit 1
+    fi
+    
+    log_info "✓ OAuth credentials provided"
+    log_info "Namespace: ${QUAY_NAMESPACE}"
+    
+    # Get OAuth credentials from Hub Cluster
+    if ! get_oauth_credentials_from_hub; then
+        log_error "Failed to get OAuth credentials from Hub Cluster"
+        log_error "Please ensure:"
+        log_error "  1. You are logged in to OpenShift (oc login)"
+        log_error "  2. The namespace '${QUAY_NAMESPACE}' exists"
+        log_error "  3. The secret 'quay-oauth-credentials' exists in the namespace"
+        exit 1
+    fi
+    
+    # Generate OAuth token for superuser
+    log_info "Generating OAuth token for superuser..."
+    SUPERUSER_SCOPES="super:user org:admin repo:admin repo:create user:admin user:read"
+    
+    if ! QUAY_API_TOKEN=$(generate_oauth_token "$QUAY_SUPER_USER" "$QUAY_SUPER_PASSWORD" "$SUPERUSER_SCOPES" "$OAUTH_CLIENT_ID" "$OAUTH_REDIRECT_URI"); then
+        log_error "Failed to generate OAuth token for superuser"
+        exit 1
+    fi
+    
+    # Get UUID in parent shell (not in subshell) to ensure it's available for cleanup
+    log_debug "Retrieving token UUID for revocation in parent shell..."
+    if OAUTH_TOKEN_UUID=$(get_token_uuid "$QUAY_API_TOKEN" "$SUPERUSER_SCOPES"); then
+        log_debug "✓ Token UUID retrieved in parent shell: ${OAUTH_TOKEN_UUID}"
+    else
+        log_warn "Failed to retrieve token UUID. Token revocation may not work properly."
+        OAUTH_TOKEN_UUID=""
+    fi
+    
+    # Mark token as auto-generated for cleanup
+    AUTO_GENERATED_TOKEN=true
+    
+    log_info "✓ OAuth token generated successfully (auto-generated)"
+    log_info "✓ Using generated token as QUAY_API_TOKEN"
+    
+    if [ "$REVOKE_TOKEN" = true ]; then
+        log_info "Note: Token will be automatically revoked on script exit"
+    else
+        log_info "Note: Token will NOT be revoked on script exit"
+    fi
+else
+    log_info "✓ Using existing API Token"
 fi
-
-log_info "✓ Using API Token authentication"
 
 # Remove trailing slash from QUAY_URL
 QUAY_URL="${QUAY_URL%/}"
@@ -341,21 +713,22 @@ for org in "${ORGANIZATIONS[@]}"; do
     log_info "  Checking team: $TEAM_NAME"
     user_already_in_team=false
     
-    if team_check=$(api_call "GET" "/api/v1/organization/${org}/team/${TEAM_NAME}/members"); then
-        if echo "$team_check" | jq -e '.name' > /dev/null 2>&1; then
-            log_info "  ✓ Team already exists"
-            
+    if echo "$org_check" | jq -e ".teams.\"${TEAM_NAME}\"" > /dev/null 2>&1; then
+        # Team exists - get member information
+        log_info "  ✓ Team already exists"
+        
+        if team_check=$(api_call "GET" "/api/v1/organization/${org}/team/${TEAM_NAME}/members"); then
             # Check if user is already a member
             if echo "$team_check" | jq -e ".members[] | select(.name==\"${TEAM_USER_NAME}\")" > /dev/null 2>&1; then
                 log_info "  ✓ User already in team"
                 user_already_in_team=true
             fi
         else
-            log_warn "  ✗ Invalid response when checking team in $org (continuing with other organizations)"
+            log_warn "  ✗ Failed to get team members in $org (continuing with other organizations)"
             continue
         fi
     else
-        # Create team
+        # Team does not exist - create it
         log_info "  Creating team: $TEAM_NAME"
         team_data="{\"name\":\"${TEAM_NAME}\",\"role\":\"member\",\"description\":\"${TEAM_DESCRIPTION}\"}"
         if ! team_response=$(api_call "PUT" "/api/v1/organization/${org}/team/${TEAM_NAME}" "$team_data"); then

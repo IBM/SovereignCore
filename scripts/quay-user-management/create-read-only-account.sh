@@ -15,6 +15,9 @@ RETRY_DELAY=2
 QUAY_NAMESPACE="${QUAY_NAMESPACE:-quay-enterprise}"
 AUTO_GENERATED_TOKEN=false
 REVOKE_TOKEN=true
+OAUTH_TOKEN_UUID=""
+TEMP_ORG_ADMIN_GRANTED=false
+TEMP_ORG_ADMIN_ORG="default-org"
 
 # Colors for output
 RED='\033[0;31m'
@@ -32,6 +35,7 @@ usage() {
     echo ""
     echo "Options:"
         echo "  -d, --dry-run             Validate configuration without making changes"
+        echo "  -D, --debug               Enable debug logging"
         echo "  --no-revoke-token         Do not revoke auto-generated OAuth token on exit"
         echo "                            Token will be saved to .env file for reuse"
         echo "  -o, --output-dir DIR      Output directory for generated files (default: ${OUTPUT_DIR})"
@@ -53,6 +57,7 @@ usage() {
     echo "    QUAY_NAMESPACE          Hub Cluster namespace (default: quay-enterprise)"
     echo ""
     echo "Optional Environment Variables:"
+    echo "  DEBUG                     Enable debug logging (true/false, default: false)"
     echo "  CURL_OPTS                 Additional curl options (e.g., '--insecure --connect-timeout 30')"
     echo ""
     echo "Examples:"
@@ -81,15 +86,17 @@ log_info() {
 }
 
 log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
+    echo -e "${YELLOW}[WARN]${NC} $1" >&2
 }
 
 log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+    echo -e "${RED}[ERROR]${NC} $1" >&2
 }
 
 log_debug() {
-    echo -e "${BLUE}[DEBUG]${NC} $1" >&2
+    if [ "${DEBUG}" = true ]; then
+        echo -e "${BLUE}[DEBUG]${NC} $1" >&2
+    fi
 }
 
 # Function to save OAuth token to .env file
@@ -146,28 +153,92 @@ export QUAY_API_TOKEN=${token}" "$env_file"
 }
 
 # Function to revoke OAuth token
+# Function to get OAuth token UUID by matching scope
+get_token_uuid() {
+    local token="$1"
+    local expected_scope="$2"
+    
+    if [ -z "$token" ]; then
+        log_error "No token provided for UUID retrieval"
+        return 1
+    fi
+    
+    if [ -z "$expected_scope" ]; then
+        log_error "No scope provided for UUID matching"
+        return 1
+    fi
+    
+    log_debug "Retrieving OAuth token UUID..."
+    log_debug "  Expected scope: ${expected_scope}"
+    
+    # Get list of user authorizations
+    local response
+    local http_code
+    
+    response=$(curl -s -w "\n%{http_code}" $CURL_OPTS -X GET \
+        -H "Authorization: Bearer ${token}" \
+        "${QUAY_URL}/api/v1/user/authorizations" 2>&1)
+    
+    http_code=$(echo "$response" | tail -n1)
+    response=$(echo "$response" | sed '$d')
+    
+    if [ "$http_code" -ne 200 ]; then
+        log_error "Failed to retrieve user authorizations (HTTP $http_code)"
+        log_debug "Response: $response"
+        return 1
+    fi
+    
+    # Parse JSON response and find matching token UUID
+    # Find the last token with matching scope (most recent)
+    # Sort scopes before comparison to handle different ordering
+    local uuid
+    log_debug "Sorting and comparing scopes (order-independent matching)..."
+    uuid=$(echo "$response" | jq -r --arg scope "$expected_scope" '
+        ($scope | split(" ") | sort | join(" ")) as $sorted_expected |
+        .authorizations
+        | map(select(.scopes | map(.scope) | sort | join(" ") == $sorted_expected))
+        | last
+        | .uuid // empty
+    ')
+    
+    if [ -z "$uuid" ]; then
+        log_warn "No OAuth token found with matching scope: ${expected_scope}"
+        log_debug "Expected scope (sorted): $(echo "$expected_scope" | tr ' ' '\n' | sort | tr '\n' ' ')"
+        log_debug "Available tokens:"
+        echo "$response" | jq -r '.authorizations[] | "  UUID: \(.uuid), Scopes: \(.scopes | map(.scope) | join(" "))"' >&2
+        return 1
+    fi
+    
+    log_debug "✓ Found matching OAuth token UUID: ${uuid}"
+    echo "$uuid"
+    return 0
+}
+
 revoke_oauth_token() {
     local token="$1"
+    local uuid="$2"
     
     if [ -z "$token" ]; then
         log_error "No token provided for revocation"
         return 1
     fi
     
+    if [ -z "$uuid" ]; then
+        log_error "No UUID provided for revocation"
+        log_error "Cannot revoke token without UUID"
+        return 1
+    fi
+    
     log_debug "Attempting to revoke OAuth token..."
+    log_debug "  UUID: ${uuid}"
     
-    # Prepare revoke request data
-    local revoke_data="token=${token}"
-    
-    # Make revoke request
+    # Make revoke request using DELETE API
     local response
     local http_code
     
-    response=$(curl -s -w "\n%{http_code}" $CURL_OPTS -X POST \
-        -H "Content-Type: application/x-www-form-urlencoded" \
+    response=$(curl -s -w "\n%{http_code}" $CURL_OPTS -X DELETE \
         -H "Authorization: Bearer ${token}" \
-        -d "$revoke_data" \
-        "${QUAY_URL}/oauth/revoke" 2>&1)
+        "${QUAY_URL}/api/v1/user/authorizations/${uuid}" 2>&1)
     
     http_code=$(echo "$response" | tail -n1)
     response=$(echo "$response" | sed '$d')
@@ -183,8 +254,78 @@ revoke_oauth_token() {
 }
 
 # Cleanup function to revoke auto-generated token on exit
+# Function to generate Kubernetes pull secret
+generate_pull_secret() {
+    local oauth_token="$1"
+    local team_user="$2"
+    local quay_url="$3"
+    local output_dir="$4"
+    local namespace="${5:-acm-service-broker}"
+    
+    log_debug ""
+    log_debug "Generating Kubernetes pull secret..."
+    
+    mkdir -p "$output_dir"
+    
+    # Remove https:// prefix from QUAY_URL for docker config
+    local registry_url="${quay_url#https://}"
+    
+    # OAuth token uses $oauthtoken as username
+    local docker_username='$oauthtoken'
+    
+    # Create docker config JSON
+    local docker_config=$(cat <<EOF
+{
+  "auths": {
+    "${registry_url}": {
+      "auth": "$(echo -n "${docker_username}:${oauth_token}" | base64)",
+      "username": "${docker_username}",
+      "password": "${oauth_token}"
+    }
+  }
+}
+EOF
+)
+    
+    # Base64 encode the docker config
+    local docker_config_base64=$(echo -n "$docker_config" | base64)
+    
+    # Generate Kubernetes Secret YAML
+    local output_file="${output_dir}/pull-secret-${team_user}.yaml"
+    
+    cat > "$output_file" <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: quay-pull-secret-${team_user}
+  namespace: ${namespace}
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: ${docker_config_base64}
+EOF
+    
+    log_debug "✓ Kubernetes pull secret generated: $output_file"
+    echo "$output_file"
+}
+
 cleanup() {
     local exit_code=$?
+    
+    if [ "$TEMP_ORG_ADMIN_GRANTED" = true ]; then
+        if [ "$DRY_RUN" = true ]; then
+            log_info "Dry run: Would revert temporary organization admin role on ${TEMP_ORG_ADMIN_ORG}/${TEAM_NAME}"
+        else
+            log_info "Reverting temporary organization admin role on ${TEMP_ORG_ADMIN_ORG}/${TEAM_NAME}..."
+            local revert_team_data="{\"name\":\"${TEAM_NAME}\",\"role\":\"member\",\"description\":\"${TEAM_DESCRIPTION}\"}"
+            if api_call "PUT" "/api/v1/organization/${TEMP_ORG_ADMIN_ORG}/team/${TEAM_NAME}" "$revert_team_data" > /dev/null; then
+                log_info "✓ Reverted temporary organization admin role on ${TEMP_ORG_ADMIN_ORG}/${TEAM_NAME}"
+                TEMP_ORG_ADMIN_GRANTED=false
+            else
+                log_warn "Failed to revert temporary organization admin role on ${TEMP_ORG_ADMIN_ORG}/${TEAM_NAME}"
+                log_warn "Please update the team role manually if needed."
+            fi
+        fi
+    fi
     
     # Only process if token was auto-generated
     if [ "$AUTO_GENERATED_TOKEN" = true ]; then
@@ -212,8 +353,13 @@ cleanup() {
                 log_info "Dry run: Would revoke auto-generated OAuth token"
             else
                 log_info "Revoking auto-generated OAuth token..."
-                if ! revoke_oauth_token "$QUAY_API_TOKEN"; then
-                    log_warn "Failed to revoke OAuth token. Please revoke it manually if needed."
+                if [ -n "$OAUTH_TOKEN_UUID" ]; then
+                    if ! revoke_oauth_token "$QUAY_API_TOKEN" "$OAUTH_TOKEN_UUID"; then
+                        log_warn "Failed to revoke OAuth token. Please revoke it manually if needed."
+                    fi
+                else
+                    log_warn "No token UUID available. Cannot revoke token automatically."
+                    log_warn "Please revoke the token manually from Quay UI if needed."
                 fi
             fi
         fi
@@ -316,15 +462,23 @@ generate_oauth_token() {
     fi
     
     log_debug "✓ OAuth token generated successfully"
+    
     echo "$token"
     return 0
 }
 
 # Parse arguments
+# Support DEBUG environment variable (can be overridden by command line flag)
+DEBUG="${DEBUG:-false}"
+
 while [[ $# -gt 0 ]]; do
     case "$1" in
         -d|--dry-run)
             DRY_RUN=true
+            shift 1
+            ;;
+        -D|--debug)
+            DEBUG=true
             shift 1
             ;;
         --no-revoke-token)
@@ -406,11 +560,20 @@ if [ -z "$QUAY_API_TOKEN" ]; then
     
     # Generate OAuth token for superuser
     log_info "Generating OAuth token for superuser..."
-    SUPERUSER_SCOPES="super:user org:admin repo:admin repo:write user:admin user:read"
+    SUPERUSER_SCOPES="super:user org:admin repo:admin repo:create user:admin user:read"
     
     if ! QUAY_API_TOKEN=$(generate_oauth_token "$QUAY_SUPER_USER" "$QUAY_SUPER_PASSWORD" "$SUPERUSER_SCOPES" "$OAUTH_CLIENT_ID" "$OAUTH_REDIRECT_URI"); then
         log_error "Failed to generate OAuth token for superuser"
         exit 1
+    fi
+    
+    # Get UUID in parent shell (not in subshell) to ensure it's available for cleanup
+    log_debug "Retrieving token UUID for revocation in parent shell..."
+    if OAUTH_TOKEN_UUID=$(get_token_uuid "$QUAY_API_TOKEN" "$SUPERUSER_SCOPES"); then
+        log_debug "✓ Token UUID retrieved in parent shell: ${OAUTH_TOKEN_UUID}"
+    else
+        log_warn "Failed to retrieve token UUID. Token revocation may not work properly."
+        OAUTH_TOKEN_UUID=""
     fi
     
     # Mark token as auto-generated for cleanup
@@ -556,6 +719,8 @@ log_info "✓ API connectivity verified"
 
 # Check if team user exists, create if not
 log_info "Checking if team user exists..."
+AUTH_FILE="${OUTPUT_DIR}/auth-${TEAM_USER_NAME}.json"
+
 if user_check=$(api_call "GET" "/api/v1/users/${TEAM_USER_NAME}"); then
     if echo "$user_check" | jq -e '.username' > /dev/null 2>&1; then
         log_info "✓ Team user already exists: $TEAM_USER_NAME"
@@ -565,7 +730,6 @@ if user_check=$(api_call "GET" "/api/v1/users/${TEAM_USER_NAME}"); then
             log_info "Using password from TEAM_USER_PASSWORD environment variable"
         else
             # Try to load password from saved auth file
-            AUTH_FILE="${OUTPUT_DIR}/auth-${TEAM_USER_NAME}.json"
             if [ -f "$AUTH_FILE" ]; then
                 log_info "Loading credentials from saved file: $AUTH_FILE"
                 TEAM_USER_PASSWORD=$(jq -r '.password' "$AUTH_FILE")
@@ -624,7 +788,6 @@ EOF
     fi
     
     # Save user creation response to JSON file
-    AUTH_FILE="${OUTPUT_DIR}/auth-${TEAM_USER_NAME}.json"
     echo "$user_response" | jq '.' > "$AUTH_FILE"
     log_info "✓ User credentials saved: $AUTH_FILE"
     
@@ -638,31 +801,8 @@ EOF
     
     log_info "✓ Team user created successfully: $TEAM_USER_NAME"
     log_info "✓ Password automatically generated by Quay"
-    
-    # Generate OAuth token for team user if OAuth credentials are available
-    if [ -n "$OAUTH_CLIENT_ID" ] && [ -n "$OAUTH_REDIRECT_URI" ]; then
-        log_info "Generating OAuth token for team user..."
-        TEAM_USER_SCOPES="repo:read"
-        
-        if TEAM_USER_OAUTH_TOKEN=$(generate_oauth_token "$TEAM_USER_NAME" "$TEAM_USER_PASSWORD" "$TEAM_USER_SCOPES" "$OAUTH_CLIENT_ID" "$OAUTH_REDIRECT_URI"); then
-            log_info "✓ OAuth token generated for team user"
-            
-            # Add OAuth token to the auth file
-            AUTH_FILE="${OUTPUT_DIR}/auth-${TEAM_USER_NAME}.json"
-            if [ -f "$AUTH_FILE" ]; then
-                # Read existing JSON, add oauth_token field, and save
-                temp_file=$(mktemp)
-                jq --arg token "$TEAM_USER_OAUTH_TOKEN" '. + {oauth_token: $token}' "$AUTH_FILE" > "$temp_file"
-                mv "$temp_file" "$AUTH_FILE"
-                log_info "✓ OAuth token added to credentials file: $AUTH_FILE"
-            else
-                log_warn "Auth file not found, OAuth token not saved to file"
-            fi
-        else
-            log_warn "Failed to generate OAuth token for team user (continuing without it)"
-        fi
-    fi
 fi
+
 
 # Exit if dry run
 if [ "$DRY_RUN" = true ]; then
@@ -686,8 +826,37 @@ fi
 
 # Extract organization names
 orgs=$(echo "$orgs_response" | jq -r '.organizations[]?.name // empty')
+
+# Ensure aiiaas-models organization exists
+TARGET_ORG="aiiaas-models"
+if echo "$orgs" | grep -Fxq "$TARGET_ORG"; then
+    log_info "✓ Organization already exists: $TARGET_ORG"
+else
+    log_info "Organization not found. Creating: $TARGET_ORG"
+    org_data="{\"name\":\"${TARGET_ORG}\"}"
+    if ! create_org_response=$(api_call "POST" "/api/v1/organization/" "$org_data"); then
+        log_error "Failed to create organization: $TARGET_ORG"
+        exit 1
+    fi
+
+    if [ "$create_org_response" != "\"Created\"" ] && [ "$create_org_response" != "Created" ]; then
+        log_error "Invalid response when creating organization: $TARGET_ORG"
+        log_error "Response: $create_org_response"
+        exit 1
+    fi
+
+    if [ -n "$orgs" ]; then
+        orgs="${orgs}
+${TARGET_ORG}"
+    else
+        orgs="${TARGET_ORG}"
+    fi
+
+    log_info "✓ Organization created: $TARGET_ORG"
+fi
+
 if [ -z "$orgs" ]; then
-    log_error "No organizations found. This script requires at least one organization."
+    log_error "No organizations available to process."
     exit 1
 fi
 
@@ -710,25 +879,29 @@ while IFS= read -r org; do
     log_info ""
     log_info "Processing organization: $org"
     
-    # Check if team exists and user membership
+    # Check if team exists by getting organization info first (avoids 404 errors)
     log_info "  Checking team: $TEAM_NAME"
     user_already_in_team=false
     
-    if team_check=$(api_call "GET" "/api/v1/organization/${org}/team/${TEAM_NAME}/members"); then
-        if echo "$team_check" | jq -e '.name' > /dev/null 2>&1; then
-            log_info "  ✓ Team already exists"
-            
+    # Get organization info to check if team exists
+    org_info=$(api_call "GET" "/api/v1/organization/${org}")
+    
+    if echo "$org_info" | jq -e ".teams.\"${TEAM_NAME}\"" > /dev/null 2>&1; then
+        # Team exists - get member information
+        log_info "  ✓ Team already exists"
+        
+        if team_check=$(api_call "GET" "/api/v1/organization/${org}/team/${TEAM_NAME}/members"); then
             # Check if user is already a member
             if echo "$team_check" | jq -e ".members[] | select(.name==\"${TEAM_USER_NAME}\")" > /dev/null 2>&1; then
                 log_info "  ✓ User already in team"
                 user_already_in_team=true
             fi
         else
-            log_warn "  ✗ Invalid response when checking team in $org (continuing with other organizations)"
+            log_warn "  ✗ Failed to get team members in $org (continuing with other organizations)"
             continue
         fi
     else
-        # Create team
+        # Team does not exist - create it
         log_info "  Creating team: $TEAM_NAME"
         team_data="{\"name\":\"${TEAM_NAME}\",\"role\":\"member\",\"description\":\"${TEAM_DESCRIPTION}\"}"
         if ! team_response=$(api_call "PUT" "/api/v1/organization/${org}/team/${TEAM_NAME}" "$team_data"); then
@@ -981,6 +1154,94 @@ if [ $total_error -gt 0 ]; then
     log_warn "  Total errors: $total_error"
 fi
 
+# Load or generate OAuth token for team user after team setup is complete
+TEAM_USER_SCOPES="repo:read"
+TEAM_USER_OAUTH_TOKEN=""
+
+if [ -f "$AUTH_FILE" ]; then
+    TEAM_USER_OAUTH_TOKEN=$(jq -r '.oauth_token // empty' "$AUTH_FILE")
+    
+    if [ -n "$TEAM_USER_OAUTH_TOKEN" ]; then
+        log_info "✓ Using existing OAuth token from credentials file"
+    fi
+fi
+
+if [ -z "$TEAM_USER_OAUTH_TOKEN" ]; then
+    if [ -n "$OAUTH_CLIENT_ID" ] && [ -n "$OAUTH_REDIRECT_URI" ]; then
+        log_info "OAuth token not found in credentials file. Generating OAuth token for team user..."
+        
+        if [ "$DRY_RUN" = true ]; then
+            log_info "Dry run: Would temporarily grant organization admin role to ${TEAM_NAME} in ${TEMP_ORG_ADMIN_ORG} before token generation"
+            log_info "Dry run: Would revert organization admin role to member after token generation"
+            if TEAM_USER_OAUTH_TOKEN=$(generate_oauth_token "$TEAM_USER_NAME" "$TEAM_USER_PASSWORD" "$TEAM_USER_SCOPES" "$OAUTH_CLIENT_ID" "$OAUTH_REDIRECT_URI"); then
+                log_info "✓ OAuth token generated for team user"
+            else
+                log_warn "Failed to generate OAuth token for team user (continuing without it)"
+            fi
+        else
+            temp_admin_team_data="{\"name\":\"${TEAM_NAME}\",\"role\":\"admin\",\"description\":\"${TEAM_DESCRIPTION}\"}"
+            log_info "Temporarily granting organization admin role to ${TEAM_NAME} in ${TEMP_ORG_ADMIN_ORG}..."
+            if api_call "PUT" "/api/v1/organization/${TEMP_ORG_ADMIN_ORG}/team/${TEAM_NAME}" "$temp_admin_team_data" > /dev/null; then
+                TEMP_ORG_ADMIN_GRANTED=true
+                log_info "✓ Temporary organization admin role granted to ${TEAM_NAME} in ${TEMP_ORG_ADMIN_ORG}"
+            else
+                log_warn "Failed to grant temporary organization admin role to ${TEAM_NAME} in ${TEMP_ORG_ADMIN_ORG}"
+                log_warn "Skipping OAuth token generation for team user"
+                TEAM_USER_OAUTH_TOKEN=""
+            fi
+            
+            if [ "$TEMP_ORG_ADMIN_GRANTED" = true ]; then
+                if TEAM_USER_OAUTH_TOKEN=$(generate_oauth_token "$TEAM_USER_NAME" "$TEAM_USER_PASSWORD" "$TEAM_USER_SCOPES" "$OAUTH_CLIENT_ID" "$OAUTH_REDIRECT_URI"); then
+                    log_info "✓ OAuth token generated for team user"
+                else
+                    log_warn "Failed to generate OAuth token for team user (continuing without it)"
+                fi
+                
+                revert_team_data="{\"name\":\"${TEAM_NAME}\",\"role\":\"member\",\"description\":\"${TEAM_DESCRIPTION}\"}"
+                log_info "Reverting temporary organization admin role on ${TEMP_ORG_ADMIN_ORG}/${TEAM_NAME}..."
+                if api_call "PUT" "/api/v1/organization/${TEMP_ORG_ADMIN_ORG}/team/${TEAM_NAME}" "$revert_team_data" > /dev/null; then
+                    TEMP_ORG_ADMIN_GRANTED=false
+                    log_info "✓ Reverted organization admin role to member for ${TEAM_NAME} in ${TEMP_ORG_ADMIN_ORG}"
+                else
+                    log_warn "Failed to revert organization admin role to member for ${TEAM_NAME} in ${TEMP_ORG_ADMIN_ORG}"
+                    log_warn "Cleanup will retry role reversion on script exit"
+                fi
+            fi
+        fi
+        
+        if [ -n "$TEAM_USER_OAUTH_TOKEN" ]; then
+            if [ -f "$AUTH_FILE" ]; then
+                temp_file=$(mktemp)
+                jq --arg token "$TEAM_USER_OAUTH_TOKEN" '. + {oauth_token: $token}' "$AUTH_FILE" > "$temp_file"
+                mv "$temp_file" "$AUTH_FILE"
+                log_info "✓ OAuth token added to credentials file: $AUTH_FILE"
+            else
+                log_warn "Auth file not found, OAuth token not saved to file"
+            fi
+        fi
+    else
+        log_warn "OAuth token not found in credentials file and OAuth client credentials are unavailable"
+        log_warn "Skipping OAuth token generation for team user"
+    fi
+fi
+
+# Generate pull secret if OAuth token is available
+PULL_SECRET_FILE=""
+if [ -n "$TEAM_USER_OAUTH_TOKEN" ]; then
+    log_info ""
+    log_info "OAuth token available, generating Kubernetes pull secret..."
+    
+    # Set namespace from environment or use default
+    NAMESPACE="${NAMESPACE:-acm-service-broker}"
+    
+    if PULL_SECRET_FILE=$(generate_pull_secret "$TEAM_USER_OAUTH_TOKEN" "$TEAM_USER_NAME" "$QUAY_URL" "$OUTPUT_DIR" "$NAMESPACE"); then
+        log_info "✓ Pull secret generation completed"
+    else
+        log_warn "Failed to generate pull secret"
+        PULL_SECRET_FILE=""
+    fi
+fi
+
 # Summary
 echo ""
 echo "=========================================="
@@ -993,23 +1254,43 @@ echo "Organizations processed: $total_orgs"
 echo "Total repositories with team access: $total_repos"
 echo ""
 echo "Authentication file saved: $AUTH_FILE"
-echo ""
-echo "=========================================="
-echo "NEXT STEPS:"
-echo "=========================================="
-echo ""
-echo "1. Create an Application Token in Quay UI:"
-echo "   a. Log in to Quay: $QUAY_URL"
-echo "   b. Use credentials from: $AUTH_FILE"
-echo "      Username: $TEAM_USER_NAME"
-echo "      Password: (see 'password' field in the JSON file)"
-echo "   c. Go to: Account Settings → Application Tokens"
-echo "   d. Click 'Generate New Token'"
-echo "   e. Copy the generated token"
-echo ""
-echo "2. Generate Kubernetes pull secret:"
-echo "   export TEAM_USER_APP_TOKEN=<your-application-token>"
-echo "   ./generate-pull-secret.sh"
+
+if [ -n "$PULL_SECRET_FILE" ]; then
+    echo ""
+    echo "=========================================="
+    echo "KUBERNETES PULL SECRET:"
+    echo "=========================================="
+    echo ""
+    echo "Pull secret generated: $PULL_SECRET_FILE"
+    echo "Namespace: ${NAMESPACE:-acm-service-broker}"
+    echo ""
+    echo "To apply the secret to your cluster:"
+    echo "  kubectl apply -f $PULL_SECRET_FILE"
+    echo ""
+else
+    echo ""
+    echo "=========================================="
+    echo "NEXT STEPS:"
+    echo "=========================================="
+    echo ""
+    echo "OAuth token was not generated automatically."
+    echo "To create a Kubernetes pull secret, you have two options:"
+    echo ""
+    echo "Option 1: Use the auto-generated OAuth token (if available in auth file):"
+    echo "  If the auth file contains an 'oauth_token' field, you can use it directly."
+    echo ""
+    echo "Option 2: Create an Application Token in Quay UI:"
+    echo "   a. Log in to Quay: $QUAY_URL"
+    echo "   b. Use credentials from: $AUTH_FILE"
+    echo "      Username: $TEAM_USER_NAME"
+    echo "      Password: (see 'password' field in the JSON file)"
+    echo "   c. Go to: Account Settings → Application Tokens"
+    echo "   d. Click 'Generate New Token'"
+    echo "   e. Copy the generated token"
+    echo ""
+    echo "Then manually create the pull secret using kubectl or other tools."
+fi
+
 echo ""
 echo "=========================================="
 
