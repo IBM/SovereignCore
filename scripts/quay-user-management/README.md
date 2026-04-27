@@ -70,9 +70,34 @@ cp .env.example .env
 
 #### Authentication
 
+The script supports two authentication methods:
+
+**Option 1: Use Existing API Token (Recommended for Production)**
+
 - **QUAY_API_TOKEN**: Superuser API token
   - Generate from Quay UI: Account Settings → Application Tokens → Generate Token
   - Requires superuser privileges (super:user scope)
+  - This is the recommended method for production environments
+
+**Option 2: Auto-generate OAuth Token (Requires Hub Cluster Access)**
+
+If `QUAY_API_TOKEN` is not set, the script will automatically generate OAuth tokens using:
+
+- **QUAY_SUPER_USER**: Superuser username for Quay
+- **QUAY_SUPER_PASSWORD**: Superuser password for Quay
+- **QUAY_NAMESPACE**: Hub Cluster namespace (default: `quay-enterprise`)
+
+**Requirements for OAuth Auto-generation:**
+- Must be logged in to Hub Cluster via `oc login`
+- Hub Cluster must have `quay-oauth-credentials` secret in the specified namespace
+- Superuser credentials must have appropriate permissions
+
+**How OAuth Auto-generation Works:**
+1. Script retrieves OAuth client credentials from Hub Cluster secret
+2. Generates OAuth token for superuser with required scopes
+3. Uses generated token as `QUAY_API_TOKEN` for API operations
+4. After creating team user, generates `repo:read` OAuth token for that user
+5. Saves team user's OAuth token in the credentials file
 
 #### Optional Variables
 
@@ -85,6 +110,8 @@ cp .env.example .env
 
 ### Example Configuration
 
+**Option 1: Using Existing API Token**
+
 ```bash
 # .env
 QUAY_URL=https://registry-quay-quay-enterprise.apps.example.com
@@ -93,16 +120,80 @@ TEAM_USER_NAME=readonly-user
 # CURL_OPTS="--insecure"  # Uncomment if needed
 ```
 
+**Option 2: Using OAuth Auto-generation**
+
+```bash
+# .env
+QUAY_URL=https://registry-quay-quay-enterprise.apps.example.com
+QUAY_SUPER_USER=admin
+QUAY_SUPER_PASSWORD=your-superuser-password
+TEAM_USER_NAME=readonly-user
+# QUAY_NAMESPACE=quay-enterprise  # Optional, defaults to quay-enterprise
+# CURL_OPTS="--insecure"  # Uncomment if needed
+```
+
+**Prerequisites for OAuth Auto-generation:**
+```bash
+# Login to Hub Cluster first
+oc login https://api.your-cluster.example.com:6443
+```
+
+### Token Reuse with --no-revoke-token
+
+When using OAuth auto-generation, you can preserve the generated token for reuse by using the `--no-revoke-token` option:
+
+```bash
+# Generate and save token (first run)
+./create-read-only-account.sh --no-revoke-token
+
+# Token is automatically saved to .env file
+# Next run will use the saved token
+source .env
+./create-read-only-account.sh
+```
+
+**Benefits:**
+- Avoid regenerating tokens on every run
+- Faster execution (no OAuth flow needed)
+- Consistent token across multiple runs
+- Useful for repeated operations or testing
+
+**Important Notes:**
+- OAuth tokens may have expiration dates configured in Quay
+- If authentication fails with a saved token, regenerate it by running with OAuth credentials again
+- Saved tokens are stored in `.env` file (excluded from git by `.gitignore`)
+- The token is saved with superuser privileges, so protect the `.env` file appropriately
+
+**Example Workflow:**
+```bash
+# First run: Generate and save token
+export QUAY_URL=https://quay.example.com
+export QUAY_SUPER_USER=admin
+export QUAY_SUPER_PASSWORD=your-password
+./create-read-only-account.sh --no-revoke-token
+
+# Subsequent runs: Use saved token
+source .env
+./create-read-only-account.sh
+
+# If token expires, regenerate it
+export QUAY_SUPER_USER=admin
+export QUAY_SUPER_PASSWORD=your-password
+./create-read-only-account.sh --no-revoke-token
+```
+
 ## Usage
 
 ### Complete Workflow (Two Steps)
 
 #### Step 1: Create User and Grant Permissions
 
+**Option A: Using Existing API Token**
+
 ```bash
 # 1. Prepare environment
 cp .env.example .env
-vim .env  # Edit with your values
+vim .env  # Edit with your values (set QUAY_API_TOKEN)
 
 # 2. Load environment variables
 source .env
@@ -114,7 +205,29 @@ source .env
 ./create-read-only-account.sh
 ```
 
+**Option B: Using OAuth Auto-generation**
+
+```bash
+# 1. Login to Hub Cluster
+oc login https://api.your-cluster.example.com:6443
+
+# 2. Prepare environment
+cp .env.example .env
+vim .env  # Edit with your values (set QUAY_SUPER_USER and QUAY_SUPER_PASSWORD)
+
+# 3. Load environment variables
+source .env
+
+# 4. (Optional) Validate configuration
+./create-read-only-account.sh --dry-run
+
+# 5. Run the script
+./create-read-only-account.sh
+```
+
 **Output**: The script will save authentication credentials to `generated/auth-<team-user-name>.json`
+
+**Note**: When using OAuth auto-generation, the credentials file will include an `oauth_token` field with the team user's OAuth token (scope: `repo:read`).
 
 #### Step 2: Create Token and Generate Pull Secret
 
@@ -156,9 +269,17 @@ kubectl apply -f generated/pull-secret-<team-user-name>.yaml
 ```
 Options:
   -d, --dry-run             Validate configuration without making changes
+  --no-revoke-token         Do not revoke auto-generated OAuth token on exit
+                            Token will be saved to .env file for reuse
   -o, --output-dir DIR      Output directory for generated files (default: ./generated)
   -h, --help                Show help message
 ```
+
+**Note on --no-revoke-token:**
+- Only applies when using OAuth auto-generation (Option 2)
+- Saves the generated token to `.env` file for future use
+- Useful for repeated operations without regenerating tokens
+- Token is saved with superuser privileges, so protect `.env` appropriately
 
 #### generate-pull-secret.sh
 
@@ -223,14 +344,42 @@ export NAMESPACE=production  # Optional: defaults to acm-service-broker
 kubectl apply -f generated/pull-secret-readonly-user.yaml
 ```
 
-#### Example 3: Dry Run (Validation Only)
+#### Example 3: Using OAuth Auto-generation
+
+```bash
+# Step 1: Login to Hub Cluster
+oc login https://api.your-cluster.example.com:6443
+
+# Step 2: Create .env file with superuser credentials
+cat > .env <<EOF
+QUAY_URL=https://quay.example.com
+QUAY_SUPER_USER=admin
+QUAY_SUPER_PASSWORD=your-superuser-password
+TEAM_USER_NAME=readonly-user
+QUAY_NAMESPACE=quay-enterprise
+EOF
+
+# Step 3: Create user and grant permissions (OAuth token auto-generated)
+source .env
+./create-read-only-account.sh
+
+# Step 4: Use the auto-generated OAuth token from credentials file
+# The oauth_token field in generated/auth-readonly-user.json can be used directly
+export TEAM_USER_OAUTH_TOKEN=$(jq -r '.oauth_token' generated/auth-readonly-user.json)
+./generate-pull-secret.sh
+
+# Step 5: Apply to Kubernetes
+kubectl apply -f generated/pull-secret-readonly-user.yaml
+```
+
+#### Example 4: Dry Run (Validation Only)
 
 ```bash
 source .env
 ./create-read-only-account.sh --dry-run
 ```
 
-#### Example 4: Custom Output Directory
+#### Example 5: Custom Output Directory
 
 ```bash
 ./create-read-only-account.sh --output-dir /tmp/quay-secrets
@@ -249,6 +398,8 @@ generated/
 
 ### Authentication File Format
 
+**Standard format (when using existing API token):**
+
 ```json
 {
   "username": "readonly-user",
@@ -257,6 +408,20 @@ generated/
   "encrypted_password": "..."
 }
 ```
+
+**Extended format (when using OAuth auto-generation):**
+
+```json
+{
+  "username": "readonly-user",
+  "email": "readonly-user@example.com",
+  "password": "auto-generated-password",
+  "encrypted_password": "...",
+  "oauth_token": "generated-oauth-token-with-repo-read-scope"
+}
+```
+
+**Note**: The `oauth_token` field is only present when OAuth auto-generation is used. This token has `repo:read` scope and can be used directly with `generate-pull-secret.sh`.
 
 ### Pull Secret Format
 
@@ -407,6 +572,42 @@ kubectl run test-pod \
 ```
 
 ## Troubleshooting
+
+### OAuth Token Auto-generation Issues
+
+#### Hub Cluster Not Accessible
+
+**Error**: `'oc' command not found` or `OpenShift Cluster not logged in`
+
+**Solutions**:
+1. Install OpenShift CLI: `brew install openshift-cli` (macOS) or download from Red Hat
+2. Login to Hub Cluster: `oc login https://api.your-cluster.example.com:6443`
+3. Verify login: `oc whoami`
+
+#### OAuth Credentials Secret Not Found
+
+**Error**: `Failed to get OAuth credentials from Hub Cluster`
+
+**Solutions**:
+1. Verify the secret exists: `oc get secret -n quay-enterprise quay-oauth-credentials`
+2. Check the namespace is correct (default: `quay-enterprise`)
+3. Set correct namespace: `export QUAY_NAMESPACE=your-namespace`
+4. Verify you have access to the namespace: `oc get secrets -n quay-enterprise`
+
+#### OAuth Token Generation Failed
+
+**Error**: `Failed to generate OAuth token for superuser`
+
+**Solutions**:
+1. Verify superuser credentials are correct
+2. Check if Client ID is whitelisted in Quay config.yaml:
+   ```yaml
+   DIRECT_OAUTH_CLIENTID_WHITELIST:
+     - 'YOUR_CLIENT_ID'
+   ```
+3. Verify Quay is accessible from your location
+4. Check network connectivity to Quay
+5. Review Quay logs for OAuth errors
 
 ### Authentication Failed
 
