@@ -65,7 +65,74 @@ function main() {
 # run cuga argo refresh commands
     refresh_cuga_argo
 
-#run concert command
+# apply IBM Concert v2.4.0 patch
+    apply_concert_patch
+}
+
+apply_concert_patch() {
+    log_info "=========================================="
+    log_info "Applying IBM Concert v2.4.0.prerelease01.patch01"
+    log_info "=========================================="
+    
+    # Get concert namespace from global config
+    local concert_namespace=$(yq -r '.concert.namespace // "concert"' "${INSTALL_FOLDER}/config/global.yaml")
+    
+    log_info "Concert namespace: $concert_namespace"
+    
+    # Check if rojacore deployment exists
+    if ! oc get deploy rojacore -n "$concert_namespace" &>/dev/null; then
+        log_warning "rojacore deployment not found in namespace $concert_namespace"
+        log_warning "Skipping Concert patch application"
+        return 0
+    fi
+    
+    # New Concert image
+    local concert_image="cp.icr.io/cp/concert/rojacore:v2.4.0.prerelease01.patch01-7-20260428.050726-v2.4.0.prerelease01-patches"
+    
+    log_info "Updating rojacore deployment with new image..."
+    log_info "New image: $concert_image"
+    
+    # Update the deployment image
+    if oc set image deploy/rojacore rojacore="$concert_image" -n "$concert_namespace"; then
+        log_info "Successfully updated rojacore deployment"
+    else
+        log_error "Failed to update rojacore deployment"
+        return 1
+    fi
+    
+    # Monitor the rollout
+    log_info "Monitoring rollout status..."
+    if oc rollout status deploy/rojacore -n "$concert_namespace" --timeout=5m; then
+        log_info "Rollout completed successfully"
+    else
+        log_error "Rollout failed or timed out"
+        return 1
+    fi
+    
+    # Verify the new pod is running
+    log_info "Verifying new pod status..."
+    local pod_name=$(oc get pods -n "$concert_namespace" -l app=rojacore --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+    
+    if [ -n "$pod_name" ]; then
+        log_info "New rojacore pod is running: $pod_name"
+        
+        # Verify the image version
+        local current_image=$(oc get pod "$pod_name" -n "$concert_namespace" -o jsonpath='{.spec.containers[?(@.name=="rojacore")].image}')
+        log_info "Current image: $current_image"
+        
+        if [ "$current_image" = "$concert_image" ]; then
+            log_info "Image version verified successfully"
+            return 0
+        else
+            log_warning "Image version mismatch detected"
+            log_warning "Expected: $concert_image"
+            log_warning "Current: $current_image"
+            return 1
+        fi
+    else
+        log_error "No running rojacore pod found"
+        return 1
+    fi
 }
 
 refresh_cuga_argo() {
