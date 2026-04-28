@@ -104,7 +104,7 @@ apply_concert_patch() {
     log_info "New image: $concert_image"
     
     # Update the deployment image
-    if oc set image deploy/rojacore rojacore="$concert_image" -n "$concert_namespace"; then
+    if oc set image deploy/rojacore rojacore-server="$concert_image" -n "$concert_namespace"; then
         log_info "Successfully updated rojacore deployment"
     else
         log_error "Failed to update rojacore deployment"
@@ -122,13 +122,13 @@ apply_concert_patch() {
     
     # Verify the new pod is running
     log_info "Verifying new pod status..."
-    local pod_name=$(oc get pods -n "$concert_namespace" -l app=rojacore --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+    local pod_name=$(oc get pods -n "$concert_namespace" -l component=rojacore --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
     
     if [ -n "$pod_name" ]; then
         log_info "New rojacore pod is running: $pod_name"
         
         # Verify the image version
-        local current_image=$(oc get pod "$pod_name" -n "$concert_namespace" -o jsonpath='{.spec.containers[?(@.name=="rojacore")].image}')
+        local current_image=$(oc get pod "$pod_name" -n "$concert_namespace" -o jsonpath='{.spec.containers[?(@.name=="rojacore-server")].image}')
         log_info "Current image: $current_image"
         
         if [ "$current_image" = "$concert_image" ]; then
