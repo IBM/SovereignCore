@@ -74,8 +74,8 @@ apply_concert_patch() {
     log_info "Applying IBM Concert v2.4.0.prerelease01.patch01"
     log_info "=========================================="
     
-    # Get concert namespace from global config
-    local concert_namespace=$(yq -r '.concert.namespace // "concert"' "${INSTALL_FOLDER}/config/global.yaml")
+    # Concert namespace is fixed
+    local concert_namespace="concert"
     
     log_info "Concert namespace: $concert_namespace"
     
@@ -86,13 +86,19 @@ apply_concert_patch() {
         return 0
     fi
     
-    # Extract Concert image from manifest file
-    local concert_image=$(yq -r '.mirror.additionalImages[] | select(.name | contains("concert/rojacore")) | .name' "$MANIFEST")
+    # Extract Concert image from manifest file and construct mirrored location
+    local source_image=$(yq -r '.mirror.additionalImages[] | select(.name | contains("concert/rojacore")) | .name' "$MANIFEST")
     
-    if [ -z "$concert_image" ]; then
+    if [ -z "$source_image" ]; then
         log_error "Concert rojacore image not found in manifest file: $MANIFEST"
         return 1
     fi
+    
+    # Extract image path and tag from source image (e.g., cp.icr.io/cp/concert/rojacore:tag -> cp/concert/rojacore:tag)
+    local image_path=$(echo "$source_image" | sed 's|^[^/]*/||')
+    
+    # Construct mirrored image location
+    local concert_image="${QUAY_REGISTRY}/${QUAY_ORGANIZATION}/${image_path}"
     
     log_info "Updating rojacore deployment with new image..."
     log_info "New image: $concert_image"
