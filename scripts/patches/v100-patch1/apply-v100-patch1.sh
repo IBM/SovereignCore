@@ -149,14 +149,7 @@ apply_concert_patch() {
 refresh_cuga_argo() {
     APPS=(
         acm-cuga-system-core
-        acm-vault-aas-core
         agent-service-broker-core
-        acm-service-broker-core
-        catalog-as-a-service-broker-core
-        common-service-broker-core
-        postgres-service-broker-core
-        service-broker-parent-app
-        sovereign-ui-core
     )
 
     NS="openshift-gitops"
