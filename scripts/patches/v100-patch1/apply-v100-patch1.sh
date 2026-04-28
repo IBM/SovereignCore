@@ -86,8 +86,13 @@ apply_concert_patch() {
         return 0
     fi
     
-    # New Concert image
-    local concert_image="cp.icr.io/cp/concert/rojacore:v2.4.0.prerelease01.patch01-7-20260428.050726-v2.4.0.prerelease01-patches"
+    # Extract Concert image from manifest file
+    local concert_image=$(yq -r '.mirror.additionalImages[] | select(.name | contains("concert/rojacore")) | .name' "$MANIFEST")
+    
+    if [ -z "$concert_image" ]; then
+        log_error "Concert rojacore image not found in manifest file: $MANIFEST"
+        return 1
+    fi
     
     log_info "Updating rojacore deployment with new image..."
     log_info "New image: $concert_image"
