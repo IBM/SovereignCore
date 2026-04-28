@@ -65,7 +65,85 @@ function main() {
 # run cuga argo refresh commands
     refresh_cuga_argo
 
-#run concert command
+# apply IBM Concert v2.4.0 patch
+    apply_concert_patch
+}
+
+apply_concert_patch() {
+    log_info "=========================================="
+    log_info "Applying IBM Concert v2.4.0.prerelease01.patch01"
+    log_info "=========================================="
+    
+    # Concert namespace is fixed
+    local concert_namespace="concert"
+    
+    log_info "Concert namespace: $concert_namespace"
+    
+    # Check if rojacore deployment exists
+    if ! oc get deploy rojacore -n "$concert_namespace" &>/dev/null; then
+        log_warning "rojacore deployment not found in namespace $concert_namespace"
+        log_warning "Skipping Concert patch application"
+        return 0
+    fi
+    
+    # Extract Concert image from manifest file and construct mirrored location
+    local source_image=$(yq -r '.mirror.additionalImages[] | select(.name | contains("concert/rojacore")) | .name' "$MANIFEST")
+    
+    if [ -z "$source_image" ]; then
+        log_error "Concert rojacore image not found in manifest file: $MANIFEST"
+        return 1
+    fi
+    
+    # Extract image path and tag from source image (e.g., cp.icr.io/cp/concert/rojacore:tag -> cp/concert/rojacore:tag)
+    local image_path=$(echo "$source_image" | sed 's|^[^/]*/||')
+    
+    # Construct mirrored image location
+    local concert_image="${QUAY_REGISTRY}/${QUAY_ORGANIZATION}/${image_path}"
+    
+    log_info "Updating rojacore deployment with new image..."
+    log_info "New image: $concert_image"
+    
+    # Update the deployment image
+    if oc set image deploy/rojacore rojacore-server="$concert_image" -n "$concert_namespace"; then
+        log_info "Successfully updated rojacore deployment"
+    else
+        log_error "Failed to update rojacore deployment"
+        return 1
+    fi
+    
+    # Monitor the rollout
+    log_info "Monitoring rollout status..."
+    if oc rollout status deploy/rojacore -n "$concert_namespace" --timeout=5m; then
+        log_info "Rollout completed successfully"
+    else
+        log_error "Rollout failed or timed out"
+        return 1
+    fi
+    
+    # Verify the new pod is running
+    log_info "Verifying new pod status..."
+    local pod_name=$(oc get pods -n "$concert_namespace" -l component=rojacore --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+    
+    if [ -n "$pod_name" ]; then
+        log_info "New rojacore pod is running: $pod_name"
+        
+        # Verify the image version
+        local current_image=$(oc get pod "$pod_name" -n "$concert_namespace" -o jsonpath='{.spec.containers[?(@.name=="rojacore-server")].image}')
+        log_info "Current image: $current_image"
+        
+        if [ "$current_image" = "$concert_image" ]; then
+            log_info "Image version verified successfully"
+            return 0
+        else
+            log_warning "Image version mismatch detected"
+            log_warning "Expected: $concert_image"
+            log_warning "Current: $current_image"
+            return 1
+        fi
+    else
+        log_error "No running rojacore pod found"
+        return 1
+    fi
 }
 
 refresh_cuga_argo() {
