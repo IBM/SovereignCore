@@ -2,9 +2,13 @@ kind: ImageSetConfiguration
 apiVersion: mirror.openshift.io/v2alpha1
 mirror:
   additionalImages:
-    - name: icr.io/cp/automation-saas-platform-dev/cuga-service-broker:main-<>
-    - name: icr.io/cp/automation-saas-platform-dev/cuga-operator:main-<>
-    - name: icr.io/cp/automation-saas-platform-dev/cuga:<>
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga-service-broker:main-1777427211
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga-operator:main-1777213044
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga:0.2.25
     - name: cp.icr.io/cp/concert/rojacore:v2.4.0.prerelease01.patch01-7-20260428.050726-v2.4.0.prerelease01-patches
+    # for testing purposes only
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga-day0-patch/acm-cuga-system:0.1.0
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga-day0-patch/agent-service-broker:0.1.0
+
 
 #TODO update image tages/digests
