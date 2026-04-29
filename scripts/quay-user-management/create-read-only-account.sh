@@ -827,33 +827,46 @@ fi
 # Extract organization names
 orgs=$(echo "$orgs_response" | jq -r '.organizations[]?.name // empty')
 
-# Ensure aiiaas-models organization exists
-TARGET_ORG="aiiaas-models"
-if echo "$orgs" | grep -Fxq "$TARGET_ORG"; then
-    log_info "✓ Organization already exists: $TARGET_ORG"
-else
-    log_info "Organization not found. Creating: $TARGET_ORG"
-    org_data="{\"name\":\"${TARGET_ORG}\"}"
-    if ! create_org_response=$(api_call "POST" "/api/v1/organization/" "$org_data"); then
-        log_error "Failed to create organization: $TARGET_ORG"
-        exit 1
-    fi
+# Ensure required organizations exist
+TARGET_ORGS=(
+    "aiiaas-models"
+    "nvidia"
+    "rhaiis"
+    "leader-worker-set"
+    "rhoai"
+    "rhcl-1"
+    "openshift-service-mesh-tech-preview"
+    "openshift-service-mesh"
+    "openshift-service-mesh-dev-preview-beta"
+)
 
-    if [ "$create_org_response" != "\"Created\"" ] && [ "$create_org_response" != "Created" ]; then
-        log_error "Invalid response when creating organization: $TARGET_ORG"
-        log_error "Response: $create_org_response"
-        exit 1
-    fi
-
-    if [ -n "$orgs" ]; then
-        orgs="${orgs}
-${TARGET_ORG}"
+for TARGET_ORG in "${TARGET_ORGS[@]}"; do
+    if echo "$orgs" | grep -Fxq "$TARGET_ORG"; then
+        log_info "✓ Organization already exists: $TARGET_ORG"
     else
-        orgs="${TARGET_ORG}"
-    fi
+        log_info "Organization not found. Creating: $TARGET_ORG"
+        org_data="{\"name\":\"${TARGET_ORG}\"}"
+        if ! create_org_response=$(api_call "POST" "/api/v1/organization/" "$org_data"); then
+            log_error "Failed to create organization: $TARGET_ORG"
+            exit 1
+        fi
 
-    log_info "✓ Organization created: $TARGET_ORG"
-fi
+        if [ "$create_org_response" != "\"Created\"" ] && [ "$create_org_response" != "Created" ]; then
+            log_error "Invalid response when creating organization: $TARGET_ORG"
+            log_error "Response: $create_org_response"
+            exit 1
+        fi
+
+        if [ -n "$orgs" ]; then
+            orgs="${orgs}
+${TARGET_ORG}"
+        else
+            orgs="${TARGET_ORG}"
+        fi
+
+        log_info "✓ Organization created: $TARGET_ORG"
+    fi
+done
 
 if [ -z "$orgs" ]; then
     log_error "No organizations available to process."
