@@ -34,7 +34,7 @@ function main() {
         log_error "Error: Manifest file $MANIFEST does not exist."
         exit 1
     fi
-    if [ ! -f "$INSTALL_FOLDER/partner-install/mcsp/resources/charts/bootstrap-cd-pipeline/mirror/scripts/mirror.sh" ]; then
+    if [ ! -f "$INSTALL_FOLDER/partner-install/mcsp/resources/charts/bootstrap-cd-pipeline/template.env" ]; then
         log_error "Make sure the install folder path points to the SovereignCore directory and re-run"
         exit 1
     fi
