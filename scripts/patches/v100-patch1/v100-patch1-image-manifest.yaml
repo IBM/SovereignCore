@@ -11,4 +11,4 @@ mirror:
     - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga-day0-patch/agent-service-broker:0.1.0
 
 
-#TODO update image tages/digests
+#TODO update image tages/digests, need to add SHA values
