@@ -18,6 +18,8 @@ REVOKE_TOKEN=true
 OAUTH_TOKEN_UUID=""
 TEMP_ORG_ADMIN_GRANTED=false
 TEMP_ORG_ADMIN_ORG="default-org"
+DEPLOYMENT_NAME="${DEPLOYMENT_NAME:-acm-service-broker-controller}"
+DEPLOYMENT_NAMESPACE="acm-service-broker"
 
 # Colors for output
 RED='\033[0;31m'
@@ -31,7 +33,8 @@ usage() {
     echo ""
     echo "This script creates 'sovereign-core-read' teams in all Quay organizations,"
     echo "adds a user to the teams, grants read permissions to all repositories,"
-    echo "and generates a Kubernetes pull secret."
+    echo "generates a Kubernetes pull secret, applies it to the cluster, and updates"
+    echo "the deployment with environment variables."
     echo ""
     echo "Options:"
         echo "  -d, --dry-run             Validate configuration without making changes"
@@ -59,6 +62,17 @@ usage() {
     echo "Optional Environment Variables:"
     echo "  DEBUG                     Enable debug logging (true/false, default: false)"
     echo "  CURL_OPTS                 Additional curl options (e.g., '--insecure --connect-timeout 30')"
+    echo "  DEPLOYMENT_NAME           Deployment to update (default: acm-service-broker-controller)"
+    echo "  NAMESPACE                 Namespace for pull secret (default: acm-service-broker)"
+    echo ""
+    echo "Cluster Operations:"
+    echo "  The script will automatically:"
+    echo "  1. Apply the generated pull secret to the cluster using 'oc apply'"
+    echo "  2. Update the deployment with environment variables:"
+    echo "     - PULL_SECRET_TEMPLATE_NAME: Name of the pull secret"
+    echo "     - PULL_SECRET_TEMPLATE_NAMESPACE: Namespace of the pull secret"
+    echo ""
+    echo "  Note: Deployment namespace is fixed to 'acm-service-broker'"
     echo ""
     echo "Examples:"
     echo "  # Set environment variables"
@@ -70,13 +84,18 @@ usage() {
     echo "  # Run the script"
     echo "  $0"
     echo ""
-    echo "  # Dry run to validate"
+    echo "  # Dry run to validate (shows commands without executing)"
     echo "  $0 --dry-run"
+    echo ""
+    echo "  # Use custom deployment name"
+    echo "  export DEPLOYMENT_NAME=my-custom-controller"
+    echo "  $0"
     echo ""
     echo "Prerequisites:"
     echo "  - curl: HTTP client"
     echo "  - jq: JSON processor"
     echo "  - base64: Base64 encoder"
+    echo "  - oc: OpenShift CLI (for cluster operations)"
     echo ""
     exit 1
 }
@@ -306,6 +325,115 @@ EOF
     
     log_debug "✓ Kubernetes pull secret generated: $output_file"
     echo "$output_file"
+}
+
+# Apply secret to cluster
+apply_secret_to_cluster() {
+    local secret_file="$1"
+    local namespace="$2"
+    
+    log_debug ""
+    log_debug "Applying secret to cluster..."
+    
+    # Check if oc command is available
+    if ! command -v oc &> /dev/null; then
+        log_error "oc command not found. Please install OpenShift CLI."
+        return 1
+    fi
+    
+    local apply_cmd="oc apply -f ${secret_file}"
+    
+    if [ "$DRY_RUN" = true ]; then
+        log_info "[DRY RUN] Would execute: $apply_cmd"
+        return 0
+    fi
+    
+    log_debug "Executing: $apply_cmd"
+    
+    if $apply_cmd; then
+        log_info "✓ Secret applied to cluster successfully"
+        return 0
+    else
+        log_error "Failed to apply secret to cluster"
+        return 1
+    fi
+}
+
+# Update deployment with environment variables
+update_deployment_env_vars() {
+    local deployment_name="$1"
+    local deployment_namespace="$2"
+    local secret_name="$3"
+    local secret_namespace="$4"
+    
+    log_debug ""
+    log_debug "Updating deployment environment variables..."
+    
+    # Check if oc command is available
+    if ! command -v oc &> /dev/null; then
+        log_error "oc command not found. Please install OpenShift CLI."
+        return 1
+    fi
+    
+    # Check if deployment exists
+    if [ "$DRY_RUN" != true ]; then
+        if ! oc get deployment "$deployment_name" -n "$deployment_namespace" &> /dev/null; then
+            log_warn "Deployment '$deployment_name' not found in namespace '$deployment_namespace'"
+            log_warn "Skipping deployment update"
+            return 1
+        fi
+    fi
+    
+    # Create patch JSON for adding environment variables
+    local patch_json=$(cat <<EOF
+{
+  "spec": {
+    "template": {
+      "spec": {
+        "containers": [
+          {
+            "name": "broker-controller",
+            "env": [
+              {
+                "name": "PULL_SECRET_TEMPLATE_NAME",
+                "value": "${secret_name}"
+              },
+              {
+                "name": "PULL_SECRET_TEMPLATE_NAMESPACE",
+                "value": "${secret_namespace}"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+EOF
+)
+    
+    local patch_cmd="oc patch deployment ${deployment_name} -n ${deployment_namespace} --type=strategic --patch '${patch_json}'"
+    
+    if [ "$DRY_RUN" = true ]; then
+        log_info "[DRY RUN] Would execute:"
+        log_info "  oc patch deployment ${deployment_name} -n ${deployment_namespace}"
+        log_info "  Adding environment variables:"
+        log_info "    - PULL_SECRET_TEMPLATE_NAME: ${secret_name}"
+        log_info "    - PULL_SECRET_TEMPLATE_NAMESPACE: ${secret_namespace}"
+        return 0
+    fi
+    
+    log_debug "Executing: oc patch deployment ${deployment_name} -n ${deployment_namespace}"
+    
+    if echo "$patch_json" | oc patch deployment "$deployment_name" -n "$deployment_namespace" --type=strategic --patch-file=/dev/stdin; then
+        log_info "✓ Deployment updated with environment variables successfully"
+        log_info "  - PULL_SECRET_TEMPLATE_NAME: ${secret_name}"
+        log_info "  - PULL_SECRET_TEMPLATE_NAMESPACE: ${secret_namespace}"
+        return 0
+    else
+        log_error "Failed to update deployment with environment variables"
+        return 1
+    fi
 }
 
 cleanup() {
@@ -1240,6 +1368,9 @@ fi
 
 # Generate pull secret if OAuth token is available
 PULL_SECRET_FILE=""
+SECRET_APPLIED=false
+DEPLOYMENT_UPDATED=false
+
 if [ -n "$TEAM_USER_OAUTH_TOKEN" ]; then
     log_info ""
     log_info "OAuth token available, generating Kubernetes pull secret..."
@@ -1249,6 +1380,27 @@ if [ -n "$TEAM_USER_OAUTH_TOKEN" ]; then
     
     if PULL_SECRET_FILE=$(generate_pull_secret "$TEAM_USER_OAUTH_TOKEN" "$TEAM_USER_NAME" "$QUAY_URL" "$OUTPUT_DIR" "$NAMESPACE"); then
         log_info "✓ Pull secret generation completed"
+        
+        # Extract secret name from the generated file
+        SECRET_NAME="quay-pull-secret-${TEAM_USER_NAME}"
+        
+        # Apply secret to cluster
+        log_info ""
+        log_info "Applying secret to cluster..."
+        if apply_secret_to_cluster "$PULL_SECRET_FILE" "$NAMESPACE"; then
+            SECRET_APPLIED=true
+            
+            # Update deployment with environment variables
+            log_info ""
+            log_info "Updating deployment with environment variables..."
+            if update_deployment_env_vars "$DEPLOYMENT_NAME" "$DEPLOYMENT_NAMESPACE" "$SECRET_NAME" "$NAMESPACE"; then
+                DEPLOYMENT_UPDATED=true
+            else
+                log_warn "Deployment update failed or was skipped"
+            fi
+        else
+            log_warn "Secret application failed or was skipped"
+        fi
     else
         log_warn "Failed to generate pull secret"
         PULL_SECRET_FILE=""
@@ -1275,10 +1427,40 @@ if [ -n "$PULL_SECRET_FILE" ]; then
     echo "=========================================="
     echo ""
     echo "Pull secret generated: $PULL_SECRET_FILE"
+    echo "Secret name: $SECRET_NAME"
     echo "Namespace: ${NAMESPACE:-acm-service-broker}"
     echo ""
-    echo "To apply the secret to your cluster:"
-    echo "  kubectl apply -f $PULL_SECRET_FILE"
+    
+    if [ "$SECRET_APPLIED" = true ]; then
+        log_info "✓ Secret applied to cluster successfully"
+    else
+        if [ "$DRY_RUN" = true ]; then
+            echo "[DRY RUN] Secret application was simulated"
+        else
+            log_warn "⚠ Secret was not applied to cluster"
+            log_warn "To manually apply the secret:"
+            echo "  oc apply -f $PULL_SECRET_FILE"
+        fi
+    fi
+    
+    echo ""
+    
+    if [ "$DEPLOYMENT_UPDATED" = true ]; then
+        log_info "✓ Deployment updated with environment variables:"
+        echo "  - Deployment: ${DEPLOYMENT_NAME}"
+        echo "  - Namespace: ${DEPLOYMENT_NAMESPACE}"
+        echo "  - PULL_SECRET_TEMPLATE_NAME: ${SECRET_NAME}"
+        echo "  - PULL_SECRET_TEMPLATE_NAMESPACE: ${NAMESPACE}"
+    else
+        if [ "$DRY_RUN" = true ]; then
+            echo "[DRY RUN] Deployment update was simulated"
+        else
+            log_warn "⚠ Deployment was not updated"
+            log_warn "To manually update the deployment, run:"
+            echo "  oc patch deployment ${DEPLOYMENT_NAME} -n ${DEPLOYMENT_NAMESPACE} \\"
+            echo "    --type=strategic --patch '{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"broker-controller\",\"env\":[{\"name\":\"PULL_SECRET_TEMPLATE_NAME\",\"value\":\"${SECRET_NAME}\"},{\"name\":\"PULL_SECRET_TEMPLATE_NAMESPACE\",\"value\":\"${NAMESPACE}\"}]}]}}}}'"
+        fi
+    fi
     echo ""
 else
     echo ""
