@@ -6,7 +6,7 @@ This document describes procedures for configuring the VM Service Tech Preview f
 
 ## Prerequisites
 
-1. Mirror example Fedora image from `quay.io/containerdisks/fedora:latest` to control plane's registry.  See the Helm chart's values file for the registry URL pattern.
+1. Mirror example Fedora image from `quay.io/containerdisks/fedora:43-1.6` to control plane's registry at `$QUAY_URL/sovcloud/cp/sovereign-cloud-platform/automation-saas-platform-dev/containerdisks/fedora:43-1.6`.  See the Helm chart's values file for the registry URL pattern.
 
 2. Sign into the control plane's Account UI as the platform tenant and create a shared cluster with the `vm.sovereign.cloud.ibm.com/virtualization-enabled=true` label.
 

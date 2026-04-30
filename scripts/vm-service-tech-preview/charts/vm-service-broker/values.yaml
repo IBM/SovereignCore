@@ -12,7 +12,7 @@ name: vm-service-tech-preview
 replicas: 1
 
 # Container image to use
-image: /automation-saas-platform/vm-service-broker:main-1776704570
+image: /cp/sovereign-cloud-platform/automation-saas-platform-dev/vm-service-broker:main-1776704570
 
 # mTLS is highly recommended for security
 mtls:
@@ -43,6 +43,6 @@ authConfig:
 sharedCluster:
   url: https://console-openshift-console.apps.example.com
   vmImageRepo: registry-quay-quay-enterprise.apps.example.com/sovcloud
-  vmSampleImage: /automation-saas-platform/containerdisks/fedora:43-1.6
+  vmSampleImage: /cp/sovereign-cloud-platform/automation-saas-platform-dev/containerdisks/fedora:43-1.6
 
 # Made with Bob
