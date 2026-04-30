@@ -132,15 +132,34 @@ apply_concert_patch() {
         local current_image=$(oc get pod "$pod_name" -n "$concert_namespace" -o jsonpath='{.spec.containers[?(@.name=="rojacore-server")].image}')
         log_info "Current image: $current_image"
         
-        if [ "$current_image" = "$concert_image" ]; then
-            log_info "Image version verified successfully"
-            return 0
-        else
-            log_warning "Image version mismatch detected"
-            log_warning "Expected: $concert_image"
-            log_warning "Current: $current_image"
-            return 1
-        fi
+        # Retry loop for image verification
+        local max_retries=20
+        local retry_delay=15
+        local retry_count=0
+        while [ $retry_count -lt $max_retries ]; do
+            if [ "$current_image" = "$concert_image" ]; then
+                log_info "Image version verified successfully"
+                return 0
+            else
+                retry_count=$((retry_count + 1))
+                if [ $retry_count -lt $max_retries ]; then
+                    log_warning "Image version mismatch detected (attempt $retry_count/$max_retries)"
+                    log_warning "Expected: $concert_image"
+                    log_warning "Current: $current_image"
+                    log_info "Retrying in ${retry_delay} seconds..."
+                    sleep $retry_delay
+                    
+                    # Re-fetch the current image
+                    current_image=$(oc get pod "$pod_name" -n "$concert_namespace" -o jsonpath='{.spec.containers[?(@.name=="rojacore-server")].image}')
+                    log_info "Current image: $current_image"
+                else
+                    log_error "Image version mismatch after $max_retries attempts"
+                    log_error "Expected: $concert_image"
+                    log_error "Current: $current_image"
+                    return 1
+                fi
+            fi
+        done
     else
         log_error "No running rojacore pod found"
         return 1
