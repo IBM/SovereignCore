@@ -48,6 +48,7 @@ function main() {
     QUAY_USERNAME=$(yq -r '.registry.username // ""' "$SECRETS_FILE")
     QUAY_PASSWORD=$(yq -r '.registry.password // ""' "$SECRETS_FILE")
     QUAY_ORGANIZATION="sovcloud"
+    CLUSTER_NAME=$(yq -r '.clusterName // ""' "${INSTALL_FOLDER}/config/global.yaml")
 
     ROOT_DIR=$(yq '.workingDir' "${INSTALL_FOLDER}/config/global.yaml")
     export KUBECONFIG="${ROOT_DIR}/ocp-cluster/auth/kubeconfig"
@@ -63,7 +64,7 @@ function main() {
     log_info "done mirroring images"
 
 # run cuga argo refresh commands
-    refresh_cuga_argo
+    refresh_cuga_argo ${CLUSTER_NAME}
 
 # apply IBM Concert v2.4.0 patch
     apply_concert_patch
@@ -147,9 +148,11 @@ apply_concert_patch() {
 }
 
 refresh_cuga_argo() {
+    local cluster_name=$1
+
     APPS=(
-        acm-cuga-system-core
-        agent-service-broker-core
+        acm-cuga-system-${cluster_name}
+        agent-service-broker-${cluster_name}
     )
 
     NS="openshift-gitops"
