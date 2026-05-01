@@ -63,8 +63,11 @@ function main() {
     fi
     log_info "done mirroring images"
 
+    sync_cuga_argo ${CLUSTER_NAME}
+
 # run cuga argo refresh commands
     refresh_cuga_argo ${CLUSTER_NAME}
+
 
 # apply IBM Concert v2.4.0 patch
     apply_concert_patch
@@ -183,6 +186,24 @@ refresh_cuga_argo() {
         -p '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"hard"}}}'
     oc annotate application.argoproj.io "$app" -n "$NS" \
         cache-buster="$(date +%s)" --overwrite
+    done
+}
+
+sync_cuga_argo() {
+    local cluster_name=$1
+
+    APPS=(
+        acm-cuga-system-${cluster_name}
+        agent-service-broker-${cluster_name}
+    )
+
+    NS="openshift-gitops"
+
+    for app in "${APPS[@]}"; do
+        log_info "Syncing $app"
+        oc patch application.argoproj.io "$app" -n "$NS" \
+            --type merge \
+            -p '{"operation":{"initiatedBy":{"username":"v100-patch1"},"sync":{"syncStrategy":{"hook":{}}}}}'
     done
 }
 

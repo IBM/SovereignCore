@@ -5,9 +5,8 @@ mirror:
     - name: cp.icr.io/cp/sovereign-cloud-platform/cp/concert/rojacore:v2.4.0.prerelease01.patch01-7-20260428.050726-v2.4.0.prerelease01-patches@sha256:0d1c8619ed41458546d1e5ec4d458fdef4b9bd499a36ce7a4a2a196e67224a86
     - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga-service-broker:main-1777427211@sha256:ce4d3c08d7ac717172132ad084f16a4fefb503bdcd26edfd32a18b50000f87f2
     - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga-operator:main-1777213044@sha256:16c9d42303a5e49fd08285a80ef2f99752162820ba9e24ecaf85e104f508f7a1
-    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga:0.2.26@sha256:f296db7cf9a2233681fbcd7c35b343a713837e46febe1c7db15c12af57cfe126
-    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/main/acm-cuga-system:0.1.0@sha256:d0d3f96662d1bd2420e831a86ba4a9440e4ef6575b3a2dc7f0adc8ccefb805d8
-    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/main/agent-service-broker:0.1.0@sha256:338ec776b84265c49e1dd56c14953f016b4fe0ac5cf5e72bd51a7b242ab2ba61
-
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga:0.2.27@sha256:c9635fed873e059e3e6acc66cd631957388b05626e60dc12e54191e6cf0ec870
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/main/acm-cuga-system:0.1.0@sha256:1bd15c48fb4fb7f25cc2fd8cb483f6383509151372317914cb00d47da6cf2f7b
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/main/agent-service-broker:0.1.0@sha256:5e2bb0e146081ce0087d81bb4091bcdbfaecfcdf534d6a2c5634ee15d6051dd8
 
 #TODO update image tages/digests, need to add SHA values
