@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 function main() {
 
-# need to validate parameters
+    # need to validate parameters
     if [ -z "$INSTALL_FOLDER" ]; then
         log_error "Install folder not specified. Please rerun script in format: ./apply-v100-patch1.sh <path to install-folder> <path to manifest-file>"
         exit 1
@@ -53,7 +53,7 @@ function main() {
     ROOT_DIR=$(yq '.workingDir' "${INSTALL_FOLDER}/config/global.yaml")
     export KUBECONFIG="${ROOT_DIR}/ocp-cluster/auth/kubeconfig"
 
-# need to mirror images based on image manifest file
+    # need to mirror images based on image manifest file
     # call the mirror.sh mirror_images function, directly point it to the manifest file  
     if mirror_images "$MANIFEST"; then
         log_info "Successfully mirrored images from $MANIFEST"
@@ -65,14 +65,17 @@ function main() {
 
     sync_cuga_argo ${CLUSTER_NAME}
 
-# run cuga argo refresh commands
+    # run cuga argo refresh commands
     refresh_cuga_argo ${CLUSTER_NAME}
 
-# apply IBM Concert v2.4.0 patch
+    # apply IBM Concert v2.4.0 patch
     apply_concert_patch
 
-# apply machine config patch for CVE-2026-31431
+    # apply machine config patch for CVE-2026-31431
     update_machine_config
+
+    # apply ACM policy for CVE-2026-31431
+    apply_acm_policy
 }
 
 apply_concert_patch() {
@@ -295,6 +298,14 @@ EOF
     log_info ""
     log_info "✅ Machine Config updated successfully"
 
+}
+
+apply_acm_policy() {
+    log_info "=========================================="
+    log_info "Applying ACM Policy to update MachineConfig for CVE-2026-31431"
+    log_info "=========================================="
+    helm install acm-disable-algif ./acm-disable-algif -n default
+    log_info "✅ ACM Policy applied successfully"
 }
 
 wait_for_machineconfigpool() {
