@@ -324,6 +324,8 @@ wait_for_machineconfigpool() {
     else
         log_warning "⚠️  Worker MachineConfigPool did not start updating within 5 minutes"
         log_warning "This might mean no changes were needed, or there's an issue"
+        log_warning "Worker generation at start: $worker_generation"
+        log_warning "Worker generation now: $(oc get machineconfigpool/worker -o jsonpath='{.status.observedGeneration}')"
     fi
     
     # For master pool, check if it's already updated or still updating
