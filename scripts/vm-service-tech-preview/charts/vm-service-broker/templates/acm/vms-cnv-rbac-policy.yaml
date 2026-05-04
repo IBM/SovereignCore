@@ -28,8 +28,8 @@ spec:
                   name: vm-admin
                 rules:
                 - apiGroups: [""]
-                  resources: ["secrets"]
-                  verbs: ["get", "list", "create", "update"]
+                  resources: ["secrets", "services"]
+                  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
                 - apiGroups: ["k8s.cni.cncf.io"]
                   resources: ["network-attachment-definitions"]
                   verbs: ["get", "list"]
