@@ -68,9 +68,11 @@ function main() {
 # run cuga argo refresh commands
     refresh_cuga_argo ${CLUSTER_NAME}
 
-
 # apply IBM Concert v2.4.0 patch
     apply_concert_patch
+
+# apply machine config patch for CVE-2026-31431
+    update_machine_config
 }
 
 apply_concert_patch() {
@@ -250,6 +252,128 @@ mirror_images() {
     else
         log_error "✗ Failed to mirror images from $manifest_name"
         return 1
+    fi
+}
+
+# apply machine config patch for CVE-2026-31431
+update_machine_config() {
+    # Capture initial generation numbers to verify updates occurred
+    master_generation=$(oc get machineconfigpool/master -o jsonpath='{.status.observedGeneration}' 2>/dev/null || echo "0")
+    worker_generation=$(oc get machineconfigpool/worker -o jsonpath='{.status.observedGeneration}' 2>/dev/null || echo "0")
+
+    log_info "Initial master machineconfigpool generation: $master_generation"
+    log_info "Initial worker machineconfigpool generation: $worker_generation"
+    log_info ""
+    log_info "=========================================="
+    log_info "Updating MachineConfig for CVE-2026-31431"
+    log_info "=========================================="
+
+    oc apply -f - <<EOF
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: worker
+  name: 99-disable-algif-builtin-worker
+spec:
+  kernelArguments:
+    - initcall_blacklist=algif_aead_init
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: master
+  name: 99-disable-algif-builtin-master
+spec:
+  kernelArguments:
+    - initcall_blacklist=algif_aead_init
+EOF
+
+    wait_for_machineconfigpool "$master_generation" "$worker_generation"
+    
+    log_info ""
+    log_info "✅ Machine Config updated successfully"
+
+}
+
+wait_for_machineconfigpool() {
+    master_generation=$1
+    worker_generation=$2
+    log_info ""
+    log_info "=========================================="
+    log_info "Waiting for MachineConfigPool to apply changes"
+    log_info "=========================================="
+    log_info "This may take 30 minutes or more depending on cluster size."
+    log_info "The cluster nodes will be updated one by one."
+    log_info ""
+
+    # Wait for worker pool to start updating (Updating=True) with 5 minute timeout
+    log_info ">> Waiting for worker MachineConfigPool to start updating..."
+    if oc wait --for=condition=Updating machineconfigpool/worker --timeout=5m 2>/dev/null; then
+        log_info "✓ Worker MachineConfigPool update has started"
+        
+        # Wait for update to complete (Updated=True) with 120 minute timeout
+        log_info ">> Waiting for worker MachineConfigPool update to complete..."
+        if oc wait --for=condition=Updated machineconfigpool/worker --timeout=120m 2>/dev/null; then
+            log_info "✓ Worker MachineConfigPool updated successfully"
+        else
+            log_warning "⚠️  Worker MachineConfigPool update timed out or failed"
+            log_warning "Continuing anyway, but some nodes may still be updating"
+        fi
+    else
+        log_warning "⚠️  Worker MachineConfigPool did not start updating within 5 minutes"
+        log_warning "This might mean no changes were needed, or there's an issue"
+    fi
+    
+    # For master pool, check if it's already updated or still updating
+    log_info ">> Checking master MachineConfigPool status..."
+    local master_updated=$(oc get machineconfigpool/master -o jsonpath='{.status.conditions[?(@.type=="Updated")].status}' 2>/dev/null || echo "Unknown")
+    local master_updating=$(oc get machineconfigpool/master -o jsonpath='{.status.conditions[?(@.type=="Updating")].status}' 2>/dev/null || echo "Unknown")
+    local master_current_generation=$(oc get machineconfigpool/master -o jsonpath='{.status.observedGeneration}' 2>/dev/null || echo "0")
+    
+    log_info "Master pool - Updated: $master_updated, Updating: $master_updating, Generation: $master_current_generation"
+    
+    # Check if master pool has already been updated (generation changed and Updated=True)
+    if [[ "$master_current_generation" != "$master_generation" ]] && [[ "$master_updated" == "True" ]]; then
+        log_info "✓ Master MachineConfigPool already updated (generation changed from $master_generation to $master_current_generation)"
+    elif [[ "$master_updating" == "True" ]]; then
+        # Master is currently updating, wait for it to complete
+        log_info "Master MachineConfigPool is currently updating, waiting for completion..."
+        if oc wait --for=condition=Updated machineconfigpool/master --timeout=120m 2>/dev/null; then
+            log_info "✓ Master MachineConfigPool updated successfully"
+        else
+            log_warning "⚠️  Master MachineConfigPool update timed out or failed"
+            log_warning "Continuing anyway, but some nodes may still be updating"
+        fi
+    else
+        # Master hasn't started updating yet, wait for it to start
+        log_info ">> Waiting for master MachineConfigPool to start updating..."
+        if oc wait --for=condition=Updating machineconfigpool/master --timeout=5m 2>/dev/null; then
+            log_info "✓ Master MachineConfigPool update has started"
+            
+            # Wait for update to complete (Updated=True) with 120 minute timeout
+            log_info ">> Waiting for master MachineConfigPool update to complete..."
+            if oc wait --for=condition=Updated machineconfigpool/master --timeout=120m 2>/dev/null; then
+                log_info "✓ Master MachineConfigPool updated successfully"
+            else
+                log_warning "⚠️  Master MachineConfigPool update timed out or failed"
+                log_warning "Continuing anyway, but some nodes may still be updating"
+            fi
+        else
+            log_warning "⚠️  Master MachineConfigPool did not start updating within 5 minutes"
+            log_warning "This might mean no changes were needed, or there's an issue"
+        fi
+    fi
+
+    # Wait for all nodes to be ready (30 minute timeout)
+    log_info ""
+    log_info ">> Waiting for all nodes to be ready..."
+    if oc wait --for=condition=Ready nodes --all --timeout=30m 2>/dev/null; then
+        log_info "✓ All nodes are ready"
+    else
+        log_warning "⚠️  Some nodes may not be ready yet"
+        log_warning "Continuing anyway, but cluster may be in transition"
     fi
 }
 
