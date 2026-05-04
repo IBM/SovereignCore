@@ -37,7 +37,36 @@ spec:
                   resources: ["virtualmachines", "virtualmachineinstances", "virtualmachineinstancemigrations"]
                   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
                 - apiGroups: ["subresources.kubevirt.io"]
-                  resources: ["virtualmachineinstances/console", "virtualmachineinstances/vnc", "virtualmachineinstances/vnc/screenshot", "virtualmachineinstances/portforward", "virtualmachines/start", "virtualmachines/stop", "virtualmachines/portforward", "virtualmachineinstances/guestosinfo"]
+                  resources: [
+                    "virtualmachineinstances/console",
+                    "virtualmachineinstances/vnc",
+                    "virtualmachineinstances/vnc/screenshot",
+                    "virtualmachineinstances/portforward",
+                    "virtualmachineinstances/guestosinfo",
+                    "virtualmachineinstances/pause",
+                    "virtualmachineinstances/unpause",
+                    "virtualmachineinstances/freeze",
+                    "virtualmachineinstances/unfreeze",
+                    "virtualmachineinstances/softreboot",
+                    "virtualmachines/start",
+                    "virtualmachines/stop",
+                    "virtualmachines/restart",
+                    "virtualmachines/console",
+                    "virtualmachines/vnc",
+                    "virtualmachines/vnc/screenshot",
+                    "virtualmachines/portforward",
+                    "virtualmachines/guestosinfo",
+                    "virtualmachines/pause",
+                    "virtualmachines/unpause",
+                    "virtualmachines/freeze",
+                    "virtualmachines/unfreeze",
+                    "virtualmachines/softreboot",
+                    "virtualmachines/migrate",
+                    "virtualmachines/addvolume",
+                    "virtualmachines/removevolume",
+                    "virtualmachines/expand-spec",
+                    "virtualmachines/memorydump"
+                  ]
                   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
                 - apiGroups: ["cdi.kubevirt.io"]
                   resources: ["datavolumes"]
