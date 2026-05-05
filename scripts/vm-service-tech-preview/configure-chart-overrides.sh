@@ -47,7 +47,7 @@ SHARED_CLUSTER_URL="https://console-openshift-console.$SHARED_CLUSTER_DOMAIN"
 echo "Shared cluster URL: $SHARED_CLUSTER_URL"
 
 # VM sample image path (without registry prefix)
-VM_SAMPLE_IMAGE="/cp/sovereign-cloud-platform/automation-saas-platform-dev/containerdisks/fedora:43-1.6"
+VM_SAMPLE_IMAGE="/cp/sovereign-cloud-platform/automation-saas-platform-dev/containerdisks/fedora:44-1.7"
 echo "VM sample image: $VM_SAMPLE_IMAGE"
 echo ""
 

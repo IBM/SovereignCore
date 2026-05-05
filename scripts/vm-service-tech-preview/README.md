@@ -10,7 +10,7 @@ This tech preview assumes you only have one shared VM cluster created.
 
 ## Prerequisites
 
-1. Mirror example Fedora image from `quay.io/containerdisks/fedora:43-1.6` to control plane's registry at `$QUAY_URL/sovcloud/cp/sovereign-cloud-platform/automation-saas-platform-dev/containerdisks/fedora:43-1.6`.  See the Helm chart's values file for the registry URL pattern.
+1. Mirror example Fedora image from `quay.io/containerdisks/fedora:44-1.7` to control plane's registry at `$QUAY_URL/sovcloud/cp/sovereign-cloud-platform/automation-saas-platform-dev/containerdisks/fedora:44-1.7`.  See the Helm chart's values file for the registry URL pattern.
 
 2. Sign into the control plane's Account UI as the platform tenant and create a shared cluster with the `vm.sovereign.cloud.ibm.com/virtualization-enabled=true` label.
 
