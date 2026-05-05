@@ -158,6 +158,7 @@ apply_concert_patch() {
                     sleep $retry_delay
                     
                     # Re-fetch the current image
+                    pod_name=$(oc get pods -n "$concert_namespace" -l component=rojacore --field-selector=status.phase=Running -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
                     current_image=$(oc get pod "$pod_name" -n "$concert_namespace" -o jsonpath='{.spec.containers[?(@.name=="rojacore-server")].image}')
                     log_info "Current image: $current_image"
                 else
