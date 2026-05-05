@@ -295,6 +295,8 @@ spec:
 EOF
 
     wait_for_machineconfigpool "$master_generation" "$worker_generation"
+
+    oc delete secret -n cert-manager --ignore-not-found=true cert-manager-webhook-ca # necessary after node reboot to fix cert-manager-webhook crash loop
     
     log_info ""
     log_info "✅ Machine Config updated successfully"
@@ -305,7 +307,7 @@ apply_acm_policy() {
     log_info "=========================================="
     log_info "Applying ACM Policy to update MachineConfig for CVE-2026-31431"
     log_info "=========================================="
-    helm install acm-disable-algif ./acm-disable-algif -n default
+    helm upgrade --install --take-ownership acm-disable-algif ./acm-disable-algif -n default
     log_info "✅ ACM Policy applied successfully"
 }
 
