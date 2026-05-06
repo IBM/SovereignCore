@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: '{{ .Values.application }}-svc'
+  namespace: "{{ .Values.namespace }}"
+  annotations:
+    argocd.argoproj.io/sync-wave: "50"
+  labels:
+    app: '{{.Values.application}}'
+    by-squad: '{{ .Values.bySquadLabel }}'
+    for-product: '{{ .Values.forProductLabel }}'
+spec:
+  selector:
+    app: {{ .Values.application }}
+    version: {{ .Values.version }}
+  ports:
+    - name: https
+      port: {{ .Values.port }}
+      targetPort: {{ .Values.port }}
+      protocol: TCP

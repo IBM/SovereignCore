@@ -1,0 +1,120 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: vms-ns-provisioning-policy
+  namespace: vm-service-broker
+  labels:
+    app.kubernetes.io/component: acm-policy
+    app.kubernetes.io/name: vm-service-broker
+    app.kubernetes.io/part-of: vm-service-broker
+spec:
+  copyPolicyMetadata: false
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: vm-namespace-provisioning
+        spec:
+          remediationAction: enforce
+          severity: high
+          object-templates-raw: |
+            {{`{{hub range (lookup "sovereign.cloud.ibm.com/v1alpha1" "VMNamespaceRequest" "vm-service-broker" "").items hub}}`}}
+            {{`{{hub if and .spec.active .spec.enabled hub}}`}}
+            # Create Namespace for tenant
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: Namespace
+                metadata:
+                  name: '{{`{{hub .spec.tenantNamespace hub}}`}}'
+                  labels:
+                    app.kubernetes.io/managed-by: vm-service-broker
+            # Create RoleBinding for vm-admin in tenant namespace for owner
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: RoleBinding
+                metadata:
+                  name: '{{`{{hub .spec.tenantNamespace hub}}`}}-vm-admin'
+                  namespace: '{{`{{hub .spec.tenantNamespace hub}}`}}'
+                  labels:
+                    app.kubernetes.io/managed-by: vm-service-broker
+                    vm.tenant: '{{`{{hub .spec.tenantName hub}}`}}'
+                roleRef:
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                  name: vm-admin
+                subjects:
+                  - kind: User
+                    name: '{{`{{hub .spec.tenantOwnerEmail hub}}`}}'
+                    apiGroup: rbac.authorization.k8s.io
+            # Create RoleBinding for vm-namespace-viewer in tenant namespace for owner
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: RoleBinding
+                metadata:
+                  name: '{{`{{hub .spec.tenantNamespace hub}}`}}-vm-namespace-viewer'
+                  namespace: '{{`{{hub .spec.tenantNamespace hub}}`}}'
+                  labels:
+                    app.kubernetes.io/managed-by: vm-service-broker
+                    vm.tenant: '{{`{{hub .spec.tenantName hub}}`}}'
+                roleRef:
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                  name: view
+                subjects:
+                  - kind: User
+                    name: '{{`{{hub .spec.tenantOwnerEmail hub}}`}}'
+                    apiGroup: rbac.authorization.k8s.io
+            {{`{{hub end hub}}`}}
+            {{`{{hub end hub}}`}}
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: vm-namespace-deletion
+        spec:
+          remediationAction: enforce
+          severity: high
+          object-templates-raw: |
+            {{`{{hub range (lookup "sovereign.cloud.ibm.com/v1alpha1" "VMNamespaceRequest" "vm-service-broker" "").items hub}}`}}
+            {{`{{hub if and (not .spec.active) (not .spec.enabled) hub}}`}}
+            # Delete RoleBinding for vm-admin in tenant namespace
+            - complianceType: mustnothave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: RoleBinding
+                metadata:
+                  name: '{{`{{hub .spec.tenantNamespace hub}}`}}-vm-admin'
+                  namespace: '{{`{{hub .spec.tenantNamespace hub}}`}}'
+                  labels:
+                    app.kubernetes.io/managed-by: vm-service-broker
+                    vm.tenant: '{{`{{hub .spec.tenantName hub}}`}}'
+            # Delete RoleBinding for vm-namespace-viewer in tenant namespace
+            - complianceType: mustnothave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: RoleBinding
+                metadata:
+                  name: '{{`{{hub .spec.tenantNamespace hub}}`}}-vm-namespace-viewer'
+                  namespace: '{{`{{hub .spec.tenantNamespace hub}}`}}'
+                  labels:
+                    app.kubernetes.io/managed-by: vm-service-broker
+                    vm.tenant: '{{`{{hub .spec.tenantName hub}}`}}'
+            # Delete Namespace for tenant
+            - complianceType: mustnothave
+              objectDefinition:
+                apiVersion: v1
+                kind: Namespace
+                metadata:
+                  name: '{{`{{hub .spec.tenantNamespace hub}}`}}'
+                  labels:
+                    app.kubernetes.io/managed-by: vm-service-broker
+            {{`{{hub end hub}}`}}
+            {{`{{hub end hub}}`}}
+  remediationAction: enforce
+
+# Made with Bob

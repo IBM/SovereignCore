@@ -1,0 +1,79 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: vms-cnv-rbac-policy
+  namespace: vm-service-broker
+  labels:
+    app.kubernetes.io/component: acm-policy
+    app.kubernetes.io/name: vm-service-broker
+    app.kubernetes.io/part-of: vm-service-broker
+spec:
+  copyPolicyMetadata: false
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: vms-cnv-rbac-config-policy
+        spec:
+          remediationAction: enforce
+          severity: high
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: ClusterRole
+                metadata:
+                  name: vm-admin
+                rules:
+                - apiGroups: [""]
+                  resources: ["secrets", "services"]
+                  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+                - apiGroups: ["k8s.cni.cncf.io"]
+                  resources: ["network-attachment-definitions"]
+                  verbs: ["get", "list"]
+                - apiGroups: ["kubevirt.io"]
+                  resources: ["virtualmachines", "virtualmachineinstances", "virtualmachineinstancemigrations"]
+                  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+                - apiGroups: ["subresources.kubevirt.io"]
+                  resources: [
+                    "virtualmachineinstances/console",
+                    "virtualmachineinstances/vnc",
+                    "virtualmachineinstances/vnc/screenshot",
+                    "virtualmachineinstances/portforward",
+                    "virtualmachineinstances/guestosinfo",
+                    "virtualmachineinstances/pause",
+                    "virtualmachineinstances/unpause",
+                    "virtualmachineinstances/freeze",
+                    "virtualmachineinstances/unfreeze",
+                    "virtualmachineinstances/softreboot",
+                    "virtualmachines/start",
+                    "virtualmachines/stop",
+                    "virtualmachines/restart",
+                    "virtualmachines/console",
+                    "virtualmachines/vnc",
+                    "virtualmachines/vnc/screenshot",
+                    "virtualmachines/portforward",
+                    "virtualmachines/guestosinfo",
+                    "virtualmachines/pause",
+                    "virtualmachines/unpause",
+                    "virtualmachines/freeze",
+                    "virtualmachines/unfreeze",
+                    "virtualmachines/softreboot",
+                    "virtualmachines/migrate",
+                    "virtualmachines/addvolume",
+                    "virtualmachines/removevolume",
+                    "virtualmachines/expand-spec",
+                    "virtualmachines/memorydump"
+                  ]
+                  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+                - apiGroups: ["cdi.kubevirt.io"]
+                  resources: ["datavolumes"]
+                  verbs: ["get", "list"]
+                - apiGroups: ["snapshot.kubevirt.io"]
+                  resources: ["virtualmachinesnapshots", "virtualmachinerestores"]
+                  verbs: ["get", "list", "watch"]
+  remediationAction: enforce
+
+# Made with Bob

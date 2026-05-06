@@ -1,0 +1,11 @@
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: vms-provisioning-placement
+  namespace: vm-service-broker
+spec:
+  predicates:
+    - requiredClusterSelector:
+        labelSelector:
+          matchLabels:
+            vm.sovereign.cloud.ibm.com/virtualization-enabled: "true"

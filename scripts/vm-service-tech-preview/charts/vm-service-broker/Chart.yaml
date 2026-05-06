@@ -1,0 +1,6 @@
+apiVersion: v2
+name: vm-service-broker
+description: Helm chart for the VM Service Broker of Sovereign Core project
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

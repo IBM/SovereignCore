@@ -1,0 +1,55 @@
+apiVersion: cerberus.watson.cloud.ibm.com/v1
+kind: ServiceBroker
+metadata:
+  labels:
+    app: '{{ .Values.application }}'
+    by-squad: '{{ .Values.bySquadLabel }}'
+    for-product: '{{ .Values.forProductLabel }}'
+  name: vm-service-broker
+  namespace: vm-service-broker
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  broker_path_element: vm-service
+  default_callback:
+    {{- if .Values.authConfig.enabled }}
+    iam_auth:
+      secret: '{{ .Values.authConfig.serviceBrokerSecretName }}'
+    {{- end }}
+    {{- if .Values.mtls.enabled }}
+    mutual_tls:
+      want_client_cert: true
+      server_ca: '{{ .Values.mtls.serverCa }}'
+    {{- end }}
+    timeout: 180s
+    url_prefix: 'https://{{ .Values.application }}-svc.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.port }}'
+    want_enable_disable_calls: true
+  default_sublocations:
+    - callback:
+        {{- if .Values.authConfig.enabled }}
+        iam_auth:
+          secret: '{{ .Values.authConfig.serviceBrokerSecretName }}'
+        {{- end }}
+        {{- if .Values.mtls.enabled }}
+        mutual_tls:
+          want_client_cert: true
+          server_ca: '{{ .Values.mtls.serverCa }}'
+        {{- end }}
+        timeout: 180s
+        url_prefix: 'https://{{ .Values.application }}-svc.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.port }}'
+      id: us-east-1
+  services:
+    - bindable: false
+      description: VM Service Tech Preview
+      id: vm-service
+      name: '{{ .Values.name }}'
+      plans:
+        - description: VM Service Tech Preview
+          free: true
+          id: vm-service-tech-preview_plan
+          name: vm-service-tech-preview_plan
+          metadata:
+            costs:
+              - part_number: NOT_USED
+                unit: NOT_USED
+                unit_id: NOT_USED

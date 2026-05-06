@@ -1,0 +1,7 @@
+apiVersion: cluster.open-cluster-management.io/v1beta2
+kind: ManagedClusterSetBinding
+metadata:
+  name: platform
+  namespace: vm-service-broker  # The namespace that gets access
+spec:
+  clusterSet: platform  # The ManagedClusterSet to bind

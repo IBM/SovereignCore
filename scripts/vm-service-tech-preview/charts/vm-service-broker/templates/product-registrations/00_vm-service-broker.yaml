@@ -1,0 +1,81 @@
+apiVersion: meter.automation.ibm.com/v2
+kind: ProductRegistrationV2
+metadata:
+  name: vm-service-tech-preview
+  namespace: product-registration
+spec:
+  # Required fields
+  productName: 'VM Service Tech Preview'
+  productDescription: 'Access OpenShift cluster to create and manage VMs'
+  productID: 'vm-service'
+  serviceID: 'vm-service'
+  headless: false
+  marketplace: IBM
+  usageSource: api
+  usageReset: disabled
+  productSupportURL: 'https://www.ibm.com/mysupport/s/?language=en_US'
+  productPurchaseURL: 'https://www.ibm.com'
+  plans:
+    - criteria:
+        - orderTypes:
+            - IBM
+          partNumbersAndQuantities:
+            - maxQuantity: 1000000
+              minQuantity: 1
+              partNumber: VM_SERVICE_TECH_PREVIEW
+      default: true
+      id: 'vm-service-tech-preview_plan'
+      name: 'VM Service Tech Preview Plan'
+  parts:
+    - urxPath: 'https://fake.urx.link'
+      supportedPlanIDs:
+        - 'vm-service-tech-preview_plan'
+      metrics:
+      calendarBasedUsageReset: false
+      tenantDisplayName:
+        allowUserInput: false
+      partType: base
+      marketplaceProductPage: 'https://www.ibm.com'
+      partPeriod: annual
+      billingType: paygo
+      instanceAsMetric: false
+      urxFormID: urx-t52694
+      partNumber: VM_SERVICE_TECH_PREVIEW
+      usageSource: api
+      partName: 'VM Service Tech Preview'
+  offerings:
+  - instances:
+      maximum: 100000
+      minimum: 1
+    partNumbers:
+      - VM_SERVICE_TECH_PREVIEW
+    supportedPlanIDs:
+      - 'vm-service-tech-preview_plan'
+    supportedRegions:
+      - us-east-1
+    type: Purchase
+  # Console parameters for UI customization
+  consoleParameters:
+    category: vms 
+    visibility: public
+    provisionCRs:
+      - name: 'VM Service Tech Preview'
+        kind: VMNamespaceRequest
+        version: sovereign.cloud.ibm.com/v1
+        requestedUIFieldsSovCore:
+              # required - tenant name / namespace
+          - - name: "VM Namespace"
+              field: "spec.tenantName"
+              type: "string"
+              default: "my-vm-namespace"
+              editableDuring:
+                - "deployment"
+              validationRules:
+                - "name-unique"
+              # required - tenant admin user
+            - name: "VM admin email"
+              field: "spec.tenantOwner"
+              type: "string"
+              default: "admin@example.com"
+              editableDuring:
+                - "deployment"

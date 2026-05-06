@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: '{{ .Values.application }}-config-map'
+  namespace: '{{.Values.namespace}}'
+  labels:
+    app: '{{.Values.application}}'
+    by-squad: '{{ .Values.bySquadLabel }}'
+    for-product: '{{ .Values.forProductLabel }}'
+  annotations:
+    argocd.argoproj.io/sync-wave: '0'
+data:
+  MTLS_ENABLED: "{{ .Values.mtls.enabled }}"
+  ENABLE_AUTH: "{{ .Values.authConfig.enabled }}"
+  {{- if .Values.authConfig.enabled }}
+  JWKS_ENDPOINT: "https://account-iam.{{ .Values.cluster.appdomain }}/api/2.0/jwks"
+  ISSUER: "https://account-iam.{{ .Values.cluster.appdomain }}/account-iam/api/2.0"
+  AUDIENCE: "ACCOUNT/global_account"
+  AUTH_ROLE: "mcsp-csb"
+  CSB_SECRET_NAME: "{{ .Values.authConfig.serviceBrokerSecretName }}"
+  {{- end }}
+  SHARED_CLUSTER_URL: "{{ .Values.sharedCluster.url }}"
+  NAMESPACE: "{{ .Values.namespace }}"
