@@ -76,11 +76,11 @@ spec:
                 apiVersion: cdi.kubevirt.io/v1beta1
                 kind: DataImportCron
                 metadata:
-                  name: fedora-image-cron-custom
+                  name: fedora-image-cron-latest
                   namespace: openshift-virtualization-os-images
                 spec:
                   garbageCollect: Outdated
-                  managedDataSource: fedora-custom
+                  managedDataSource: fedora-latest
                   schedule: "*/5 * * * *"
                   template:
                     metadata: {}

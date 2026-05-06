@@ -43,6 +43,6 @@ authConfig:
 sharedCluster:
   url: https://console-openshift-console.apps.example.com
   vmImageRepo: registry-quay-quay-enterprise.apps.example.com/sovcloud
-  vmSampleImage: /cp/sovereign-cloud-platform/automation-saas-platform-dev/containerdisks/fedora:44-1.7
+  vmSampleImage: /cp/sovereign-cloud-platform/automation-saas-platform-dev/containerdisks/fedora:latest
 
 # Made with Bob
