@@ -7,7 +7,7 @@ common:
 # Policy configuration
 policy:
   name: disable-algif-builtin-policy
-  remediationAction: enforce  # enforce or inform
+  remediationAction: inform  # enforce or inform
   severity: medium  # low, medium, high, critical
 
 # Placement configuration
