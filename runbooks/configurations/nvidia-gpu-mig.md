@@ -7,7 +7,7 @@ The Multi-Instance GPU (MIG) feature, available on supported NVIDIA GPUs, allows
 > [!NOTE]
 > Make sure the NVIDIA GPU hardware uses the Ampere architecture or a later architecture.
 
-This document describes how a system owner configures this feature in the AI Inference Service.
+This document describes how a system owner configures this feature in the AI inference service.
 
 ## Prerequisites
 
@@ -85,7 +85,7 @@ Review [MIG support in Red Hat OpenShift Container Platform](https://docs.nvidia
 
     A list of node names and their allocatable GPU counts is displayed.
 
-3. Get the GPU model of each node by running the following command:
+3. Get the GPU capacity of each node by running the following command:
 
     ```sh
     oc get nodes --context "<ai-inference-cluster-context>" \
@@ -103,7 +103,7 @@ Review [MIG support in Red Hat OpenShift Container Platform](https://docs.nvidia
     The pods running in the llms namespace are listed with their node assignments. If a model deployment is running on the target node, delete the model deployment. MIG cannot be configured while model deployments are active on a node.
 
 5. Review the supported MIG profiles to choose the profile you want to configure. For details, see [Supported MIG profiles](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/supported-mig-profiles.html).
-Run the following command to view the default profiles already configured in the service cluster:
+    Run the following command to view the default profiles already configured in the service cluster:
 
     ```sh
     oc get cm --context "<ai-inference-cluster-context>" \
@@ -116,3 +116,5 @@ Run the following command to view the default profiles already configured in the
     ```sh
     oc label node <node-name> nvidia.com/mig.config=<profile-name> --overwrite
     ```
+
+7. Redeploy models if you removed them as part of this procedure.
