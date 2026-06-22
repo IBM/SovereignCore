@@ -51,7 +51,7 @@ Review [MIG support in Red Hat OpenShift Container Platform](https://docs.nvidia
 
 ## Procedure
 
-1. Set the NVIDIA MIG strategy. The strategy is managed by the nvidia-gpu-configuration policy on the management cluster.
+1. Set the NVIDIA MIG strategy. The strategy is managed by the `nvidia-gpu-configuration` policy on the management cluster.
      1. From the management cluster, check the existing MIG strategy by running the following command:
 
         ```sh
