@@ -70,7 +70,7 @@ Review [MIG support in Red Hat OpenShift Container Platform](https://docs.nvidia
         ```
 
      2. To change the strategy, update the strategy field of the gpu-cluster-policy object.
-     In the following example, the path assumes that `gpu-cluster-policy` is defined at position 4 (0-based index) of the object-templates array. Verify the correct index for your environment before running the command.
+     In the following example, the path assumes that `gpu-cluster-policy` is defined at position 4 (0-based index) of the object-templates array. Verify the correct index for your environment before running the command by checking the output of step 1.
      Replace new-strategy with either single or mixed.
 
         ```sh
