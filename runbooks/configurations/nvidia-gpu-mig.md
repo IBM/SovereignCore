@@ -53,6 +53,12 @@ kind: ModelDeployment
 ...
 ```
 
+### Which to use
+
+Use the **single strategy** for large clusters where you can organize nodes into groups with the same MIG profile. All GPUs on each node must use the same profile. This strategy works with existing model deployments without modification because they use the standard `nvidia.com/gpu` resource notation.
+
+Use the **mixed strategy** for smaller clusters where you need different MIG profiles on the same node. Each GPU can use a different profile, but model deployments must specify the exact profile they need (such as `nvidia.com/mig-1g.5gb`) in their resource notation.
+
 Review [MIG support in Red Hat OpenShift Container Platform](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/mig-ocp.html) in the NVIDIA documentation for more information about advertisement strategies and MIG profiles.
 
 ## Procedure
