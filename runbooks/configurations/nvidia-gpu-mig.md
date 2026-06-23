@@ -51,7 +51,18 @@ Review [MIG support in Red Hat OpenShift Container Platform](https://docs.nvidia
 
 ## Procedure
 
-1. Set the NVIDIA MIG strategy. The strategy is managed by the `nvidia-gpu-configuration` policy on the management cluster.
+1. Get the Kubernetes context of the AI inference service cluster where the Nvidia GPU Operator is installed. For details, see the [Kubernetes reference documentation](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/).
+    - To find the name of the cluster, run `oc get managedcluster -l sovcloud.open-cluster-management.io/nvidia-gpu=true`
+
+2. Review the supported MIG profiles to choose the profile you want to configure. For details, see [Supported MIG profiles](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/supported-mig-profiles.html).
+    Run the following command to view the default profiles configured in the service cluster:
+
+    ```sh
+    oc get cm --context "<ai-inference-cluster-context>" \
+    -n nvidia-gpu-operator default-mig-parted-config \
+    -o go-template='{{index .data "config.yaml"}}'
+
+3. Set the NVIDIA MIG strategy. The strategy is managed by the `nvidia-gpu-configuration` policy on the management cluster.
      1. From the management cluster, check the existing MIG strategy by running the following command:
 
         ```sh
@@ -75,17 +86,7 @@ Review [MIG support in Red Hat OpenShift Container Platform](https://docs.nvidia
             ]'
         ```
 
-2. Get the Kubernetes context of the AI inference service cluster. For details, see the [Kubernetes reference documentation](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/).
-    Identify the nodes with GPUs that can be allocated by running the following command:
-
-    ```sh
-    oc get nodes --context "<ai-inference-cluster-context>" \
-        -o "custom-columns=NAME:.metadata.name,GPU:.status.allocatable.nvidia\.com/gpu"
-    ```
-
-    A list of node names and their allocatable GPU counts is displayed.
-
-3. Get the GPU capacity of each node by running the following command:
+4. Get the GPU capacity of each node by running the following command:
 
     ```sh
     oc get nodes --context "<ai-inference-cluster-context>" \
@@ -94,7 +95,7 @@ Review [MIG support in Red Hat OpenShift Container Platform](https://docs.nvidia
 
     Select the node whose GPU you want to partition from the list.
 
-4. Check whether a foundation model is deployed on the node by running the following command:
+5. Check whether a foundation model is deployed on the node by running the following command:
 
     ```sh
     oc get pod --context "<ai-inference-cluster-context>" -n llms -o wide
@@ -102,13 +103,6 @@ Review [MIG support in Red Hat OpenShift Container Platform](https://docs.nvidia
 
     The pods running in the llms namespace are listed with their node assignments. If a model deployment is running on the target node, delete the model deployment. MIG cannot be configured while model deployments are active on a node.
 
-5. Review the supported MIG profiles to choose the profile you want to configure. For details, see [Supported MIG profiles](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/supported-mig-profiles.html).
-    Run the following command to view the default profiles already configured in the service cluster:
-
-    ```sh
-    oc get cm --context "<ai-inference-cluster-context>" \
-    -n nvidia-gpu-operator default-mig-parted-config \
-    -o go-template='{{index .data "config.yaml"}}'
     ```
 
 6. Set the MIG profile on the GPU node.
