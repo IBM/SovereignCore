@@ -27,9 +27,12 @@ You can use the same profile on all of the GPU worker nodes in your cluster. All
 For example, the deployed model's custom resource contains the following section:
 
 ```yaml
-resources:
-  limits:
-    nvidia.com/gpu: 1
+kind: ModelDeployment
+...
+            resources:
+            limits:
+                nvidia.com/gpu: 1
+...
 ```
 
 ### Mixed strategy
@@ -42,9 +45,12 @@ You can use different profiles on each worker node in your cluster. Each profile
 For example, the deployed model's custom resource contains the following section:
 
 ```yaml
-resources:
-  limits:
-    nvidia.com/mig-1g.5gb: 1
+kind: ModelDeployment
+...
+            resources:
+            limits:
+                nvidia.com/mig-1g.5gb: 1
+...
 ```
 
 Review [MIG support in Red Hat OpenShift Container Platform](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/mig-ocp.html) in the NVIDIA documentation for more information about advertisement strategies and MIG profiles.
