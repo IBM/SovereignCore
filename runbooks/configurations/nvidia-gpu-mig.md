@@ -5,7 +5,7 @@
 The Multi-Instance GPU (MIG) feature, available on supported NVIDIA GPUs, allows GPUs to be securely partitioned into instances.
 
 > [!NOTE]
-> Make sure the NVIDIA GPU hardware uses the Ampere architecture or a later architecture.
+> Make sure the NVIDIA GPU hardware is the Ampere generation or a later generation. For details, see https://docs.nvidia.com/datacenter/tesla/mig-user-guide/supported-gpus.html
 
 This document describes how a system owner configures this feature in the AI inference service.
 
