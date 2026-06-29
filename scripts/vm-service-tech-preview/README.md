@@ -2,38 +2,51 @@
 
 ## Overview
 
-This document describes procedures for configuring the VM Service Tech Preview for IBM Sovereign Core.
+This document describes required procedures, additional configuration guides, and runbooks for the VM Service Tech Preview for IBM Sovereign Core.
 
-## Limitations
+## Procedures
 
-This tech preview assumes you only have one shared VM cluster created.
 
-## Prerequisites
+### Prerequisites
 
-1. Mirror example Fedora image from `quay.io/containerdisks/fedora:latest` to control plane's registry at `$QUAY_URL/sovcloud/cp/sovereign-cloud-platform/automation-saas-platform-dev/containerdisks/fedora:latest`.  See the Helm chart's values file for the registry URL pattern.
+1. The existing IBM documentation must have been followed to create a shared VM cluster.
 
-2. Sign into the control plane's Account UI as the platform tenant and create a shared cluster with the `vm.sovereign.cloud.ibm.com/virtualization-enabled=true` label.
+### Installation
 
-3. Login to the control plane's OpenShift cluster via the `oc` CLI.
+Once a shared VM cluster has been created, two additional scripts must be run — one against the shared VM cluster to complete the OAuth configuration, and one against the hub cluster to apply the IAM token refresh workaround.
 
-4. Ensure there is a default storage class set for the shared cluster. This will be used for the Fedora sample container disk image as well as be the default for all created Virtual Machines.
+**On the shared VM cluster:**
 
-## Procedure
+1. Login to the shared VM cluster
 
-1. Run `configure-chart-overrides.sh https://console-openshift-console.apps.<domain>` with optional argument of shared cluster console URL to generate a values override file called `values-override.yaml` for the `vm-service-broker` Helm chart.
+2. Run `configure-vm-oauth.sh`
 
-2. Run `helm install vm-service-broker charts/vm-service-broker -f values-override.yaml` to deploy the Helm chart to the control plane cluster.
+3. Verify the OAuth configuration is configured in the cluster
 
-   If shared cluster console URL is not specified, this script will attempt to lookup details for the first managed cluster with the `vm.sovereign.cloud.ibm.com/virtualization-enabled=true` label.
+**On the hub cluster:**
 
-3. Run `configure-sso-client.sh` with optional argument of shared cluster console URL to create an IDP client to be used in the shared cluster's OAuth configuration and create some local manifests to be used to configure Oauth for the shared cluster.
+4. Login to the hub cluster
 
-   If shared cluster console URL is not specified, this script will attempt to lookup details for the first managed cluster with the `vm.sovereign.cloud.ibm.com/virtualization-enabled=true` label.
+5. Run `apply-operator-restart-cronjob.sh`
 
-4. Login to the shared cluster via `oc` CLI.
+**Resume IBM documentation:**
 
-5. Run `configure-vm-oauth.sh` to deploy generated client resources and add an identity provider to the shared cluster's OAuth configuration to allow tenant SSO login.
+6. Resume the steps outlined in the IBM documentation to make the VM service tech preview public.
 
-6. Verify Virtualization is configured in the shared cluster.
 
-7. Login to the control plane's MSP UI and set the VM Service Tech Preview as visible in the catalog to enable tenants to provision the service.
+## Scripts
+
+- [`configure-vm-oauth.sh`](./configure-vm-oauth.sh) — configures the OAuth identity provider on the shared VM cluster. Required on bare metal where the ACM-managed Jobs cannot run due to the internal image registry being unavailable.
+- [`apply-operator-restart-cronjob.sh`](./apply-operator-restart-cronjob.sh) — applies a CronJob that periodically restarts the VM service broker operator to refresh its IAM token. Required until the automatic token re-authentication fix ships.
+
+## Guides
+
+- [Adding Guest OS Images](./adding-guest-os-images.md) — how to add additional
+  guest OS images via DataImportCron resources on the shared VM cluster.
+- [Cluster Resource Quotas](./quotas/cluster-resource-quotas.md) — sample ClusterResourceQuota
+  configurations for managing resource limits across VM service namespaces.
+
+## Runbooks
+
+- [VM Service Operations Runbook](./vm-service-runbook.md) — full operational
+  reference covering operations, monitoring, troubleshooting, maintenance, and security.

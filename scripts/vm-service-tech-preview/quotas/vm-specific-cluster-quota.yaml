@@ -1,0 +1,39 @@
+apiVersion: quota.openshift.io/v1
+kind: ClusterResourceQuota
+metadata:
+  name: vm-service-vm-quota
+  labels:
+    app.kubernetes.io/name: vm-service
+    app.kubernetes.io/component: quota
+spec:
+  selector:
+    labels:
+      matchLabels:
+        app.kubernetes.io/managed-by: vm-service-broker
+  quota:
+    hard:
+      # Virtual Machine resources
+      count/virtualmachines.kubevirt.io: "30"
+      count/virtualmachineinstances.kubevirt.io: "30"
+      
+      # VM storage resources
+      count/datavolumes.cdi.kubevirt.io: "60"
+      
+      # VM snapshots
+      count/virtualmachinesnapshots.snapshot.kubevirt.io: "20"
+      
+      # VM replica sets and presets
+      count/virtualmachineinstancereplicasets.kubevirt.io: "10"
+      count/virtualmachineinstancepresets.kubevirt.io: "10"
+      
+      # Compute resources for VMs
+      requests.cpu: "60"
+      requests.memory: 120Gi
+      limits.cpu: "120"
+      limits.memory: 240Gi
+      
+      # Storage for VMs
+      persistentvolumeclaims: "60"
+      requests.storage: "3Ti"
+
+# Made with Bob

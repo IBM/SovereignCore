@@ -1,0 +1,42 @@
+apiVersion: quota.openshift.io/v1
+kind: ClusterResourceQuota
+metadata:
+  name: vm-service-standard-plan-quota
+  labels:
+    app.kubernetes.io/name: vm-service
+    app.kubernetes.io/component: quota
+    vm.sovereign.cloud.ibm.com/plan: standard
+spec:
+  selector:
+    labels:
+      matchLabels:
+        app.kubernetes.io/managed-by: vm-service-broker
+  quota:
+    hard:
+      # Virtual Machine resources for standard plan
+      count/virtualmachines.kubevirt.io: "10"
+      count/virtualmachineinstances.kubevirt.io: "10"
+      
+      # VM storage resources
+      count/datavolumes.cdi.kubevirt.io: "20"
+      
+      # VM snapshots
+      count/virtualmachinesnapshots.snapshot.kubevirt.io: "5"
+      
+      # Compute resources
+      requests.cpu: "20"
+      requests.memory: 40Gi
+      limits.cpu: "40"
+      limits.memory: 80Gi
+      
+      # Storage
+      persistentvolumeclaims: "20"
+      requests.storage: "1Ti"
+      
+      # Object counts
+      pods: "30"
+      services: "15"
+      secrets: "30"
+      configmaps: "15"
+
+# Made with Bob
