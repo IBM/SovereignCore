@@ -1,0 +1,12 @@
+{{- range .Values.placement.clusterSets }}
+---
+apiVersion: cluster.open-cluster-management.io/v1beta2
+kind: ManagedClusterSetBinding
+metadata:
+  name: {{ . }}
+  namespace: {{ $.Values.common.namespace }}
+spec:
+  clusterSet: {{ . }}
+{{- end }}
+
+# Made with Bob
