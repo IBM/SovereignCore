@@ -15,19 +15,19 @@ This document describes required procedures, additional configuration guides, an
 
 Once a shared VM cluster has been created, two additional scripts must be run — one against the shared VM cluster to complete the OAuth configuration, and one against the hub cluster to apply the IAM token refresh workaround.
 
-**On the shared VM cluster:**
-
-1. Login to the shared VM cluster
-
-2. Run `configure-vm-oauth.sh`
-
-3. Verify the OAuth configuration is configured in the cluster
-
 **On the hub cluster:**
 
-4. Login to the hub cluster
+1. Login to the hub cluster
 
-5. Run `apply-operator-restart-cronjob.sh`
+2. Run `apply-operator-restart-cronjob.sh`
+
+**On the shared VM cluster:**
+
+3. Login to the shared VM cluster
+
+4. Run `configure-vm-oauth.sh`
+
+5. Verify the OAuth configuration is configured in the cluster
 
 **Resume IBM documentation:**
 
