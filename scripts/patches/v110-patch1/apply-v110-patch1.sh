@@ -74,9 +74,9 @@ refresh_argo() {
 
     APPS=(
         acm-cuga-system-${cluster_name}
-        agent-service-broker-${cluster_name}
         backup-restore-pipelines-${core}
         sov-core-k8s-wrapper-${cluster}
+        acm-vault-aas-${cluster}
     )
 
     NS="openshift-gitops"
@@ -96,9 +96,9 @@ sync_argo() {
 
     APPS=(
         acm-cuga-system-${cluster_name}
-        agent-service-broker-${cluster_name}
         backup-restore-pipelines-${core}
         sov-core-k8s-wrapper-${cluster}
+        acm-vault-aas-${cluster}
     )
 
     NS="openshift-gitops"
