@@ -18,7 +18,7 @@ function main() {
 
     # need to validate parameters
     if [ -z "$INSTALL_FOLDER" ]; then
-        log_error "Install folder not specified. Please rerun script in format: ./apply-v100-patch1.sh <path to install-folder> <path to manifest-file>"
+        log_error "Install folder not specified. Please rerun script in format: ./apply-v110-patch1.sh <path to install-folder> <path to manifest-file>"
         exit 1
     fi
     if [ ! -d "$INSTALL_FOLDER" ]; then
@@ -27,7 +27,7 @@ function main() {
     fi
     
     if [ -z "$MANIFEST" ]; then
-        log_error "Manifest file not specified. Please rerun script in format: ./apply-v100-patch1.sh <path to install-folder> <path to manifest-file>"
+        log_error "Manifest file not specified. Please rerun script in format: ./apply-v110-patch1.sh <path to install-folder> <path to manifest-file>"
         exit 1
     fi
     if [ ! -f "$MANIFEST" ]; then
@@ -45,8 +45,6 @@ function main() {
 
     # extract variables from values.yaml and secrets.yaml
     QUAY_REGISTRY=$(yq -r '.registry.domain // ""' "$VALUES_FILE_DYNAMIC")
-    QUAY_USERNAME=$(yq -r '.registry.username // ""' "$SECRETS_FILE")
-    QUAY_PASSWORD=$(yq -r '.registry.password // ""' "$SECRETS_FILE")
     QUAY_ORGANIZATION="sovcloud"
     CLUSTER_NAME=$(yq -r '.clusterName // ""' "${INSTALL_FOLDER}/config/global.yaml")
 
@@ -74,21 +72,27 @@ refresh_argo() {
 
     APPS=(
         acm-cuga-system-${cluster_name}
-        backup-restore-pipelines-${core}
-        sov-core-k8s-wrapper-${cluster}
-        acm-vault-aas-${cluster}
+        backup-restore-pipelines-${cluster_name}
+        sov-core-k8s-wrapper-${cluster_name}
+        acm-vault-aas-${cluster_name}
     )
 
     NS="openshift-gitops"
 
+    local failed=0
     for app in "${APPS[@]}"; do
-    log_info "Refreshing $app"
-    oc patch application.argoproj.io "$app" -n "$NS" \
-        --type merge \
-        -p '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"hard"}}}'
-    oc annotate application.argoproj.io "$app" -n "$NS" \
-        cache-buster="$(date +%s)" --overwrite
+        log_info "Refreshing $app"
+        if ! oc patch application.argoproj.io "$app" -n "$NS" \
+            --type merge \
+            -p '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"hard"}}}'; then
+            log_error "Failed to refresh $app"
+            failed=1
+            continue
+        fi
+        oc annotate application.argoproj.io "$app" -n "$NS" \
+            cache-buster="$(date +%s)" --overwrite
     done
+    return $failed
 }
 
 sync_argo() {
@@ -96,19 +100,24 @@ sync_argo() {
 
     APPS=(
         acm-cuga-system-${cluster_name}
-        backup-restore-pipelines-${core}
-        sov-core-k8s-wrapper-${cluster}
-        acm-vault-aas-${cluster}
+        backup-restore-pipelines-${cluster_name}
+        sov-core-k8s-wrapper-${cluster_name}
+        acm-vault-aas-${cluster_name}
     )
 
     NS="openshift-gitops"
 
+    local failed=0
     for app in "${APPS[@]}"; do
         log_info "Syncing $app"
-        oc patch application.argoproj.io "$app" -n "$NS" \
+        if ! oc patch application.argoproj.io "$app" -n "$NS" \
             --type merge \
-            -p '{"operation":{"initiatedBy":{"username":"v110-patch1"},"sync":{"syncStrategy":{"hook":{}}}}}'
+            -p '{"operation":{"initiatedBy":{"username":"v110-patch1"},"sync":{"syncStrategy":{"hook":{}}}}}'; then
+            log_error "Failed to sync $app"
+            failed=1
+        fi
     done
+    return $failed
 }
 
 mirror_images() {
