@@ -610,7 +610,7 @@ oc exec -n <blueprint-ns> <blueprint-pod> -- \
 Port-forward the Blueprint UI service to your local machine:
 
 ```sh
-kubectl port-forward services/aimsb-fsi-${name} 8081:80 -n <blueprint-ns>
+oc port-forward services/aimsb-fsi-${name} 8081:80 -n <blueprint-ns>
 ```
 
 Open [http://localhost:8081](http://localhost:8081) in a browser and use the application as follows:
