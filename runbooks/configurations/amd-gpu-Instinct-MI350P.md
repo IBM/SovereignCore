@@ -361,7 +361,7 @@ oc get pods -n openshift-amd-gpu
 Once the AMD GPU Operator and driver DaemonSet are running, verify that the MI350P appears as an allocatable resource on the GPU node:
 
 ```sh
-kubectl get node <gpu-node> \
+oc get node <gpu-node> \
   -o jsonpath='{.status.allocatable.amd\.com/gpu}'
 # Expected output: 1
 ```
@@ -369,7 +369,7 @@ kubectl get node <gpu-node> \
 If the output is `0` or absent, check the driver DaemonSet logs:
 
 ```sh
-kubectl logs -n openshift-amd-gpu \
+oc logs -n openshift-amd-gpu \
   -l app=amd-gpu-driver --tail=50
 ```
 
@@ -468,9 +468,9 @@ spec:
 Apply and watch for readiness:
 
 ```sh
-kubectl apply -f modeldeployment-llama-mi350p.yaml
+oc apply -f modeldeployment-llama-mi350p.yaml
 
-kubectl get modeldeployment <uuid> \
+oc get modeldeployment <uuid> \
   -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' --watch
 # Expected: True (allow up to 10 minutes for the model to load)
 ```
@@ -478,8 +478,8 @@ kubectl get modeldeployment <uuid> \
 Confirm the pod is running on the GPU node:
 
 ```sh
-kubectl get pod -n <inference-ns> -l app=<uuid> -o wide
-kubectl describe pod <vllm-pod-name> -n <inference-ns> | grep -A5 "Limits:"
+oc get pod -n <inference-ns> -l app=<uuid> -o wide
+oc describe pod <vllm-pod-name> -n <inference-ns> | grep -A5 "Limits:"
 # Expected: amd.com/gpu: 1 in Limits
 ```
 
@@ -596,7 +596,7 @@ oc rollout status deploy/<blueprint-deployment> -n <blueprint-ns>
 ### 8-4. Verify Blueprint connectivity to Model Gateway
 
 ```sh
-kubectl exec -n <blueprint-ns> <blueprint-pod> -- \
+oc exec -n <blueprint-ns> <blueprint-pod> -- \
   curl -s -o /dev/null -w "%{http_code}" \
   -H "Authorization: Bearer <api-key>" \
   https://<model-gateway-host>/v1/models
