@@ -11,33 +11,6 @@ The AMD Instinct MI350P PCIe card is designed for enterprise AI workloads in exi
 
 ---
 
-## ⚠️ Technical Preview — read before you begin
-
-This guide describes a **Technical Preview** configuration. All three underlying components are pre-GA:
-
-| Constraint | Detail |
-|---|---|
-| **C-1 — RHOAI vLLM gap** | The current RHOAI release (including early access) does not ship a vLLM build with AMD MI350P support. The inference runtime used is an AMD-provided vLLM build for ROCm 7.13, which is also preview maturity. |
-| **C-2 — AMD GPU Operator maturity** | The AMD Kubernetes GPU Operator that supports MI350P is in **beta**. It is not production-supported. |
-| **C-3 — ROCm maturity** | MI350P support was added in **ROCm 7.13 preview** (released 2026-05-15). The current stable ROCm releases are 7.0.x–7.2.x; MI350P is not listed in any stable ROCm release. |
-
-Do not use this configuration for production workloads. The guide will change significantly once C-1, C-2, and C-3 are resolved.
-
----
-
-## Prerequisites
-
-| # | Prerequisite |
-|---|---|
-| 1 | AMD Instinct MI350P PCIe GPU physically installed and powered in an air-cooled server |
-| 2 | IBM Sovereign Core deployment running on OpenShift with Red Hat OpenShift AI (RHOAI) |
-| 3 | AIIaaS Operator and Model Gateway Operator healthy on the Hub Cluster |
-| 4 | Access to the Hub Cluster (for ACM policy and image mirroring steps) |
-| 5 | Sovereign Quay Enterprise available and credentials configured |
-| 6 | `oc`, `skopeo`, and `helm` CLI tools available |
-
----
-
 ## Validated solution blueprints
 
 The following AMD enterprise AI blueprint was tested with Sovereign Core:
