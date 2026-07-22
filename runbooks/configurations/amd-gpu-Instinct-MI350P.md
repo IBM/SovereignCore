@@ -377,7 +377,56 @@ kubectl logs -n openshift-amd-gpu \
 
 ## Step 7 — Deploy a model via Sovereign Core AI Inference Service
 
-Create a `ModelDeployment` CR that targets the MI350P GPU. Key fields:
+### 7-1. Mirror the model image and vLLM runtime to Sovereign Quay (Hub Cluster)
+
+**Model image (llama-3.3-70b-instruct):**
+
+Mirror the Red Hat AI modelcar image directly with skopeo:
+
+```sh
+skopeo copy \
+  docker://registry.redhat.io/rhelai1/modelcar-llama-3-3-70b-instruct:1.5 \
+  docker://${QUAY}/aiiaas-models/llama-3-3-70b-instruct:1.5
+```
+
+**vLLM ROCm runtime image:**
+
+The RHOAI-bundled vLLM does not include MI350P support. Build a custom image from the
+following Dockerfile and push it to Sovereign Quay:
+
+```dockerfile
+FROM mirror.gcr.io/rocm/vllm:rocm7.13.0_gfx950-dcgpu_ubuntu24.04_py3.13_pytorch_2.10.0_vllm_0.19.1
+
+USER root
+
+RUN set -eux; \
+    chgrp -R 0 /opt/python /app; \
+    chmod -R g=u /opt/python /app; \
+    chmod -R a+rX /opt/python /app; \
+    chmod a+rx /root /root/.local /root/.local/share /root/.local/share/uv /root/.local/share/uv/python; \
+    chmod -R a+rX /root/.local/share/uv/python/cpython-3.13-linux-x86_64-gnu; \
+    chmod a+rx /opt/python/bin/vllm; \
+    namei -l /opt/python/bin/python
+
+USER 1001
+```
+
+Build and push:
+
+```sh
+podman build -t ${QUAY}/rocm/vllm-rocm:rocm7.13-mi350p .
+podman push ${QUAY}/rocm/vllm-rocm:rocm7.13-mi350p
+```
+
+> **Note:** The base image `mirror.gcr.io/rocm/vllm:rocm7.13.0_gfx950-dcgpu_ubuntu24.04_py3.13_pytorch_2.10.0_vllm_0.19.1`
+> must be accessible from the build host. If building in an air-gapped environment,
+> mirror the base image to Sovereign Quay first and update the `FROM` line accordingly.
+
+---
+
+### 7-2. Create a ModelDeployment CR (Hub Cluster)
+
+Log in to the **Hub Cluster** and create a `ModelDeployment` CR that targets the MI350P GPU. Key fields:
 
 ```yaml
 spec:
