@@ -605,13 +605,24 @@ oc exec -n <blueprint-ns> <blueprint-pod> -- \
 # Expected: 200
 ```
 
-### 8-5. Run stock analysis (Run 1 and Run 2)
+### 8-5. Run stock analysis
 
-Submit a stock ticker query through the Blueprint UI or its API endpoint.
+Port-forward the Blueprint UI service to your local machine:
 
-**Expected**: Blueprint returns a non-empty stock analysis response. No errors in Blueprint pod logs.
+```sh
+kubectl port-forward services/aimsb-fsi-${name} 8081:80 -n <blueprint-ns>
+```
 
-Repeat the request once more on the same hardware and configuration without restarting any pods to confirm reproducibility (NFR-2 requires ≥ 2/2 successful runs).
+Open [http://localhost:8081](http://localhost:8081) in a browser and use the application as follows:
+
+1. Enter a stock symbol/ticker
+2. Set the date range for the analysis period
+3. Click **Analyze Stock** to fetch data, compute indicators, and generate AI commentary
+4. Review the results: technical indicators, charts, and AI-generated analysis
+
+**Expected**: Blueprint UI returns a non-empty stock analysis response. No errors in Blueprint pod logs.
+
+For details, see the [FSI Blueprint — Connect to UI](https://enterprise-ai.docs.amd.com/en/latest/solution-blueprints/fsi/README.html#connect-to-ui) documentation.
 
 ---
 
