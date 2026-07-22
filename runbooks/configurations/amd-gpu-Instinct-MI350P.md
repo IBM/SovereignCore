@@ -5,7 +5,7 @@
 The IBM Sovereign Core team collaborated with AMD to test the AMD Instinct MI350P PCIe GPU card for AI inferencing within the secure environment of IBM Sovereign Core. The validation covered two scenarios:
 
 1. **Sovereign Core AI inference stack** — verifying that the Sovereign Core AI inference stack operates correctly with an MI350P GPU.
-2. **End-to-end AMD Blueprint integration** — verifying that the AMD blueprint [Financial Stock Intelligence](https://enterprise-ai.docs.amd.com/en/latest/solution-blueprints/catalog.html#financial-stock-intelligence) integrates correctly with the Sovereign Core AI inference stack on MI350P.
+2. **End-to-end AMD Blueprint integration** — verifying that the AMD blueprint [Financial Stock Intelligence](https://enterprise-ai.docs.amd.com/en/latest/solution-blueprints/fsi/README.html) integrates correctly with the Sovereign Core AI inference stack on MI350P.
 
 The AMD Instinct MI350P PCIe card is designed for enterprise AI workloads in existing air-cooled servers. For more information see the [AMD Instinct MI350P announcement](https://www.amd.com/en/blogs/2026/amd-instinct-mi350p-pcie-gpus-run-enterprise-ai-on-your.html).
 
@@ -15,7 +15,7 @@ The AMD Instinct MI350P PCIe card is designed for enterprise AI workloads in exi
 
 The following AMD enterprise AI blueprint was tested with Sovereign Core:
 
-* [Financial Stock Intelligence](https://enterprise-ai.docs.amd.com/en/latest/solution-blueprints/catalog.html#financial-stock-intelligence)
+* [Financial Stock Intelligence](https://enterprise-ai.docs.amd.com/en/latest/solution-blueprints/fsi/README.html)
 
 ---
 
