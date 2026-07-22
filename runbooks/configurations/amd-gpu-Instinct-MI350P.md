@@ -499,7 +499,9 @@ curl -s -X POST https://<model-gateway-host>/v1/chat/completions \
 
 ---
 
-## Step 8 — Deploy and run the Financial Stock Intelligence Blueprint
+## Step 8 — Deploy and run the Financial Stock Intelligence Blueprint (Managed Cluster)
+
+Log in to the **Managed Cluster** that has the MI350P GPU installed. All sub-steps in this section are performed on the Managed Cluster.
 
 The Financial Stock Intelligence Blueprint connects to Sovereign Core's AI Inference Service via the `llm.existingService` Helm parameter. The blueprint acts as an external model consumer; the model itself runs on MI350P inside the Sovereign Core AI stack.
 
