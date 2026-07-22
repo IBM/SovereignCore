@@ -143,6 +143,10 @@ spec:
           - "true"
 ```
 
+```sh
+oc apply -f placement-rule.yaml
+```
+
 ```yaml
 apiVersion: policy.open-cluster-management.io/v1
 kind: PlacementBinding
@@ -166,6 +170,10 @@ subjects:
   - apiGroup: policy.open-cluster-management.io
     kind: Policy
     name: model-configuration
+```
+
+```sh
+oc apply -f placement-binding.yaml
 ```
 
 ---
