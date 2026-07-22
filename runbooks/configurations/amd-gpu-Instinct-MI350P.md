@@ -429,19 +429,40 @@ podman push ${QUAY}/rocm/vllm-rocm:rocm7.13-mi350p
 Log in to the **Hub Cluster** and create a `ModelDeployment` CR that targets the MI350P GPU. Key fields:
 
 ```yaml
+apiVersion: sovereign.cloud.ibm.com/v1
+kind: ModelDeployment
+metadata:
+  finalizers:
+  - modeldeployment.sovereign.cloud.ibm.com/finalizer
+  name: <uuid>
+  namespace: aiiaas
 spec:
+  displayName: llama-3.3-70b-instruct
+  enabled: true
   llmInferenceServiceSpec:
     model:
       name: meta-llama/llama-3.3-70b-instruct
-      uri: oci://<quay-host>/sovereign/llama-3.3-70b-instruct:<tag>
+      uri: oci://${QUAY}/aiiaas-models/llama-3-3-70b-instruct:1.5
     replicas: 1
+    router:
+      gateway: {}
+      route: {}
+      scheduler: {}
     template:
       containers:
-        - name: main                                           # Required: container name expected by KServe
-          image: <quay-host>/sovereign/vllm-rocm:<tag>        # AMD-provided vLLM build (ROCm 7.13)
+        - env:
+            - name: VLLM_ADDITIONAL_ARGS
+              value: --enable-prompt-tokens-details
+          name: main                                           # Required: container name expected by KServe
+          image: ${QUAY}/rocm/vllm-rocm:rocm7.13-mi350p       # AMD-provided vLLM build (ROCm 7.13)
           resources:
             limits:
+              cpu: "4"
+              memory: 16Gi
               amd.com/gpu: "1"
+            requests:
+              cpu: "2"
+              memory: 8Gi
 ```
 
 Apply and watch for readiness:
