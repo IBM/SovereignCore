@@ -526,20 +526,45 @@ spec:
         - port: 443
 ```
 
-### 8-2. Deploy the Blueprint via Helm
+### 8-2. Build and push the Blueprint application image
+
+The Blueprint Helm chart references a pre-built Python application image. Build the image from the `requirements.txt` embedded in the chart's ConfigMap and push it to the internal Quay registry before running the Helm install.
+
+```sh
+# 1. Export the Quay registry hostname
+QUAY=registry-quay-quay-enterprise.apps.mgmt.<your-domain>
+
+# 2. Extract requirements.txt from the Blueprint Helm chart
+helm template fsi-blueprint <quay-chart-reference> \
+  | yq 'select(.kind == "ConfigMap").data["requirements.txt"]' > requirements.txt
+
+# 3. Write the Dockerfile
+cat > Dockerfile <<'EOF'
+FROM python:3.12
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+EOF
+
+# 4. Build and push
+podman build -t ${QUAY}/fsi-blueprint/app:latest .
+podman push ${QUAY}/fsi-blueprint/app:latest
+```
+
+### 8-3. Deploy the Blueprint via Helm
 
 ```sh
 helm install fsi-blueprint <quay-chart-reference> \
   --namespace <blueprint-ns> \
   --create-namespace \
+  --set image="${QUAY}/fsi-blueprint/app:latest" \
   --set llm.existingService="https://<model-gateway-host>/v1" \
   --set llm.model="meta-llama/llama-3.3-70b-instruct" \
   --set llm.apiKey="<service-instance-api-key>" \
-  --set storage.ephemeral.storageClassName="ceph-rbd-platform" \
-  --set llm.storage.ephemeral.storageClassName="ceph-rbd-platform"
+  --set storage.ephemeral.storageClassName="ceph-rbd-platform"
 ```
 
-### 8-3. Inject the Model Gateway CA certificate
+### 8-4. Inject the Model Gateway CA certificate
 
 The Blueprint's Python HTTP client validates TLS certificates. The Model Gateway uses a cluster-internal CA that is not in the default system trust store. Inject the CA before running any stock analysis requests.
 
@@ -595,7 +620,7 @@ oc patch deployment <blueprint-deployment> -n <blueprint-ns> --type='json' -p='[
 oc rollout status deploy/<blueprint-deployment> -n <blueprint-ns>
 ```
 
-### 8-4. Verify Blueprint connectivity to Model Gateway
+### 8-5. Verify Blueprint connectivity to Model Gateway
 
 ```sh
 oc exec -n <blueprint-ns> <blueprint-pod> -- \
@@ -605,7 +630,7 @@ oc exec -n <blueprint-ns> <blueprint-pod> -- \
 # Expected: 200
 ```
 
-### 8-5. Run stock analysis
+### 8-6. Run stock analysis
 
 Port-forward the Blueprint UI service to your local machine:
 
