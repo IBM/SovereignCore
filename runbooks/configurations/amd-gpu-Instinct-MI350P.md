@@ -105,23 +105,6 @@ oc mirror --config=imageset.yaml \
 
 The files under `${WORKSPACE}` will be used later.
 
-### 1-3. Fallback — mirror with skopeo (if oc mirror fails)
-
-```sh
-skopeo login ${QUAY} -u ${QUAY_USER} -p ${QUAY_PASS}
-
-for IMG in \
-  docker.io/rocm/gpu-operator:v1.5.1-beta.0 \
-  docker.io/rocm/gpu-operator-utils:v1.5.1-beta.0 \
-  docker.io/rocm/device-metrics-exporter:v1.5.1-beta.0 \
-  docker.io/rocm/amdgpu-driver:coreos-9.6-31.30
-do
-  REPO=$(echo ${IMG} | sed 's|docker.io/||' | cut -d: -f1)
-  TAG=$(echo ${IMG} | cut -d: -f2)
-  skopeo copy docker://${IMG} docker://${QUAY}/redhat/${REPO}:${TAG}
-done
-```
-
 ---
 
 ## Step 2 — Label the target Managed Cluster (Hub Cluster)
