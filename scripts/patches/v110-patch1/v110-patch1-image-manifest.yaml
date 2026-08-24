@@ -1,0 +1,9 @@
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+mirror:
+  additionalImages:
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/main/acm-cuga-system:0.2.0@sha256:fe8fffe4eec8e47ef9ef3928b1361e1720da087a8c1a60e08691e68369e10b21
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/main/acm-vault-aas:0.2.0@sha256:b95436f457e2562b988e017275cf2dbf4451853e466777ff71c179dfb8e50eaa
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/main/backup-restore-pipelines:0.2.0@sha256:b1e8ae431b86e91df0bd7f726a187f382f0f89e2e0fefd1f22993a5395e92fa2
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/main/sov-core-k8s-wrapper:0.2.0@sha256:9461ef8885ed32737b403d09f06d3502e3aaffd008bb435360078f568af8eb2f
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/sov-core-k8s-wrapper:master-1783011623@sha256:8752d7f4e22061f38d7384f56ee0c311bf673ca1ccb9e27e3445e2c2e8456dd1
