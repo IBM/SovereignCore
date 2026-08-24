@@ -61,10 +61,11 @@ function main() {
     fi
     log_info "done mirroring images"
 
-    sync_argo ${CLUSTER_NAME}
-
-    # run cuga argo refresh commands
+    # run argo refresh commands
     refresh_argo ${CLUSTER_NAME}
+    sleep 30
+
+    sync_argo ${CLUSTER_NAME}
 }
 
 refresh_argo() {
