@@ -3,4 +3,6 @@ kind: ImageSetConfiguration
 mirror:
   additionalImages:
   - name: icr.io/automation-saas-platform/tekton-baseimage:v0.1.7
-  - name: tbd-ui-images
+  - name: icr.io/automation-saas-platform-dev/gori-experience-apps/mspui:main-1787365235
+  - name: icr.io/automation-saas-platform-dev/gori-experience-apps/accountui:main-1787365235
+  - name: icr.io/automation-saas-platform-dev/gori-experience-apps/xpm:main-1787365235
