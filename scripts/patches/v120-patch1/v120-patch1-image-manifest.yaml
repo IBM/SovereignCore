@@ -6,6 +6,7 @@ mirror:
   - name: icr.io/automation-saas-platform-dev/gori-experience-apps/mspui:main-1787365235
   - name: icr.io/automation-saas-platform-dev/gori-experience-apps/accountui:main-1787365235
   - name: icr.io/automation-saas-platform-dev/gori-experience-apps/xpm:main-1787365235
-  - name: icr.io/automation-saas-platform-dev/acm-cuga-system:0.3.0
-  - name: icr.io/automation-saas-platform-dev/main:0.3.0
-  - name: icr.io/automation-saas-platform-dev/sovereign-core-upgrade-pipelines:0.3.0
+  - name: icr.io/automation-saas-platform-dev/release-v1.2.0/acm-cuga-system:0.3.0
+  - name: icr.io/automation-saas-platform-dev/release-v1.2.0/main:0.3.0
+  - name: icr.io/automation-saas-platform-dev/release-v1.2.0/sovereign-core-upgrade-pipelines:0.3.0
+  - name: icr.io/automation-saas-platform-dev/release-v1.2.0/aiiaas:0.3.0

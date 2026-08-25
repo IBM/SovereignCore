@@ -77,6 +77,7 @@ refresh_argo() {
         app-of-apps-parent-app
         sovereign-ui-${cluster_name}
         acm-cuga-system-${cluster_name}
+        aiiaas-${cluster_name}
     )
 
     NS="openshift-gitops"
@@ -104,6 +105,7 @@ sync_argo() {
         app-of-apps-parent-app
         sovereign-ui-${cluster_name}
         acm-cuga-system-${cluster_name}
+        aiiaas-${cluster_name}
     )
 
     NS="openshift-gitops"
