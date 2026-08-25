@@ -1,0 +1,10 @@
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v2alpha1
+mirror:
+  additionalImages:
+    - name: cp.icr.io/cp/sovereign-cloud-platform/cp/concert/rojacore:v2.4.0.prerelease01.patch01-7-20260428.050726-v2.4.0.prerelease01-patches@sha256:0d1c8619ed41458546d1e5ec4d458fdef4b9bd499a36ce7a4a2a196e67224a86
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga-service-broker:main-1777427211@sha256:ce4d3c08d7ac717172132ad084f16a4fefb503bdcd26edfd32a18b50000f87f2
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga-operator:main-1777213044@sha256:16c9d42303a5e49fd08285a80ef2f99752162820ba9e24ecaf85e104f508f7a1
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga:0.2.27@sha256:c9635fed873e059e3e6acc66cd631957388b05626e60dc12e54191e6cf0ec870
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/main/acm-cuga-system:0.1.0@sha256:5e2bb0e146081ce0087d81bb4091bcdbfaecfcdf534d6a2c5634ee15d6051dd8
+    - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/main/agent-service-broker:0.1.0@sha256:fdf6a3c47a5331e6fcf130c700696947714ba8bc865a7f1dbe08bb40cdd4a151

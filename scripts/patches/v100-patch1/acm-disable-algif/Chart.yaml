@@ -1,0 +1,15 @@
+apiVersion: v2
+name: acm-disable-algif
+description: A Helm chart for deploying ACM Policy to disable algif builtin kernel module
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - openshift
+  - acm
+  - policy
+  - machineconfig
+maintainers:
+  - name: IBM SovereignCore Team
+
+# Made with Bob
