@@ -10,3 +10,4 @@ mirror:
   - name: icr.io/automation-saas-platform-dev/release-v1.2.0/main:0.3.0
   - name: icr.io/automation-saas-platform-dev/release-v1.2.0/sovereign-core-upgrade-pipelines:0.3.0
   - name: icr.io/automation-saas-platform-dev/release-v1.2.0/aiiaas:0.3.0
+  - name: icr.io/automation-saas-platform-dev/release-v1.2.0/sovereign-ui:0.3.0
