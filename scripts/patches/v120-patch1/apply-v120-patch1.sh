@@ -66,6 +66,8 @@ function main() {
     sleep 30
 
     sync_argo ${CLUSTER_NAME}
+
+    update_vault_watcher
 }
 
 refresh_argo() {
@@ -117,6 +119,20 @@ sync_argo() {
         fi
     done
     return $failed
+}
+
+update_vault_watcher() {
+    local target_registry="${QUAY_REGISTRY}/${QUAY_ORGANIZATION}"
+    local image_base="${target_registry}/automation-saas-platform/tekton-baseimage:v0.1.7"
+    local patch="{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"watcher\",\"image\":\"${image_base}\"}]}}}}"
+
+    log_info "Patching vault-unsealer-watcher in namespace vault-unsealer"
+    oc patch deployment vault-unsealer-watcher -n vault-unsealer \
+        --type strategic -p "$patch"
+
+    log_info "Patching vaultaas-unsealer-watcher in namespace vault-aas-unsealer"
+    oc patch deployment vaultaas-unsealer-watcher -n vault-aas-unsealer \
+        --type strategic -p "$patch"
 }
 
 mirror_images() {
