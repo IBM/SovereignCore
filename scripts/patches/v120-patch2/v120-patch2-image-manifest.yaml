@@ -1,5 +1,0 @@
-apiVersion: mirror.openshift.io/v2alpha1
-kind: ImageSetConfiguration
-mirror:
-  additionalImages:
-  - name: icr.io/automation-saas-platform-dev/aiiaas:0.3.1

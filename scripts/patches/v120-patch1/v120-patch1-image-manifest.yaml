@@ -9,3 +9,4 @@ mirror:
   - name: icr.io/automation-saas-platform-dev/acm-cuga-system:0.3.0
   - name: icr.io/automation-saas-platform-dev/main:0.3.0
   - name: icr.io/automation-saas-platform-dev/sovereign-core-upgrade-pipelines:0.3.0
+  - name: icr.io/automation-saas-platform-dev/aiiaas:0.3.0
