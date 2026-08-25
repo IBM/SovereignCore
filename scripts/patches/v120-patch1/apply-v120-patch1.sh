@@ -72,7 +72,9 @@ refresh_argo() {
     local cluster_name=$1
 
     APPS=(
+        app-of-apps-parent-app
         sovereign-ui-${cluster_name}
+        acm-cuga-system-${cluster_name}
     )
 
     NS="openshift-gitops"
@@ -97,7 +99,9 @@ sync_argo() {
     local cluster_name=$1
 
     APPS=(
+        app-of-apps-parent-app
         sovereign-ui-${cluster_name}
+        acm-cuga-system-${cluster_name}
     )
 
     NS="openshift-gitops"
