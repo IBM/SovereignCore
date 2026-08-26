@@ -2,12 +2,12 @@ apiVersion: mirror.openshift.io/v2alpha1
 kind: ImageSetConfiguration
 mirror:
   additionalImages:
-  - name: icr.io/automation-saas-platform/tekton-baseimage:v0.1.7
-  - name: icr.io/automation-saas-platform-dev/gori-experience-apps/mspui:main-1787365235
-  - name: icr.io/automation-saas-platform-dev/gori-experience-apps/accountui:main-1787365235
-  - name: icr.io/automation-saas-platform-dev/gori-experience-apps/xpm:main-1787365235
-  - name: icr.io/automation-saas-platform-dev/release-v1.2.0/acm-cuga-system:0.3.0
-  - name: icr.io/automation-saas-platform-dev/release-v1.2.0/main:0.3.0
-  - name: icr.io/automation-saas-platform-dev/release-v1.2.0/sovereign-core-upgrade-pipelines:0.3.0
-  - name: icr.io/automation-saas-platform-dev/release-v1.2.0/aiiaas:0.3.0
-  - name: icr.io/automation-saas-platform-dev/release-v1.2.0/sovereign-ui:0.3.0
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform/tekton-baseimage:v0.1.7@sha256:10c922db4ea86364905883f381963570774d3666ed7eb5a7445c5c5cc74a70c9
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/gori-experience-apps/mspui:main-1787365235@sha256:e2231e6680ca48a35fa7ab90b6f8d86860fcb903002b0d7dcb054d312228c2da
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/gori-experience-apps/accountui:main-1787365235@sha256:c3529464284a1075eab9217ca934279f25426691494550ae01e4ac83a628ad35
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/gori-experience-apps/xpm:main-1787365235@sha256:a676b7f6097558b095c64685a127ba5a1ab305dce88bd4b1041998308673f4d6
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/release-v1.2.0/acm-cuga-system:0.3.0@sha256:b451aa1b9691cc37cfe59f778abc447fb4d688ab6c742497bdbabea950249959
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/release-v1.2.0/main:0.3.0@sha256:4dea9e0cd4d9ccce7a34cb5f0fffbb368968c7d5806d88d8a868c27198db1fa5
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/release-v1.2.0/sovereign-core-upgrade-pipelines:0.3.0@sha256:6db62d71b3a659af9a38302b65e1cab91e448dbb3527b95dc0307f4ab5b903d0
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/release-v1.2.0/aiiaas:0.3.0@sha256:45ff6d72c23069fa8c95c096526f46c2eb5f8e9dd954e739209454ed900b82fc
+  - name: cp.icr.io/cp/sovereign-cloud-platform/automation-saas-platform-dev/release-v1.2.0/sovereign-ui:0.3.0@sha256:9f41f3303109fffab7f1fe1416cdcc766cb0f4d2ae7d0b91b11af598c7167310
