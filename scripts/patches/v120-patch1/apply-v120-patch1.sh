@@ -45,6 +45,7 @@ function main() {
 
     # extract variables from values.yaml and secrets.yaml
     QUAY_REGISTRY=$(yq -r '.registry.domain // ""' "$VALUES_FILE_DYNAMIC")
+    IMAGE_REGISTRY=$(yq -r '.imageRegistry // ""' "$VALUES_FILE_DYNAMIC")
     QUAY_ORGANIZATION="sovcloud"
     CLUSTER_NAME=$(yq -r '.clusterName // ""' "${INSTALL_FOLDER}/config/global.yaml")
 
@@ -124,7 +125,7 @@ sync_argo() {
 }
 
 update_vault_watcher() {
-    local target_registry="${QUAY_REGISTRY}/${QUAY_ORGANIZATION}"
+    local target_registry="${IMAGE_REGISTRY}"
     local image_base="${target_registry}/automation-saas-platform/tekton-baseimage:v0.1.7"
     local patch="{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"watcher\",\"image\":\"${image_base}\"}]}}}}"
 
