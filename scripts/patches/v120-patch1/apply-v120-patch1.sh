@@ -79,6 +79,7 @@ refresh_argo() {
         sovereign-ui-${cluster_name}
         acm-cuga-system-${cluster_name}
         aiiaas-${cluster_name}
+        acm-observability-${cluster_name}
     )
 
     NS="openshift-gitops"
@@ -107,6 +108,7 @@ sync_argo() {
         sovereign-ui-${cluster_name}
         acm-cuga-system-${cluster_name}
         aiiaas-${cluster_name}
+        acm-observability-${cluster_name}
     )
 
     NS="openshift-gitops"
