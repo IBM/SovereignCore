@@ -1,4 +1,4 @@
-# Sovereign Core — Metring Notebooks
+# Sovereign Core — Metering Notebooks
 
 **sovereign-core-metrics-aggregator** is a metrics aggregation service for Sovereign Core that exposes metering and usage data endpoints. It underpins the **Metering Usage** feature of Sovereign Core — the infrastructure responsible for tracking, collecting, and exposing software consumption data across the platform, enabling Managed Service Providers (MSPs) to bill Application Developers and Tenants for their usage.
 
