@@ -98,7 +98,7 @@ cp .env.template .env
 
 | Variable | Description |
 |---|---|
-| `APP_DOMAIN` | Cluster domain, e.g. `apps.my-cluster.cp.fyre.ibm.com` |
+| `APP_DOMAIN` | Cluster domain, e.g. `apps.cluster.url.com` |
 | `SERVICE_ID` | Catalog service ID to query, e.g. `cluster-as-a-service` |
 | `TENANT_ID` | Tenant UUID for tenant-scoped fetch examples, or `all` |
 | `IAM_ACCOUNT_TYPE` | `platform` (MSP), `<tenant-uuid>` (App Developer), or `global_account` (Internal) |
