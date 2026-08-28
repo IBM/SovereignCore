@@ -205,4 +205,8 @@ The template defines:
 
 ## Reference
 
-- [Official documentation](https://github.ibm.com/Sovereign-Core/architecture/blob/main/sovCore2.0/metering.md) — metering architecture, data pipeline, metering models, query patterns, pagination, caching, and common gotchas.
+- [Official documentation](https://developer.ibm.com/apis/catalog/sovcore--ibm-sovereign-core-apis/api/API--sovcore--ibm-sovereign-core-apis#getRawUsageByServiceProxy) 
+
+---
+
+**Published On:** 28 August 2026
