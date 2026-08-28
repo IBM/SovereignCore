@@ -1,0 +1,537 @@
+{
+  "params": {
+    "tenantIds": [
+      "all"
+    ],
+    "workspaceIds": [
+      "all"
+    ],
+    "instanceIds": [
+      "all"
+    ],
+    "usageStart": 1785309431908,
+    "usageEnd": 1787901431908,
+    "groupByHrs": 24,
+    "transform": "avg",
+    "metricId": "users",
+    "serviceId": "servicebrokercore",
+    "groupBy": "groupByTenant"
+  },
+  "totalGroups": 4,
+  "totalPeriodsPerGroup": 16,
+  "totalPeriodsCount": 64,
+  "aggregatedMeteredUsagePeriods": [
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 1,
+      "periodQuantity": 1,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665600000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 2,
+      "periodQuantity": 1,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786752000000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 3,
+      "periodQuantity": 1,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838400000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 4,
+      "periodQuantity": 1,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924800000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 5,
+      "periodQuantity": 1,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011200000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 6,
+      "periodQuantity": 1,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097600000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 7,
+      "periodQuantity": 1,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787184000000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 8,
+      "periodQuantity": 1,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270400000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 9,
+      "periodQuantity": 1,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356800000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 10,
+      "periodQuantity": 1,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443200000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 11,
+      "periodQuantity": 1,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529600000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 12,
+      "periodQuantity": 1,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787616000000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 13,
+      "periodQuantity": 1,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702400000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 14,
+      "periodQuantity": 1,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788800000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 15,
+      "periodQuantity": 1,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875200000
+    },
+    {
+      "groupId": "0fd2a329-b354-44ad-90e7-16f00fa85948::",
+      "groupTenantId": "0fd2a329-b354-44ad-90e7-16f00fa85948",
+      "periodNumber": 16,
+      "periodQuantity": 1,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961600000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 1,
+      "periodQuantity": 1,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665600000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 2,
+      "periodQuantity": 1,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786752000000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 3,
+      "periodQuantity": 1,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838400000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 4,
+      "periodQuantity": 1,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924800000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 5,
+      "periodQuantity": 1,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011200000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 6,
+      "periodQuantity": 1,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097600000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 7,
+      "periodQuantity": 1,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787184000000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 8,
+      "periodQuantity": 1,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270400000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 9,
+      "periodQuantity": 1,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356800000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 10,
+      "periodQuantity": 1,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443200000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 11,
+      "periodQuantity": 1,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529600000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 12,
+      "periodQuantity": 1,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787616000000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 13,
+      "periodQuantity": 1,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702400000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 14,
+      "periodQuantity": 1,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788800000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 15,
+      "periodQuantity": 1,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875200000
+    },
+    {
+      "groupId": "7ef3d047-2729-402c-a956-3292c88329a7::",
+      "groupTenantId": "7ef3d047-2729-402c-a956-3292c88329a7",
+      "periodNumber": 16,
+      "periodQuantity": 1,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961600000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 1,
+      "periodQuantity": 1,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665600000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 2,
+      "periodQuantity": 1,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786752000000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 3,
+      "periodQuantity": 1,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838400000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 4,
+      "periodQuantity": 1,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924800000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 5,
+      "periodQuantity": 1,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011200000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 6,
+      "periodQuantity": 1,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097600000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 7,
+      "periodQuantity": 1,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787184000000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 8,
+      "periodQuantity": 1,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270400000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 9,
+      "periodQuantity": 1,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356800000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 10,
+      "periodQuantity": 1,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443200000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 11,
+      "periodQuantity": 1,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529600000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 12,
+      "periodQuantity": 1,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787616000000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 13,
+      "periodQuantity": 1,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702400000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 14,
+      "periodQuantity": 1,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788800000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 15,
+      "periodQuantity": 1,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875200000
+    },
+    {
+      "groupId": "ab475c00-63cc-4b75-abcf-9c4513505e31::",
+      "groupTenantId": "ab475c00-63cc-4b75-abcf-9c4513505e31",
+      "periodNumber": 16,
+      "periodQuantity": 1,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961600000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 1,
+      "periodQuantity": 1,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665600000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 2,
+      "periodQuantity": 1,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786752000000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 3,
+      "periodQuantity": 1,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838400000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 4,
+      "periodQuantity": 1,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924800000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 5,
+      "periodQuantity": 1,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011200000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 6,
+      "periodQuantity": 1,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097600000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 7,
+      "periodQuantity": 1,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787184000000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 8,
+      "periodQuantity": 1,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270400000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 9,
+      "periodQuantity": 1,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356800000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 10,
+      "periodQuantity": 1,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443200000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 11,
+      "periodQuantity": 1,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529600000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 12,
+      "periodQuantity": 1,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787616000000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 13,
+      "periodQuantity": 1,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702400000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 14,
+      "periodQuantity": 1,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788800000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 15,
+      "periodQuantity": 1,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875200000
+    },
+    {
+      "groupId": "platform::",
+      "groupTenantId": "platform",
+      "periodNumber": 16,
+      "periodQuantity": 1,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961600000
+    }
+  ]
+}

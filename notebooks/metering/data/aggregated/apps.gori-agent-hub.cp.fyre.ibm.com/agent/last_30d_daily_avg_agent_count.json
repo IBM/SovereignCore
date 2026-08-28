@@ -1,0 +1,82 @@
+{
+  "params": {
+    "tenantIds": [
+      "all"
+    ],
+    "workspaceIds": [
+      "all"
+    ],
+    "instanceIds": [
+      "all"
+    ],
+    "usageStart": 1784627784822,
+    "usageEnd": 1787219784822,
+    "groupByHrs": 24,
+    "transform": "avg",
+    "metricId": "agent_count",
+    "serviceId": "agent"
+  },
+  "totalPeriodsCount": 10,
+  "aggregatedMeteredUsagePeriods": [
+    {
+      "periodNumber": 1,
+      "periodQuantity": 1,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492800000
+    },
+    {
+      "periodNumber": 2,
+      "periodQuantity": 1,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579200000
+    },
+    {
+      "periodNumber": 3,
+      "periodQuantity": 1,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665600000
+    },
+    {
+      "periodNumber": 4,
+      "periodQuantity": 1,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786752000000
+    },
+    {
+      "periodNumber": 5,
+      "periodQuantity": 1,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838400000
+    },
+    {
+      "periodNumber": 6,
+      "periodQuantity": 1,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924800000
+    },
+    {
+      "periodNumber": 7,
+      "periodQuantity": 1,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011200000
+    },
+    {
+      "periodNumber": 8,
+      "periodQuantity": 1,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097600000
+    },
+    {
+      "periodNumber": 9,
+      "periodQuantity": 1,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787184000000
+    },
+    {
+      "periodNumber": 10,
+      "periodQuantity": 1,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270400000
+    }
+  ]
+}

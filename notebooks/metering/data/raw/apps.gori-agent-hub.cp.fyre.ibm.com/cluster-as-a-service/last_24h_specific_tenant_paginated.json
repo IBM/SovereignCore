@@ -1,0 +1,22 @@
+{
+  "params": {
+    "tenantIds": [
+      "platform"
+    ],
+    "workspaceIds": [
+      "all"
+    ],
+    "instanceIds": [
+      "all"
+    ],
+    "metricIds": [
+      "all"
+    ],
+    "usageStart": 1787815183982,
+    "usageEnd": 1787901583982,
+    "usagePageSize": 50,
+    "usageNextPageKey": 0,
+    "serviceId": "cluster-as-a-service"
+  },
+  "meteredUsage": []
+}

@@ -1,0 +1,485 @@
+{
+  "params": {
+    "tenantIds": [
+      "all"
+    ],
+    "workspaceIds": [
+      "all"
+    ],
+    "instanceIds": [
+      "all"
+    ],
+    "usageStart": 1785310178890,
+    "usageEnd": 1787902178890,
+    "groupByHrs": 24,
+    "transform": "avg",
+    "metricId": "instances",
+    "serviceId": "catalog-as-a-service",
+    "groupBy": "groupByInstance"
+  },
+  "totalGroups": 4,
+  "totalPeriodsPerGroup": 16,
+  "totalPeriodsCount": 46,
+  "aggregatedMeteredUsagePeriods": [
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 1,
+      "periodQuantity": 1,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665600000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 2,
+      "periodQuantity": 1,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786752000000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 3,
+      "periodQuantity": 1,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838400000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 4,
+      "periodQuantity": 1,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924800000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 5,
+      "periodQuantity": 1,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011200000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 6,
+      "periodQuantity": 1,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097600000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 7,
+      "periodQuantity": 1,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787184000000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 8,
+      "periodQuantity": 1,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270400000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 9,
+      "periodQuantity": 1,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356800000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 10,
+      "periodQuantity": 1,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443200000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 11,
+      "periodQuantity": 1,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529600000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 12,
+      "periodQuantity": 1,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787616000000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 13,
+      "periodQuantity": 1,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702400000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 14,
+      "periodQuantity": 1,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788800000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 15,
+      "periodQuantity": 1,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875200000
+    },
+    {
+      "groupId": "platform:asaservice:019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "019ff1d4-07f7-7122-bed5-027928bd9a89",
+      "periodNumber": 16,
+      "periodQuantity": 1,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961600000
+    },
+    {
+      "groupId": "platform:asaservice:01a01a00-942f-747a-99a9-ef46090d4c83",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01a00-942f-747a-99a9-ef46090d4c83",
+      "periodNumber": 7,
+      "periodQuantity": 1,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787184000000
+    },
+    {
+      "groupId": "platform:asaservice:01a01a00-942f-747a-99a9-ef46090d4c83",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01a00-942f-747a-99a9-ef46090d4c83",
+      "periodNumber": 8,
+      "periodQuantity": 1,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270400000
+    },
+    {
+      "groupId": "platform:asaservice:01a01a00-942f-747a-99a9-ef46090d4c83",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01a00-942f-747a-99a9-ef46090d4c83",
+      "periodNumber": 9,
+      "periodQuantity": 1,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356800000
+    },
+    {
+      "groupId": "platform:asaservice:01a01a00-942f-747a-99a9-ef46090d4c83",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01a00-942f-747a-99a9-ef46090d4c83",
+      "periodNumber": 10,
+      "periodQuantity": 1,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443200000
+    },
+    {
+      "groupId": "platform:asaservice:01a01a00-942f-747a-99a9-ef46090d4c83",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01a00-942f-747a-99a9-ef46090d4c83",
+      "periodNumber": 11,
+      "periodQuantity": 1,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529600000
+    },
+    {
+      "groupId": "platform:asaservice:01a01a00-942f-747a-99a9-ef46090d4c83",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01a00-942f-747a-99a9-ef46090d4c83",
+      "periodNumber": 12,
+      "periodQuantity": 1,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787616000000
+    },
+    {
+      "groupId": "platform:asaservice:01a01a00-942f-747a-99a9-ef46090d4c83",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01a00-942f-747a-99a9-ef46090d4c83",
+      "periodNumber": 13,
+      "periodQuantity": 1,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702400000
+    },
+    {
+      "groupId": "platform:asaservice:01a01a00-942f-747a-99a9-ef46090d4c83",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01a00-942f-747a-99a9-ef46090d4c83",
+      "periodNumber": 14,
+      "periodQuantity": 1,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788800000
+    },
+    {
+      "groupId": "platform:asaservice:01a01a00-942f-747a-99a9-ef46090d4c83",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01a00-942f-747a-99a9-ef46090d4c83",
+      "periodNumber": 15,
+      "periodQuantity": 1,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875200000
+    },
+    {
+      "groupId": "platform:asaservice:01a01a00-942f-747a-99a9-ef46090d4c83",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01a00-942f-747a-99a9-ef46090d4c83",
+      "periodNumber": 16,
+      "periodQuantity": 1,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961600000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b01-1255-765d-9aa5-a90611ce175e",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b01-1255-765d-9aa5-a90611ce175e",
+      "periodNumber": 7,
+      "periodQuantity": 1,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787184000000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b01-1255-765d-9aa5-a90611ce175e",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b01-1255-765d-9aa5-a90611ce175e",
+      "periodNumber": 8,
+      "periodQuantity": 1,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270400000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b01-1255-765d-9aa5-a90611ce175e",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b01-1255-765d-9aa5-a90611ce175e",
+      "periodNumber": 9,
+      "periodQuantity": 1,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356800000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b01-1255-765d-9aa5-a90611ce175e",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b01-1255-765d-9aa5-a90611ce175e",
+      "periodNumber": 10,
+      "periodQuantity": 1,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443200000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b01-1255-765d-9aa5-a90611ce175e",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b01-1255-765d-9aa5-a90611ce175e",
+      "periodNumber": 11,
+      "periodQuantity": 1,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529600000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b01-1255-765d-9aa5-a90611ce175e",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b01-1255-765d-9aa5-a90611ce175e",
+      "periodNumber": 12,
+      "periodQuantity": 1,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787616000000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b01-1255-765d-9aa5-a90611ce175e",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b01-1255-765d-9aa5-a90611ce175e",
+      "periodNumber": 13,
+      "periodQuantity": 1,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702400000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b01-1255-765d-9aa5-a90611ce175e",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b01-1255-765d-9aa5-a90611ce175e",
+      "periodNumber": 14,
+      "periodQuantity": 1,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788800000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b01-1255-765d-9aa5-a90611ce175e",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b01-1255-765d-9aa5-a90611ce175e",
+      "periodNumber": 15,
+      "periodQuantity": 1,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875200000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b01-1255-765d-9aa5-a90611ce175e",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b01-1255-765d-9aa5-a90611ce175e",
+      "periodNumber": 16,
+      "periodQuantity": 1,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961600000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "periodNumber": 7,
+      "periodQuantity": 1,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787184000000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "periodNumber": 8,
+      "periodQuantity": 1,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270400000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "periodNumber": 9,
+      "periodQuantity": 1,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356800000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "periodNumber": 10,
+      "periodQuantity": 1,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443200000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "periodNumber": 11,
+      "periodQuantity": 1,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529600000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "periodNumber": 12,
+      "periodQuantity": 1,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787616000000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "periodNumber": 13,
+      "periodQuantity": 1,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702400000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "periodNumber": 14,
+      "periodQuantity": 1,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788800000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "periodNumber": 15,
+      "periodQuantity": 1,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875200000
+    },
+    {
+      "groupId": "platform:asaservice:01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "groupTenantId": "platform",
+      "groupWorkspaceId": "asaservice",
+      "groupInstanceId": "01a01b04-4e27-7275-8ec7-2ff11fcea254",
+      "periodNumber": 16,
+      "periodQuantity": 1,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961600000
+    }
+  ]
+}
