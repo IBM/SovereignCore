@@ -1,0 +1,118 @@
+{
+  "params": {
+    "tenantIds": [
+      "all"
+    ],
+    "workspaceIds": [
+      "all"
+    ],
+    "instanceIds": [
+      "all"
+    ],
+    "usageStart": 1785309431908,
+    "usageEnd": 1787901431908,
+    "groupByHrs": 24,
+    "transform": "avg",
+    "metricId": "instances",
+    "serviceId": "servicebrokercore"
+  },
+  "totalPeriodsCount": 16,
+  "aggregatedMeteredUsagePeriods": [
+    {
+      "periodNumber": 1,
+      "periodQuantity": 1,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665600000
+    },
+    {
+      "periodNumber": 2,
+      "periodQuantity": 1,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786752000000
+    },
+    {
+      "periodNumber": 3,
+      "periodQuantity": 1,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838400000
+    },
+    {
+      "periodNumber": 4,
+      "periodQuantity": 1,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924800000
+    },
+    {
+      "periodNumber": 5,
+      "periodQuantity": 1,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011200000
+    },
+    {
+      "periodNumber": 6,
+      "periodQuantity": 1,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097600000
+    },
+    {
+      "periodNumber": 7,
+      "periodQuantity": 1,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787184000000
+    },
+    {
+      "periodNumber": 8,
+      "periodQuantity": 1,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270400000
+    },
+    {
+      "periodNumber": 9,
+      "periodQuantity": 1,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356800000
+    },
+    {
+      "periodNumber": 10,
+      "periodQuantity": 1,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443200000
+    },
+    {
+      "periodNumber": 11,
+      "periodQuantity": 1,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529600000
+    },
+    {
+      "periodNumber": 12,
+      "periodQuantity": 1,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787616000000
+    },
+    {
+      "periodNumber": 13,
+      "periodQuantity": 1,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702400000
+    },
+    {
+      "periodNumber": 14,
+      "periodQuantity": 1,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788800000
+    },
+    {
+      "periodNumber": 15,
+      "periodQuantity": 1,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875200000
+    },
+    {
+      "periodNumber": 16,
+      "periodQuantity": 1,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961600000
+    }
+  ]
+}

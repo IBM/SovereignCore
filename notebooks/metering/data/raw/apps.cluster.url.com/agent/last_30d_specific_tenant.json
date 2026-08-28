@@ -1,0 +1,22 @@
+{
+  "params": {
+    "tenantIds": [
+      "platform"
+    ],
+    "workspaceIds": [
+      "all"
+    ],
+    "instanceIds": [
+      "all"
+    ],
+    "metricIds": [
+      "all"
+    ],
+    "usageStart": 1784627784822,
+    "usageEnd": 1787219784822,
+    "usagePageSize": 10000,
+    "usageNextPageKey": 0,
+    "serviceId": "agent"
+  },
+  "meteredUsage": []
+}
