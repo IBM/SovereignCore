@@ -286,6 +286,7 @@ ${RGW_REGION}
 ${ENABLE_OBJECT_STORAGE}
 ${ENABLE_BLOCK_STORAGE}
 ${CUSTOM_CA_BUNDLE_PATH}
+${USE_CEPHADM}
 STATE
     print_debug "State saved: phase=$1 tenant=${TENANT_NAME} mode=${MODE}"
 }
@@ -305,10 +306,12 @@ load_state() {
         ENABLE_OBJECT_STORAGE=$(sed -n '11p' "$STATE_FILE")
         ENABLE_BLOCK_STORAGE=$(sed -n '12p' "$STATE_FILE")
         CUSTOM_CA_BUNDLE_PATH=$(sed -n '13p' "$STATE_FILE")
+        USE_CEPHADM=$(sed -n '14p' "$STATE_FILE")
         [ -z "$LOG_LEVEL" ] && LOG_LEVEL="INFO"
         [ -z "$RGW_REGION" ] && RGW_REGION="default"
         [ -z "$ENABLE_OBJECT_STORAGE" ] && ENABLE_OBJECT_STORAGE=false
         [ -z "$ENABLE_BLOCK_STORAGE" ] && ENABLE_BLOCK_STORAGE=false
+        [ -z "$USE_CEPHADM" ] && USE_CEPHADM=false
         return 0
     fi
     return 1
