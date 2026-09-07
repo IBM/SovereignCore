@@ -2680,6 +2680,15 @@ ensure_runtime_dependencies() {
     
     # TOOLBOX_POD is needed for phases 2, 3, 4, 5 in ODF mode (any phase using ceph_exec)
     if [ "$MODE" = "odf" ] && [ "$phase" -ge 2 ] && [ -z "$TOOLBOX_POD" ]; then
+        # NAMESPACE may be empty when --phase N skips Phase 1; auto-detect it now.
+        if [ -z "$NAMESPACE" ]; then
+            print_debug "NAMESPACE not set, attempting auto-detection for phase ${phase}..."
+            auto_detect_namespace || true
+        fi
+        if [ -z "$NAMESPACE" ]; then
+            print_error "Could not determine ODF namespace. Specify with: --namespace <namespace>"
+            exit 1
+        fi
         print_debug "Initializing TOOLBOX_POD for phase ${phase}..."
         TOOLBOX_POD=$(oc get pods -n "$NAMESPACE" -l app=rook-ceph-tools \
                       -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
