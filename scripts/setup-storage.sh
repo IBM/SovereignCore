@@ -2411,6 +2411,12 @@ RGW_USER_NAME="${TENANT_NAME}-noobaa-user"
 BACKING_BUCKET="${TENANT_NAME}-backing-bucket"
 CA_BUNDLE_FILE="${OUTPUT_DIR}/${TENANT_NAME}-ca-bundle.crt"
 
+# Shared RBD pool and CSI users for the NooBaa database
+COMMON_RBD_POOL="noobaa-db-pool"
+COMMON_RBD_NODE_USER="csi-rbd-node-common"
+COMMON_RBD_PROV_USER="csi-rbd-provisioner-common"
+COMMON_RBD_ENV_FILE="${OUTPUT_DIR}/common-ceph-rbd.env"
+
 # CSI user names
 CSI_RBD_NODE_USER="csi-rbd-node-${TENANT_NAME}-${POOL_NAME}"
 CSI_RBD_PROV_USER="csi-rbd-provisioner-${TENANT_NAME}-${POOL_NAME}"
@@ -3418,6 +3424,59 @@ else
         print_success "CSI RBD provisioner user created"
     fi
     
+    print_info "Preparing common RBD pool for the NooBaa database: ${COMMON_RBD_POOL}"
+    if ceph_exec ceph osd pool ls 2>/dev/null | grep -q "^${COMMON_RBD_POOL}$"; then
+        print_warning "Common RBD pool '${COMMON_RBD_POOL}' already exists"
+    else
+        ceph_exec ceph osd pool create "$COMMON_RBD_POOL" "$POOL_PGS"
+        print_success "Common RBD pool created: ${COMMON_RBD_POOL}"
+    fi
+    ceph_exec rbd pool init "$COMMON_RBD_POOL"
+
+    print_info "Creating common RBD CSI users"
+    if ceph_exec ceph auth get "client.${COMMON_RBD_NODE_USER}" &>/dev/null; then
+        print_warning "User 'client.${COMMON_RBD_NODE_USER}' already exists"
+    else
+        ceph_exec ceph auth get-or-create "client.${COMMON_RBD_NODE_USER}" \
+            mon 'profile rbd' \
+            osd "profile rbd pool=${COMMON_RBD_POOL}"
+    fi
+    if ceph_exec ceph auth get "client.${COMMON_RBD_PROV_USER}" &>/dev/null; then
+        print_warning "User 'client.${COMMON_RBD_PROV_USER}' already exists"
+    else
+        ceph_exec ceph auth get-or-create "client.${COMMON_RBD_PROV_USER}" \
+            mon 'profile rbd' \
+            osd "profile rbd pool=${COMMON_RBD_POOL}"
+    fi
+
+    if [ -z "${CEPH_FSID:-}" ]; then
+        CEPH_FSID=$(ceph_exec ceph fsid 2>/dev/null || true)
+    fi
+    if [ -z "${CEPH_FSID:-}" ]; then
+        print_error "Failed to retrieve Ceph FSID for common RBD credentials"
+        exit 1
+    fi
+
+    COMMON_RBD_PROV_KEY=$(ceph_exec ceph auth get-key "client.${COMMON_RBD_PROV_USER}")
+    COMMON_RBD_NODE_KEY=$(ceph_exec ceph auth get-key "client.${COMMON_RBD_NODE_USER}")
+    if [ -z "$COMMON_RBD_PROV_KEY" ] || [ -z "$COMMON_RBD_NODE_KEY" ]; then
+        print_error "Failed to retrieve common RBD user keys"
+        exit 1
+    fi
+
+    cat > "$COMMON_RBD_ENV_FILE" <<COMMONRBD
+# Common RBD connection info for the NooBaa DB
+# Generated: $(date '+%Y-%m-%d %H:%M:%S')
+export FSID="${CEPH_FSID}"
+export RBD_POOL="${COMMON_RBD_POOL}"
+export PROVISIONER_USER_ID="${COMMON_RBD_PROV_USER}"
+export PROVISIONER_USER_KEY="${COMMON_RBD_PROV_KEY}"
+export NODE_USER_ID="${COMMON_RBD_NODE_USER}"
+export NODE_USER_KEY="${COMMON_RBD_NODE_KEY}"
+COMMONRBD
+    chmod 600 "$COMMON_RBD_ENV_FILE"
+    print_success "Common RBD credentials saved to: ${COMMON_RBD_ENV_FILE}"
+
     print_success "Phase 4 Complete: Ceph users created"
     echo ""
 fi
@@ -3581,56 +3640,24 @@ else
         fi
 
         # Save RGW credentials
-        RGW_CREDS_FILE="${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt"
+        # Filename and content format align with 2_Ceph-Prepare-RBD-RGW-en.md Step 9,
+        # consumed on the RKE2 side via `source <tenant>-ceph-rgw.env`.
+        RGW_CREDS_FILE="${OUTPUT_DIR}/${TENANT_NAME}-ceph-rgw.env"
+        TENANT_UPPER=$(echo "${TENANT_NAME}" | tr '[:lower:]-' '[:upper:]_')
         cat > "$RGW_CREDS_FILE" <<RGWCREDS
-# RGW Credentials for Tenant: ${TENANT_NAME}
-# Generated: $(date)
-# User: ${RGW_USER_NAME} (in RGW zone: ${RGW_ZONE})
-
-RGW_USER_NAME=${RGW_USER_NAME}
-RGW_ACCESS_KEY=${RGW_ACCESS_KEY}
-RGW_SECRET_KEY=${RGW_SECRET_KEY}
-RGW_ENDPOINT=${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}
-RGW_REGION=${RGW_REGION}
-RGW_QUOTA=${RGW_USER_QUOTA}
-RGW_QUOTA_BYTES=${RGW_QUOTA_BYTES}
-BACKING_BUCKET=${BACKING_BUCKET}
-
-# For ACM Policy (BackingStore secret):
-AWS_ACCESS_KEY_ID=${RGW_ACCESS_KEY}
-AWS_SECRET_ACCESS_KEY=${RGW_SECRET_KEY}
-
-# For NooBaa BackingStore (current configuration - ${RGW_PROTOCOL}):
-# endpoint: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}
-# targetBucket: ${BACKING_BUCKET}
-# secret: <tenant>-rgw-credentials  # pragma: allowlist secret
+# RGW connection info (${TENANT_NAME})
+# Generated: $(date '+%Y-%m-%d %H:%M:%S')
+# User: ${RGW_USER_NAME} (RGW zone: ${RGW_ZONE})
+# RGW quota: ${RGW_USER_QUOTA} (${RGW_QUOTA_BYTES} bytes)
+export ${TENANT_UPPER}_RGW_USER_NAME="${RGW_USER_NAME}"
+export ${TENANT_UPPER}_RGW_ACCESS_KEY="${RGW_ACCESS_KEY}"
+export ${TENANT_UPPER}_RGW_SECRET_KEY="${RGW_SECRET_KEY}"
+export ${TENANT_UPPER}_BACKING_BUCKET="${BACKING_BUCKET}"
+export RGW_ENDPOINT="${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}"
+export AWS_ACCESS_KEY_ID="${RGW_ACCESS_KEY}"
+export AWS_SECRET_ACCESS_KEY="${RGW_SECRET_KEY}"
 RGWCREDS
-        
-        # Add HTTPS alternative if SSL port is detected or if currently using HTTP
-        # Extract hostname from MAIN_RGW_ENDPOINT for use in comments
-        RGW_ENDPOINT_HOST=$(echo "$MAIN_RGW_ENDPOINT" | cut -d':' -f1)
-        
-        if [ -n "${RGW_SSL_PORT:-}" ] && [ "$RGW_PROTOCOL" = "http" ]; then
-            # SSL is configured but not currently used
-            cat >> "$RGW_CREDS_FILE" <<RGWCREDS_HTTPS
-#
-# Alternative: For secure HTTPS endpoint (SSL is configured on port ${RGW_SSL_PORT}):
-# endpoint: https://${RGW_ENDPOINT_HOST}:${RGW_SSL_PORT}
-# targetBucket: ${BACKING_BUCKET}
-# secret: <tenant>-rgw-credentials  # pragma: allowlist secret
-RGWCREDS_HTTPS
-        elif [ "$RGW_PROTOCOL" = "http" ]; then
-            # No SSL detected, show common SSL ports as placeholder
-            cat >> "$RGW_CREDS_FILE" <<RGWCREDS_HTTPS
-#
-# Alternative: For secure HTTPS endpoint (configure RGW SSL first):
-# endpoint: https://${RGW_ENDPOINT_HOST}:443
-# targetBucket: ${BACKING_BUCKET}
-# secret: <tenant>-rgw-credentials  # pragma: allowlist secret
-# Note: Common SSL ports are 443 (standard) or 8443 (alternative)
-RGWCREDS_HTTPS
-        fi
-        
+
         print_success "RGW credentials saved to: ${RGW_CREDS_FILE}"
         
         # Handle CA certificate bundle
@@ -3736,13 +3763,14 @@ else
         # When resuming from a saved state, RGW credentials and the endpoint may
         # not be set (Phase 1 was skipped).  Restore them from the credentials file
         # that Phase 5 wrote.
-        RGW_CREDS_FILE_PHASE6="${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt"
+        RGW_CREDS_FILE_PHASE6="${OUTPUT_DIR}/${TENANT_NAME}-ceph-rgw.env"
         if [ -z "${RGW_SECRET_KEY:-}" ] || [ -z "${RGW_ACCESS_KEY:-}" ]; then
             if [ -f "$RGW_CREDS_FILE_PHASE6" ]; then
                 print_info "Restoring RGW credentials from saved file..."
-                # Source only the KEY= lines (avoid sourcing comments or endpoint lines with empty values)
-                RGW_ACCESS_KEY=$(grep "^RGW_ACCESS_KEY=" "$RGW_CREDS_FILE_PHASE6" | cut -d'=' -f2-)
-                RGW_SECRET_KEY=$(grep "^RGW_SECRET_KEY=" "$RGW_CREDS_FILE_PHASE6" | cut -d'=' -f2-)
+                TENANT_UPPER_P6=$(echo "${TENANT_NAME}" | tr '[:lower:]-' '[:upper:]_')
+                RGW_ACCESS_KEY=$(grep "^export ${TENANT_UPPER_P6}_RGW_ACCESS_KEY=" "$RGW_CREDS_FILE_PHASE6" | cut -d'"' -f2)
+                RGW_SECRET_KEY=$(grep "^export ${TENANT_UPPER_P6}_RGW_SECRET_KEY=" "$RGW_CREDS_FILE_PHASE6" | cut -d'"' -f2)
+                unset TENANT_UPPER_P6
                 print_debug "Restored: ACCESS_KEY=${RGW_ACCESS_KEY}"
             else
                 print_error "RGW credentials file not found: ${RGW_CREDS_FILE_PHASE6}"
@@ -3752,7 +3780,7 @@ else
             fi
         fi
         if [ -z "${MAIN_RGW_ENDPOINT:-}" ]; then
-            _saved_endpoint=$(grep "^RGW_ENDPOINT=" "$RGW_CREDS_FILE_PHASE6" 2>/dev/null | cut -d'=' -f2- | sed 's|^https\?://||')
+            _saved_endpoint=$(grep "^export RGW_ENDPOINT=" "$RGW_CREDS_FILE_PHASE6" 2>/dev/null | cut -d'"' -f2 | sed 's|^https\?://||')
             if [ -n "$_saved_endpoint" ]; then
                 MAIN_RGW_ENDPOINT="$_saved_endpoint"
                 print_debug "Restored MAIN_RGW_ENDPOINT from credentials file: ${MAIN_RGW_ENDPOINT}"
@@ -4174,11 +4202,13 @@ else
 
         # Restore RGW credentials and endpoint when resuming from a saved state
         # (Phase 1 was skipped so these variables may be unset).
-        _ph7_creds_file="${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt"
+        _ph7_creds_file="${OUTPUT_DIR}/${TENANT_NAME}-ceph-rgw.env"
         if [ -z "${RGW_SECRET_KEY:-}" ] || [ -z "${RGW_ACCESS_KEY:-}" ]; then
             if [ -f "$_ph7_creds_file" ]; then
-                RGW_ACCESS_KEY=$(grep "^RGW_ACCESS_KEY=" "$_ph7_creds_file" | cut -d'=' -f2-)
-                RGW_SECRET_KEY=$(grep "^RGW_SECRET_KEY=" "$_ph7_creds_file" | cut -d'=' -f2-)
+                _tu=$(echo "${TENANT_NAME}" | tr '[:lower:]-' '[:upper:]_')
+                RGW_ACCESS_KEY=$(grep "^export ${_tu}_RGW_ACCESS_KEY=" "$_ph7_creds_file" | cut -d'"' -f2)
+                RGW_SECRET_KEY=$(grep "^export ${_tu}_RGW_SECRET_KEY=" "$_ph7_creds_file" | cut -d'"' -f2)
+                unset _tu
                 print_debug "Phase 7: restored RGW credentials from file"
             else
                 print_error "Cannot add RGW resources: credentials file not found: ${_ph7_creds_file}"
@@ -4186,7 +4216,7 @@ else
             fi
         fi
         if [ -z "${MAIN_RGW_ENDPOINT:-}" ]; then
-            _saved_ep=$(grep "^RGW_ENDPOINT=" "$_ph7_creds_file" 2>/dev/null | cut -d'=' -f2- | sed 's|^https\?://||')
+            _saved_ep=$(grep "^export RGW_ENDPOINT=" "$_ph7_creds_file" 2>/dev/null | cut -d'"' -f2 | sed 's|^https\?://||')
             if [ -n "$_saved_ep" ]; then
                 MAIN_RGW_ENDPOINT="$_saved_ep"
             else
@@ -4304,11 +4334,11 @@ else
     # Create summary file
     SUMMARY_FILE="${OUTPUT_DIR}/${TENANT_NAME}-summary.txt"
     # Ensure file-path variables are set when resuming from phase 8
-    : "${RGW_CREDS_FILE:=${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt}"
+    : "${RGW_CREDS_FILE:=${OUTPUT_DIR}/${TENANT_NAME}-ceph-rgw.env}"
     : "${OUTPUT_JSON:=${OUTPUT_DIR}/${TENANT_NAME}-external-config.json}"
     # Restore MAIN_RGW_ENDPOINT if not set (from credentials file or orchestrator)
     if [ "$ENABLE_OBJECT_STORAGE" = true ] && [ -z "${MAIN_RGW_ENDPOINT:-}" ]; then
-        _ep=$(grep "^RGW_ENDPOINT=" "$RGW_CREDS_FILE" 2>/dev/null | cut -d'=' -f2- | sed 's|^https\?://||')
+        _ep=$(grep "^export RGW_ENDPOINT=" "$RGW_CREDS_FILE" 2>/dev/null | cut -d'"' -f2 | sed 's|^https\?://||')
         if [ -n "$_ep" ]; then
             MAIN_RGW_ENDPOINT="$_ep"
         else
@@ -4359,7 +4389,8 @@ RGW Region:        ${RGW_REGION}
 GENERATED FILES
 ---------------
 External Config:   ${OUTPUT_JSON}  (HAND OVER THIS FILE)
-RGW Credentials:   ${RGW_CREDS_FILE}  (FOR ACM POLICY)
+Common RBD Env:    ${COMMON_RBD_ENV_FILE}  (HAND OVER)
+RGW Credentials:   ${RGW_CREDS_FILE}  (HAND OVER)
 Summary:           ${SUMMARY_FILE}
 Log File:          ${LOG_FILE}
 
@@ -4367,6 +4398,7 @@ NEXT STEPS
 ----------
 1. Hand over these files to the control plane or LOB Admin UI:
    - ${OUTPUT_JSON}
+   - ${COMMON_RBD_ENV_FILE}
    - ${RGW_CREDS_FILE}
 
 2. LOB Admin UI will deploy ODF client on tenant cluster with:
@@ -4473,7 +4505,8 @@ if [ "$ENABLE_OBJECT_STORAGE" = true ]; then
     echo ""
     print_info "Generated Files:"
     print_info "  External Config: ${OUTPUT_DIR}/${TENANT_NAME}-external-config.json  ${COLOR_GREEN}(HAND OVER)${COLOR_RESET}"
-    print_info "  RGW Credentials: ${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt  ${COLOR_GREEN}(HAND OVER)${COLOR_RESET}"
+    print_info "  Common RBD Env:  ${OUTPUT_DIR}/common-ceph-rbd.env  ${COLOR_GREEN}(HAND OVER)${COLOR_RESET}"
+    print_info "  RGW Credentials: ${OUTPUT_DIR}/${TENANT_NAME}-ceph-rgw.env  ${COLOR_GREEN}(HAND OVER)${COLOR_RESET}"
     if [ "$RGW_PROTOCOL" = "https" ] && [ -f "${OUTPUT_DIR}/${TENANT_NAME}-ca-bundle.crt" ]; then
         print_info "  CA Bundle:       ${OUTPUT_DIR}/${TENANT_NAME}-ca-bundle.crt  ${COLOR_GREEN}(HAND OVER)${COLOR_RESET}"
     fi
@@ -4482,10 +4515,11 @@ if [ "$ENABLE_OBJECT_STORAGE" = true ]; then
     print_header "Next Steps:"
     print_info "  1. Hand over these files to the control plane or LOB Admin UI:"
     print_info "     - ${OUTPUT_DIR}/${TENANT_NAME}-external-config.json (includes RGW credentials)"
+    print_info "     - ${OUTPUT_DIR}/common-ceph-rbd.env (NooBaa DB common RBD credentials)"
     if [ "$RGW_PROTOCOL" = "https" ] && [ -f "${OUTPUT_DIR}/${TENANT_NAME}-ca-bundle.crt" ]; then
         print_info "     - ${OUTPUT_DIR}/${TENANT_NAME}-ca-bundle.crt (for HTTPS verification)"
     fi
-    print_info "     - ${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt (reference/backup)"
+    print_info "     - ${OUTPUT_DIR}/${TENANT_NAME}-ceph-rgw.env"
     print_info ""
     print_info "  2. LOB Admin UI will deploy ODF client on tenant cluster with:"
     print_info "     - Block storage (RBD)"
