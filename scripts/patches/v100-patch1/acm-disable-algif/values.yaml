@@ -1,0 +1,46 @@
+# Default values for acm-disable-algif chart
+
+# Common configuration
+common:
+  namespace: acm-disable-algif
+
+# Policy configuration
+policy:
+  name: disable-algif-builtin-policy
+  remediationAction: inform  # enforce or inform
+  severity: medium  # low, medium, high, critical
+
+# Placement configuration
+placement:
+  name: disable-algif-builtin-placement
+  # List of cluster sets to target
+  clusterSets:
+    - account
+    - platform
+  # Additional cluster selectors (optional)
+  clusterSelector:
+    matchExpressions: []
+    # Example:
+    # - key: environment
+    #   operator: In
+    #   values:
+    #     - production
+
+# PlacementBinding configuration
+placementBinding:
+  name: disable-algif-builtin-placement-binding
+
+# ManagedClusterSetBinding configuration
+managedClusterSetBinding:
+  name: disable-algif-builtin-clusterset-binding
+
+# MachineConfig settings
+machineConfig:
+  worker:
+    name: 99-disable-algif-builtin-worker
+  master:
+    name: 99-disable-algif-builtin-master
+  kernelArguments:
+    - initcall_blacklist=algif_aead_init
+
+# Made with Bob

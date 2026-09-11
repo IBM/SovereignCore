@@ -1,0 +1,29 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named {{ .Release.Name }}.
+
+The following resources have been created:
+
+1. Namespace: {{ .Values.common.namespace }}
+2. Policy: {{ .Values.policy.name }}
+   - Remediation Action: {{ .Values.policy.remediationAction }}
+   - Severity: {{ .Values.policy.severity }}
+3. Placement: {{ .Values.placement.name }}
+   - Target Cluster Sets: {{ join ", " .Values.placement.clusterSets }}
+4. PlacementBinding: {{ .Values.placementBinding.name }}
+5. ManagedClusterSetBinding(s): {{ join ", " .Values.placement.clusterSets }}
+
+The policy will create MachineConfig resources on target clusters to disable the algif builtin kernel module:
+- Worker nodes: {{ .Values.machineConfig.worker.name }}
+- Master nodes: {{ .Values.machineConfig.master.name }}
+
+To check the policy status:
+  kubectl get policy {{ .Values.policy.name }} -n {{ .Values.common.namespace }}
+
+To view policy compliance:
+  kubectl get policy {{ .Values.policy.name }} -n {{ .Values.common.namespace }} -o jsonpath='{.status.compliant}'
+
+To view placement decisions:
+  kubectl get placementdecision -n {{ .Values.common.namespace }} -l cluster.open-cluster-management.io/placement={{ .Values.placement.name }}
+
+Note: After the MachineConfig is applied, the affected nodes will reboot to apply the kernel argument changes.
