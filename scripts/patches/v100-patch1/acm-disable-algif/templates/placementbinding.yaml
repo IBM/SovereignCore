@@ -1,0 +1,15 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: {{ .Values.placementBinding.name }}
+  namespace: {{ .Values.common.namespace }}
+placementRef:
+  name: {{ .Values.placement.name }}
+  kind: Placement
+  apiGroup: cluster.open-cluster-management.io
+subjects:
+  - name: {{ .Values.policy.name }}
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io
+
+# Made with Bob

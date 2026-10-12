@@ -1,0 +1,59 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: {{ .Values.policy.name }}
+  namespace: {{ .Values.common.namespace }}
+  labels:
+    app.kubernetes.io/name: acm-disable-algif
+    app.kubernetes.io/component: acm-policy
+    app.kubernetes.io/part-of: v100-patch1
+spec:
+  remediationAction: {{ .Values.policy.remediationAction }}
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: disable-algif-builtin-worker-config
+        spec:
+          remediationAction: {{ .Values.policy.remediationAction }}
+          severity: {{ .Values.policy.severity }}
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: machineconfiguration.openshift.io/v1
+                kind: MachineConfig
+                metadata:
+                  labels:
+                    machineconfiguration.openshift.io/role: worker
+                  name: {{ .Values.machineConfig.worker.name }}
+                spec:
+                  kernelArguments:
+                    {{- range .Values.machineConfig.kernelArguments }}
+                    - {{ . }}
+                    {{- end }}
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: disable-algif-builtin-master-config
+        spec:
+          remediationAction: {{ .Values.policy.remediationAction }}
+          severity: {{ .Values.policy.severity }}
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: machineconfiguration.openshift.io/v1
+                kind: MachineConfig
+                metadata:
+                  labels:
+                    machineconfiguration.openshift.io/role: master
+                  name: {{ .Values.machineConfig.master.name }}
+                spec:
+                  kernelArguments:
+                    {{- range .Values.machineConfig.kernelArguments }}
+                    - {{ . }}
+                    {{- end }}
+
+# Made with Bob
