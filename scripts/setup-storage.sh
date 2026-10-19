@@ -1160,8 +1160,8 @@ detect_rgw_zone() {
     if [ -n "${RGW_REALM}" ]; then
         local zone_get_out
         zone_get_out=$(ceph_exec radosgw-admin zone get --rgw-realm="${RGW_REALM}" 2>/dev/null || echo "")
-        detected_zone=$(echo "$zone_get_out" | sed -n 's/.*"name":[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
-        if [ -n "$detected_zone" ]; then
+        detected_zone=$(echo "$zone_get_out" | jq -r '.name' 2>/dev/null || echo "")
+        if [ -n "$detected_zone" ] && [ "$detected_zone" != "null" ]; then
             print_debug "Using default zone for realm '${RGW_REALM}': ${detected_zone}" >&2
             echo "$detected_zone"
         else
@@ -2475,8 +2475,8 @@ detect_rgw_zone() {
     if [ -n "${RGW_REALM}" ]; then
         local zone_get_out
         zone_get_out=$(ceph_exec radosgw-admin zone get --rgw-realm="${RGW_REALM}" 2>/dev/null || echo "")
-        detected_zone=$(echo "$zone_get_out" | sed -n 's/.*"name":[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
-        if [ -n "$detected_zone" ]; then
+        detected_zone=$(echo "$zone_get_out" | jq -r '.name' 2>/dev/null || echo "")
+        if [ -n "$detected_zone" ] && [ "$detected_zone" != "null" ]; then
             print_debug "Using default zone for realm '${RGW_REALM}': ${detected_zone}" >&2
             echo "$detected_zone"
         else
@@ -3541,7 +3541,12 @@ else
                 exit 1
             fi
 
-            if echo "$RGW_USER_OUTPUT" | grep -qi "error" && ! echo "$RGW_USER_OUTPUT" | grep -qi "already exists"; then
+            # Check for failure: error present AND no user JSON returned.
+            # Some multi-realm setups emit period warnings to stderr but still
+            # create the user successfully (access_key is present in output).
+            if echo "$RGW_USER_OUTPUT" | grep -qi "error" && \
+               ! echo "$RGW_USER_OUTPUT" | grep -qi "already exists" && \
+               ! echo "$RGW_USER_OUTPUT" | grep -q '"access_key"'; then
                 print_error "Failed to create RGW user ${RGW_USER_NAME}"
                 print_error "Output: $RGW_USER_OUTPUT"
                 exit 1
@@ -3988,6 +3993,23 @@ else
         # direct mode: run python3 on the host (requires python3-rados to be installed).
         print_info "Running create-external-cluster-resources.py..."
         print_info "This will generate all necessary ConfigMaps and Secrets for ODF"
+
+        # Determine the RGW pool prefix.
+        # When --rgw-realm is specified the RGW pools are named <zone>.rgw.*
+        # (e.g. zone-tenant4.rgw.buckets.data).  Pass that zone name as the
+        # pool prefix so the generated ConfigMap args reflect the correct pools.
+        # Without --rgw-realm the default single-realm prefix is "default".
+        # RGW_ZONE may be unset when resuming from --phase 7 (Phase 5 was skipped),
+        # so detect it now if --rgw-realm is provided.
+        if [ -n "${RGW_REALM}" ]; then
+            if [ -z "${RGW_ZONE:-}" ]; then
+                RGW_ZONE=$(detect_rgw_zone)
+            fi
+            _rgw_pool_prefix="${RGW_ZONE}"
+        else
+            _rgw_pool_prefix="default"
+        fi
+        print_info "RGW pool prefix: ${_rgw_pool_prefix}"
         
         set +e
         if [ "$USE_CEPHADM" = "true" ]; then
@@ -3998,6 +4020,7 @@ else
                     --rbd-data-pool-name "$POOL_NAME" \
                     --k8s-cluster-name "$TENANT_NAME" \
                     --restricted-auth-permission true \
+                    --rgw-pool-prefix "$_rgw_pool_prefix" \
                     --format json 2>&1)
         else
             # Direct execution: python3 + python3-rados must be installed on the host
@@ -4011,8 +4034,10 @@ else
                 --rbd-data-pool-name "$POOL_NAME" \
                 --k8s-cluster-name "$TENANT_NAME" \
                 --restricted-auth-permission true \
+                --rgw-pool-prefix "$_rgw_pool_prefix" \
                 --format json 2>&1)
         fi
+        unset _rgw_pool_prefix
         SCRIPT_EXIT_CODE=$?
         set -e
         
@@ -4082,18 +4107,20 @@ else
     
     # Post-process JSON (both ODF and native modes)
     print_info "Post-processing external config JSON..."
-    
+
+    # In native mode NAMESPACE is not auto-detected — fall back to the standard ODF namespace.
+    _ns="${NAMESPACE:-openshift-storage}"
+
     # Get FSID from rook-ceph-mon secret for clusterID
     CEPH_FSID=$(jq -r '.[] | select(.name == "rook-ceph-mon" and .kind == "Secret") | .data.fsid' "$OUTPUT_JSON")
     
     # 1. Add controller-publish-secret parameter (required for volume attachment)
     # 2. Remove all CephFS resources (we only expose RBD block storage, not file storage)
-    # Note: Use the auto-detected namespace for ceph-csi-config
     jq '
       map(
         if .name == "ceph-rbd" and .kind == "StorageClass" then
           .data["csi.storage.k8s.io/controller-publish-secret-name"] = .data["csi.storage.k8s.io/node-stage-secret-name"] |
-          .data["csi.storage.k8s.io/controller-publish-secret-namespace"] = "'"$NAMESPACE"'"
+          .data["csi.storage.k8s.io/controller-publish-secret-namespace"] = "'"$_ns"'"
         else
           .
         end
