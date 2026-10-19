@@ -1,0 +1,4825 @@
+{
+  "params": {
+    "tenantIds": [
+      "all"
+    ],
+    "workspaceIds": [
+      "all"
+    ],
+    "instanceIds": [
+      "all"
+    ],
+    "usageStart": 1785765600000,
+    "usageEnd": 1788357600000,
+    "groupByHrs": 24,
+    "transform": "sum",
+    "metricId": "api_calls",
+    "serviceId": "servicebrokercore",
+    "groupBy": "groupByInstance"
+  },
+  "totalGroups": 16,
+  "totalPeriodsPerGroup": 30,
+  "totalPeriodsCount": 480,
+  "aggregatedMeteredUsagePeriods": [
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 1,
+      "periodQuantity": 782163,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 2,
+      "periodQuantity": 791422,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 3,
+      "periodQuantity": 764426,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 4,
+      "periodQuantity": 763938,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 5,
+      "periodQuantity": 752787,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 6,
+      "periodQuantity": 795230,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 7,
+      "periodQuantity": 717590,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 8,
+      "periodQuantity": 1608090,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 9,
+      "periodQuantity": 820152,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 10,
+      "periodQuantity": 788114,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 11,
+      "periodQuantity": 787638,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 12,
+      "periodQuantity": 782220,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 13,
+      "periodQuantity": 791311,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 14,
+      "periodQuantity": 817267,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 15,
+      "periodQuantity": 807708,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 16,
+      "periodQuantity": 819353,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 17,
+      "periodQuantity": 774362,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 18,
+      "periodQuantity": 773313,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 19,
+      "periodQuantity": 748284,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 20,
+      "periodQuantity": 812778,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 21,
+      "periodQuantity": 786758,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 22,
+      "periodQuantity": 782875,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 23,
+      "periodQuantity": 789911,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 24,
+      "periodQuantity": 764518,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 25,
+      "periodQuantity": 749869,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 26,
+      "periodQuantity": 840702,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 27,
+      "periodQuantity": 769134,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 28,
+      "periodQuantity": 826331,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 29,
+      "periodQuantity": 722130,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_CORE_BANKING_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_CORE_BANKING_INSTANCE",
+      "periodNumber": 30,
+      "periodQuantity": 793677,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 31,
+      "periodQuantity": 48988,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 32,
+      "periodQuantity": 49562,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 33,
+      "periodQuantity": 53049,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 34,
+      "periodQuantity": 51510,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 35,
+      "periodQuantity": 46037,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 36,
+      "periodQuantity": 49549,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 37,
+      "periodQuantity": 52734,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 38,
+      "periodQuantity": 48046,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 39,
+      "periodQuantity": 53348,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 40,
+      "periodQuantity": 51725,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 41,
+      "periodQuantity": 51227,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 42,
+      "periodQuantity": 52526,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 43,
+      "periodQuantity": 49643,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 44,
+      "periodQuantity": 51306,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 45,
+      "periodQuantity": 52466,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 46,
+      "periodQuantity": 49360,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 47,
+      "periodQuantity": 48344,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 48,
+      "periodQuantity": 55194,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 49,
+      "periodQuantity": 50763,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 50,
+      "periodQuantity": 49945,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 51,
+      "periodQuantity": 50856,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 52,
+      "periodQuantity": 47118,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 53,
+      "periodQuantity": 52200,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 54,
+      "periodQuantity": 50021,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 55,
+      "periodQuantity": 49287,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 56,
+      "periodQuantity": 47734,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 57,
+      "periodQuantity": 50537,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 58,
+      "periodQuantity": 54055,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 59,
+      "periodQuantity": 51252,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_DR:BANK_DR_FAILOVER_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_DR",
+      "groupInstanceId": "BANK_DR_FAILOVER_INSTANCE",
+      "periodNumber": 60,
+      "periodQuantity": 48716,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 61,
+      "periodQuantity": 235856,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 62,
+      "periodQuantity": 228886,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 63,
+      "periodQuantity": 237479,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 64,
+      "periodQuantity": 242300,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 65,
+      "periodQuantity": 247151,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 66,
+      "periodQuantity": 242592,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 67,
+      "periodQuantity": 259530,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 68,
+      "periodQuantity": 237632,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 69,
+      "periodQuantity": 255320,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 70,
+      "periodQuantity": 230218,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 71,
+      "periodQuantity": 248223,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 72,
+      "periodQuantity": 242258,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 73,
+      "periodQuantity": 256204,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 74,
+      "periodQuantity": 246069,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 75,
+      "periodQuantity": 234330,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 76,
+      "periodQuantity": 237916,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 77,
+      "periodQuantity": 275733,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 78,
+      "periodQuantity": 249314,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 79,
+      "periodQuantity": 253557,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 80,
+      "periodQuantity": 260119,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 81,
+      "periodQuantity": 240793,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 82,
+      "periodQuantity": 222617,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 83,
+      "periodQuantity": 252061,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 84,
+      "periodQuantity": 249951,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 85,
+      "periodQuantity": 238630,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 86,
+      "periodQuantity": 243821,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 87,
+      "periodQuantity": 225344,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 88,
+      "periodQuantity": 264210,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 89,
+      "periodQuantity": 251969,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "BANK_CORP:BANK_PROD:BANK_RISK_ENGINE_INSTANCE",
+      "groupTenantId": "BANK_CORP",
+      "groupWorkspaceId": "BANK_PROD",
+      "groupInstanceId": "BANK_RISK_ENGINE_INSTANCE",
+      "periodNumber": 90,
+      "periodQuantity": 252402,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 91,
+      "periodQuantity": 235124,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 92,
+      "periodQuantity": 233604,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 93,
+      "periodQuantity": 204783,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 94,
+      "periodQuantity": 220988,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 95,
+      "periodQuantity": 231461,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 96,
+      "periodQuantity": 250611,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 97,
+      "periodQuantity": 246722,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 98,
+      "periodQuantity": 245292,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 99,
+      "periodQuantity": 245225,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 100,
+      "periodQuantity": 240681,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 101,
+      "periodQuantity": 248245,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 102,
+      "periodQuantity": 232224,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 103,
+      "periodQuantity": 247851,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 104,
+      "periodQuantity": 239712,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 105,
+      "periodQuantity": 236779,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 106,
+      "periodQuantity": 239576,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 107,
+      "periodQuantity": 232457,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 108,
+      "periodQuantity": 226583,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 109,
+      "periodQuantity": 244179,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 110,
+      "periodQuantity": 219597,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 111,
+      "periodQuantity": 237360,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 112,
+      "periodQuantity": 233016,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 113,
+      "periodQuantity": 234022,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 114,
+      "periodQuantity": 238106,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 115,
+      "periodQuantity": 244951,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 116,
+      "periodQuantity": 253919,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 117,
+      "periodQuantity": 243804,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 118,
+      "periodQuantity": 224049,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 119,
+      "periodQuantity": 241366,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_IMAGING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_IMAGING_INSTANCE",
+      "periodNumber": 120,
+      "periodQuantity": 239247,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 121,
+      "periodQuantity": 47433,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 122,
+      "periodQuantity": 47882,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 123,
+      "periodQuantity": 47259,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 124,
+      "periodQuantity": 46623,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 125,
+      "periodQuantity": 48190,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 126,
+      "periodQuantity": 48898,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 127,
+      "periodQuantity": 47812,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 128,
+      "periodQuantity": 51480,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 129,
+      "periodQuantity": 52123,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 130,
+      "periodQuantity": 49697,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 131,
+      "periodQuantity": 50779,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 132,
+      "periodQuantity": 50072,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 133,
+      "periodQuantity": 47366,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 134,
+      "periodQuantity": 51662,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 135,
+      "periodQuantity": 43864,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 136,
+      "periodQuantity": 54877,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 137,
+      "periodQuantity": 51550,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 138,
+      "periodQuantity": 52938,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 139,
+      "periodQuantity": 51784,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 140,
+      "periodQuantity": 46772,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 141,
+      "periodQuantity": 50813,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 142,
+      "periodQuantity": 51055,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 143,
+      "periodQuantity": 49343,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 144,
+      "periodQuantity": 51864,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 145,
+      "periodQuantity": 48365,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 146,
+      "periodQuantity": 53427,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 147,
+      "periodQuantity": 49621,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 148,
+      "periodQuantity": 49332,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 149,
+      "periodQuantity": 51012,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_RESEARCH:HEALTH_ML_TRAINING_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_RESEARCH",
+      "groupInstanceId": "HEALTH_ML_TRAINING_INSTANCE",
+      "periodNumber": 150,
+      "periodQuantity": 52811,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 151,
+      "periodQuantity": 239314,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 152,
+      "periodQuantity": 246598,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 153,
+      "periodQuantity": 242816,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 154,
+      "periodQuantity": 245581,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 155,
+      "periodQuantity": 244054,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 156,
+      "periodQuantity": 228168,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 157,
+      "periodQuantity": 256514,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 158,
+      "periodQuantity": 249968,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 159,
+      "periodQuantity": 223116,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 160,
+      "periodQuantity": 244746,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 161,
+      "periodQuantity": 229486,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 162,
+      "periodQuantity": 231499,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 163,
+      "periodQuantity": 233095,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 164,
+      "periodQuantity": 223034,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 165,
+      "periodQuantity": 229077,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 166,
+      "periodQuantity": 264327,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 167,
+      "periodQuantity": 234283,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 168,
+      "periodQuantity": 237849,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 169,
+      "periodQuantity": 241234,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 170,
+      "periodQuantity": 259538,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 171,
+      "periodQuantity": 226817,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 172,
+      "periodQuantity": 229067,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 173,
+      "periodQuantity": 230621,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 174,
+      "periodQuantity": 229809,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 175,
+      "periodQuantity": 234197,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 176,
+      "periodQuantity": 235556,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 177,
+      "periodQuantity": 242404,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 178,
+      "periodQuantity": 238355,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 179,
+      "periodQuantity": 251403,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG:HEALTH_CLINICAL:HEALTH_PATIENT_DATA_INSTANCE",
+      "groupTenantId": "HEALTHNET_ORG",
+      "groupWorkspaceId": "HEALTH_CLINICAL",
+      "groupInstanceId": "HEALTH_PATIENT_DATA_INSTANCE",
+      "periodNumber": 180,
+      "periodQuantity": 245150,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 181,
+      "periodQuantity": 47126,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 182,
+      "periodQuantity": 54955,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 183,
+      "periodQuantity": 45681,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 184,
+      "periodQuantity": 43846,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 185,
+      "periodQuantity": 51572,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 186,
+      "periodQuantity": 48246,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 187,
+      "periodQuantity": 46849,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 188,
+      "periodQuantity": 47927,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 189,
+      "periodQuantity": 51602,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 190,
+      "periodQuantity": 45407,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 191,
+      "periodQuantity": 45907,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 192,
+      "periodQuantity": 47250,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 193,
+      "periodQuantity": 52627,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 194,
+      "periodQuantity": 49097,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 195,
+      "periodQuantity": 48311,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 196,
+      "periodQuantity": 51868,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 197,
+      "periodQuantity": 52264,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 198,
+      "periodQuantity": 52358,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 199,
+      "periodQuantity": 48804,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 200,
+      "periodQuantity": 48142,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 201,
+      "periodQuantity": 53113,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 202,
+      "periodQuantity": 48841,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 203,
+      "periodQuantity": 54613,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 204,
+      "periodQuantity": 55094,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 205,
+      "periodQuantity": 52429,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 206,
+      "periodQuantity": 46786,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 207,
+      "periodQuantity": 47867,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 208,
+      "periodQuantity": 47704,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 209,
+      "periodQuantity": 45821,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_EDGE:MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_EDGE",
+      "groupInstanceId": "MANUFACT_EDGE_CLUSTER_INSTANCE",
+      "periodNumber": 210,
+      "periodQuantity": 53521,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 211,
+      "periodQuantity": 1099401,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 212,
+      "periodQuantity": 1045746,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 213,
+      "periodQuantity": 1162555,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 214,
+      "periodQuantity": 1013338,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 215,
+      "periodQuantity": 1049892,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 216,
+      "periodQuantity": 1094523,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 217,
+      "periodQuantity": 1131376,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 218,
+      "periodQuantity": 1095261,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 219,
+      "periodQuantity": 1230651,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 220,
+      "periodQuantity": 1142372,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 221,
+      "periodQuantity": 1095702,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 222,
+      "periodQuantity": 1081554,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 223,
+      "periodQuantity": 1105388,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 224,
+      "periodQuantity": 1112788,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 225,
+      "periodQuantity": 1218055,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 226,
+      "periodQuantity": 1053186,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 227,
+      "periodQuantity": 1145351,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 228,
+      "periodQuantity": 1037888,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 229,
+      "periodQuantity": 1009482,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 230,
+      "periodQuantity": 1039963,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 231,
+      "periodQuantity": 1140852,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 232,
+      "periodQuantity": 1139152,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 233,
+      "periodQuantity": 1173683,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 234,
+      "periodQuantity": 1919057,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 235,
+      "periodQuantity": 1093719,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 236,
+      "periodQuantity": 1114052,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 237,
+      "periodQuantity": 1108356,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 238,
+      "periodQuantity": 1045579,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 239,
+      "periodQuantity": 1015667,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_IOT_GATEWAY_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_IOT_GATEWAY_INSTANCE",
+      "periodNumber": 240,
+      "periodQuantity": 1082354,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 241,
+      "periodQuantity": 240579,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 242,
+      "periodQuantity": 239660,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 243,
+      "periodQuantity": 232558,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 244,
+      "periodQuantity": 235975,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 245,
+      "periodQuantity": 209020,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 246,
+      "periodQuantity": 222385,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 247,
+      "periodQuantity": 218478,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 248,
+      "periodQuantity": 249026,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 249,
+      "periodQuantity": 240851,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 250,
+      "periodQuantity": 265662,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 251,
+      "periodQuantity": 223456,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 252,
+      "periodQuantity": 241097,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 253,
+      "periodQuantity": 233219,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 254,
+      "periodQuantity": 255238,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 255,
+      "periodQuantity": 269547,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 256,
+      "periodQuantity": 255293,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 257,
+      "periodQuantity": 244649,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 258,
+      "periodQuantity": 240490,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 259,
+      "periodQuantity": 229079,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 260,
+      "periodQuantity": 234413,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 261,
+      "periodQuantity": 238598,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 262,
+      "periodQuantity": 250164,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 263,
+      "periodQuantity": 241008,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 264,
+      "periodQuantity": 221554,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 265,
+      "periodQuantity": 232052,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 266,
+      "periodQuantity": 220255,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 267,
+      "periodQuantity": 239785,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 268,
+      "periodQuantity": 240147,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 269,
+      "periodQuantity": 229113,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS:MANUFACT_PLANT_OPS:MANUFACT_SCADA_INSTANCE",
+      "groupTenantId": "MANUFACT_WORKS",
+      "groupWorkspaceId": "MANUFACT_PLANT_OPS",
+      "groupInstanceId": "MANUFACT_SCADA_INSTANCE",
+      "periodNumber": 270,
+      "periodQuantity": 241045,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 271,
+      "periodQuantity": 67183,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 272,
+      "periodQuantity": 80368,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 273,
+      "periodQuantity": 91033,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 274,
+      "periodQuantity": 95093,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 275,
+      "periodQuantity": 93591,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 276,
+      "periodQuantity": 106132,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 277,
+      "periodQuantity": 105256,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 278,
+      "periodQuantity": 117963,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 279,
+      "periodQuantity": 117802,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 280,
+      "periodQuantity": 117284,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 281,
+      "periodQuantity": 125696,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 282,
+      "periodQuantity": 135238,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 283,
+      "periodQuantity": 143578,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 284,
+      "periodQuantity": 151777,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 285,
+      "periodQuantity": 160301,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 286,
+      "periodQuantity": 168253,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 287,
+      "periodQuantity": 159107,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 288,
+      "periodQuantity": 167599,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 289,
+      "periodQuantity": 181895,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 290,
+      "periodQuantity": 175676,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 291,
+      "periodQuantity": 195962,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 292,
+      "periodQuantity": 194946,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 293,
+      "periodQuantity": 218419,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 294,
+      "periodQuantity": 212419,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 295,
+      "periodQuantity": 209819,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 296,
+      "periodQuantity": 225610,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 297,
+      "periodQuantity": 211789,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 298,
+      "periodQuantity": 248155,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 299,
+      "periodQuantity": 224653,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_EV_CONFIGURATOR_INSTANCE",
+      "periodNumber": 300,
+      "periodQuantity": 251263,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 301,
+      "periodQuantity": 248083,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 302,
+      "periodQuantity": 249019,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 303,
+      "periodQuantity": 218369,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 304,
+      "periodQuantity": 239450,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 305,
+      "periodQuantity": 250191,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 306,
+      "periodQuantity": 264248,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 307,
+      "periodQuantity": 246513,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 308,
+      "periodQuantity": 250991,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 309,
+      "periodQuantity": 252473,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 310,
+      "periodQuantity": 232796,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 311,
+      "periodQuantity": 233740,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 312,
+      "periodQuantity": 226777,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 313,
+      "periodQuantity": 219552,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 314,
+      "periodQuantity": 256207,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 315,
+      "periodQuantity": 240735,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 316,
+      "periodQuantity": 237529,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 317,
+      "periodQuantity": 243193,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 318,
+      "periodQuantity": 208175,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 319,
+      "periodQuantity": 249854,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 320,
+      "periodQuantity": 250306,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 321,
+      "periodQuantity": 233878,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 322,
+      "periodQuantity": 210939,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 323,
+      "periodQuantity": 239274,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 324,
+      "periodQuantity": 250907,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 325,
+      "periodQuantity": 254456,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 326,
+      "periodQuantity": 258079,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 327,
+      "periodQuantity": 230021,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 328,
+      "periodQuantity": 225628,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 329,
+      "periodQuantity": 250123,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_PROD:MOTOR_PARTS_CATALOG_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_PROD",
+      "groupInstanceId": "MOTOR_PARTS_CATALOG_INSTANCE",
+      "periodNumber": 330,
+      "periodQuantity": 237780,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 331,
+      "periodQuantity": 48047,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 332,
+      "periodQuantity": 48006,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 333,
+      "periodQuantity": 45063,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 334,
+      "periodQuantity": 51003,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 335,
+      "periodQuantity": 49117,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 336,
+      "periodQuantity": 51562,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 337,
+      "periodQuantity": 47143,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 338,
+      "periodQuantity": 51947,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 339,
+      "periodQuantity": 48973,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 340,
+      "periodQuantity": 46218,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 341,
+      "periodQuantity": 53140,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 342,
+      "periodQuantity": 52907,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 343,
+      "periodQuantity": 54436,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 344,
+      "periodQuantity": 51135,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 345,
+      "periodQuantity": 49488,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 346,
+      "periodQuantity": 47394,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 347,
+      "periodQuantity": 50376,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 348,
+      "periodQuantity": 47476,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 349,
+      "periodQuantity": 54198,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 350,
+      "periodQuantity": 51674,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 351,
+      "periodQuantity": 47909,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 352,
+      "periodQuantity": 50403,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 353,
+      "periodQuantity": 50366,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 354,
+      "periodQuantity": 48061,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 355,
+      "periodQuantity": 49883,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 356,
+      "periodQuantity": 51755,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 357,
+      "periodQuantity": 46366,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 358,
+      "periodQuantity": 50120,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 359,
+      "periodQuantity": 51114,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC:MOTOR_STAGING:MOTOR_STAGING_INSTANCE",
+      "groupTenantId": "MOTORVAULT_INC",
+      "groupWorkspaceId": "MOTOR_STAGING",
+      "groupInstanceId": "MOTOR_STAGING_INSTANCE",
+      "periodNumber": 360,
+      "periodQuantity": 49290,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 361,
+      "periodQuantity": 47968,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 362,
+      "periodQuantity": 49659,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 363,
+      "periodQuantity": 49085,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 364,
+      "periodQuantity": 50896,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 365,
+      "periodQuantity": 51179,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 366,
+      "periodQuantity": 50565,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 367,
+      "periodQuantity": 52700,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 368,
+      "periodQuantity": 52219,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 369,
+      "periodQuantity": 49152,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 370,
+      "periodQuantity": 48262,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 371,
+      "periodQuantity": 50287,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 372,
+      "periodQuantity": 52503,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 373,
+      "periodQuantity": 49734,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 374,
+      "periodQuantity": 51973,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 375,
+      "periodQuantity": 45991,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 376,
+      "periodQuantity": 50837,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 377,
+      "periodQuantity": 50850,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 378,
+      "periodQuantity": 50113,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 379,
+      "periodQuantity": 53508,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 380,
+      "periodQuantity": 51490,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 381,
+      "periodQuantity": 53997,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 382,
+      "periodQuantity": 46406,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 383,
+      "periodQuantity": 47552,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 384,
+      "periodQuantity": 48258,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 385,
+      "periodQuantity": 55432,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 386,
+      "periodQuantity": 44016,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 387,
+      "periodQuantity": 48000,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 388,
+      "periodQuantity": 49627,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 389,
+      "periodQuantity": 49149,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_ANALYTICS:RETAIL_ANALYTICS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_ANALYTICS",
+      "groupInstanceId": "RETAIL_ANALYTICS_INSTANCE",
+      "periodNumber": 390,
+      "periodQuantity": 54322,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 391,
+      "periodQuantity": 255211,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 392,
+      "periodQuantity": 246536,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 393,
+      "periodQuantity": 236903,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 394,
+      "periodQuantity": 253872,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 395,
+      "periodQuantity": 261521,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 396,
+      "periodQuantity": 251351,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 397,
+      "periodQuantity": 252560,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 398,
+      "periodQuantity": 236126,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 399,
+      "periodQuantity": 243014,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 400,
+      "periodQuantity": 243173,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 401,
+      "periodQuantity": 238771,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 402,
+      "periodQuantity": 237634,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 403,
+      "periodQuantity": 261546,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 404,
+      "periodQuantity": 239814,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 405,
+      "periodQuantity": 255673,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 406,
+      "periodQuantity": 240686,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 407,
+      "periodQuantity": 253164,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 408,
+      "periodQuantity": 229093,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 409,
+      "periodQuantity": 223450,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 410,
+      "periodQuantity": 225851,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 411,
+      "periodQuantity": 240630,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 412,
+      "periodQuantity": 219685,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 413,
+      "periodQuantity": 251896,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 414,
+      "periodQuantity": 234414,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 415,
+      "periodQuantity": 222393,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 416,
+      "periodQuantity": 238080,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 417,
+      "periodQuantity": 243506,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 418,
+      "periodQuantity": 238776,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 419,
+      "periodQuantity": 224468,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_INVENTORY_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_INVENTORY_INSTANCE",
+      "periodNumber": 420,
+      "periodQuantity": 227791,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 421,
+      "periodQuantity": 234545,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 422,
+      "periodQuantity": 244813,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 423,
+      "periodQuantity": 240604,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 424,
+      "periodQuantity": 242701,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 425,
+      "periodQuantity": 224174,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 426,
+      "periodQuantity": 267702,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 427,
+      "periodQuantity": 236987,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 428,
+      "periodQuantity": 227718,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 429,
+      "periodQuantity": 237933,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 430,
+      "periodQuantity": 248419,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 431,
+      "periodQuantity": 235823,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 432,
+      "periodQuantity": 246200,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 433,
+      "periodQuantity": 237582,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 434,
+      "periodQuantity": 238638,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 435,
+      "periodQuantity": 227425,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 436,
+      "periodQuantity": 237183,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 437,
+      "periodQuantity": 241468,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 438,
+      "periodQuantity": 236826,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 439,
+      "periodQuantity": 246882,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 440,
+      "periodQuantity": 242656,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 441,
+      "periodQuantity": 227642,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 442,
+      "periodQuantity": 240946,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 443,
+      "periodQuantity": 242479,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 444,
+      "periodQuantity": 255376,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 445,
+      "periodQuantity": 247410,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 446,
+      "periodQuantity": 236394,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 447,
+      "periodQuantity": 227567,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 448,
+      "periodQuantity": 249972,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 449,
+      "periodQuantity": 233050,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_RECOMMENDATIONS_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_RECOMMENDATIONS_INSTANCE",
+      "periodNumber": 450,
+      "periodQuantity": 240739,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 451,
+      "periodQuantity": 739578,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 452,
+      "periodQuantity": 817101,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 453,
+      "periodQuantity": 720437,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 454,
+      "periodQuantity": 827198,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 455,
+      "periodQuantity": 688563,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 456,
+      "periodQuantity": 752382,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 457,
+      "periodQuantity": 764565,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 458,
+      "periodQuantity": 778055,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 459,
+      "periodQuantity": 755724,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 460,
+      "periodQuantity": 768931,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 461,
+      "periodQuantity": 806279,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 462,
+      "periodQuantity": 747867,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 463,
+      "periodQuantity": 863562,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 464,
+      "periodQuantity": 831391,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 465,
+      "periodQuantity": 742776,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 466,
+      "periodQuantity": 802546,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 467,
+      "periodQuantity": 764663,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 468,
+      "periodQuantity": 755880,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 469,
+      "periodQuantity": 810608,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 470,
+      "periodQuantity": 2282613,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 471,
+      "periodQuantity": 804209,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 472,
+      "periodQuantity": 773632,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 473,
+      "periodQuantity": 733774,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 474,
+      "periodQuantity": 797010,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 475,
+      "periodQuantity": 810089,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 476,
+      "periodQuantity": 730529,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 477,
+      "periodQuantity": 776061,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 478,
+      "periodQuantity": 725957,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 479,
+      "periodQuantity": 763611,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO:RETAIL_PROD:RETAIL_STOREFRONT_INSTANCE",
+      "groupTenantId": "RETAILPLEX_CO",
+      "groupWorkspaceId": "RETAIL_PROD",
+      "groupInstanceId": "RETAIL_STOREFRONT_INSTANCE",
+      "periodNumber": 480,
+      "periodQuantity": 772917,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    }
+  ]
+}
