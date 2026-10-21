@@ -77,7 +77,7 @@ The postgres-service-broker-api or postgres-service-broker-controller deployment
 ## DatabaseAsAServicePGOperatorLowSuccessRate
 
 ### Meaning
-PostgreSQL Operator deployment success rate has fallen below 90% over the last 30 minutes.
+PostgreSQL Operator deployment success rate has fallen below 90% over the last hour.
 
 ### Impact
 - Multiple provisioning failures
@@ -125,7 +125,7 @@ PostgreSQL Operator deployment success rate has fallen below 90% over the last 3
 ## DatabaseAsAServicePGOperatorHighDuration
 
 ### Meaning
-PostgreSQL Operator deployment is taking longer than 10 minutes on average over the last 30 minutes.
+PostgreSQL Operator deployment is taking longer than 10 minutes on average over the last hour.
 
 ### Impact
 - Delayed PostgreSQL operator provisioning
@@ -536,7 +536,7 @@ More than 10% of PostgresRequest deploy operations have failed over the last hou
 ### Impact
 - Users cannot provision PostgreSQL instances reliably
 - Service reliability degradation
-- Potential systemic issue (target cluster, ArgoCD, cert-manager policy, StorageClass, etc.)
+- Potential systemic issue (target cluster, ArgoCD, StorageClass, etc.)
 
 ### Diagnosis
 1. Check failure rate and breakdown by reason:
@@ -560,7 +560,7 @@ More than 10% of PostgresRequest deploy operations have failed over the last hou
 ### Mitigation
 1. Group failures by `failure_reason`:
    - `ResourceCreationFailed`: see [DatabaseAsAServicePostgresResourceCreationFailed](#databaseasaservicepostgresresourcecreationfailed)
-   - `ValidationFailed`: check spec validation errors and cert-manager ACM Policy compliance on the target cluster
+   - `ValidationFailed`: check the PostgresRequest spec for validation errors (see `.status.message`)
    - `StorageClassNotAvailable`: verify a suitable StorageClass exists on the target ManagedCluster
    - `Error`: review `.status.message` and controller logs
 2. Verify target ManagedCluster availability:
@@ -608,10 +608,9 @@ The 95th percentile of PostgresRequest deploy duration has exceeded 30 minutes o
 
 ### Mitigation
 1. Verify target ManagedCluster is available and healthy
-2. Check cert-manager ACM Policy compliance on the target cluster (Pending phase waits for it)
-3. Review ArgoCD Application events and resolve sync errors
-4. Check resource availability (CPU, memory, storage) on the target cluster
-5. If stuck in Creating phase for an extended period, consider manual intervention or escalation
+2. Review ArgoCD Application events and resolve sync errors
+3. Check resource availability (CPU, memory, storage) on the target cluster
+4. If stuck in Creating phase for an extended period, consider manual intervention or escalation
 
 ---
 
@@ -628,8 +627,8 @@ The 95th percentile of PostgresRequest undeploy duration has exceeded 10 minutes
 ### Diagnosis
 1. Check undeploy duration and in-progress operations:
    ```promql
-   histogram_quantile(0.95, sum by (le) (rate(sov_dbaas_postgres_duration_seconds_bucket{operation="undeploy"}[1h])))
-   sum(sov_dbaas_postgres_current{operation="undeploy"})
+   histogram_quantile(0.95, sum by (le, external_access) (rate(sov_dbaas_postgres_duration_seconds_bucket{operation="undeploy"}[1h])))
+   sum by (external_access) (sov_dbaas_postgres_current{operation="undeploy"})
    ```
 2. List requests in Deleting phase:
    ```bash
