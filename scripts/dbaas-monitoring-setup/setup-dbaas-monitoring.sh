@@ -442,7 +442,7 @@ spec:
               plugin:
                 kind: PrometheusTimeSeriesQuery
                 spec:
-                  query: '100 * sum by (datname) (rate(cnpg_pg_stat_database_blks_hit_total{namespace="\$namespace", instance_id="\$cluster", datname!~"template.*|"}[5m])) / (sum by (datname) (rate(cnpg_pg_stat_database_blks_hit_total{namespace="\$namespace", instance_id="\$cluster", datname!~"template.*|"}[5m])) + sum by (datname) (rate(cnpg_pg_stat_database_blks_read_total{namespace="\$namespace", instance_id="\$cluster", datname!~"template.*|"}[5m])))'
+                  query: '100 * sum by (datname) (rate(cnpg_pg_stat_database_blks_hit_total{namespace="\$namespace", instance_id="\$cluster", datname!~"template.*|"}[5m])) / clamp_min(sum by (datname) (rate(cnpg_pg_stat_database_blks_hit_total{namespace="\$namespace", instance_id="\$cluster", datname!~"template.*|"}[5m])) + sum by (datname) (rate(cnpg_pg_stat_database_blks_read_total{namespace="\$namespace", instance_id="\$cluster", datname!~"template.*|"}[5m])), 1)'
     db_size:
       kind: Panel
       spec:
