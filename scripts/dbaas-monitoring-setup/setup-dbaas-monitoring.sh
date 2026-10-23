@@ -10,7 +10,7 @@
 #   4. PersesDashboard (dbaas-postgresql-manual) — adds Datastore for PostgreSQL dashboard to OpenShift Console Observe -> Dashboards
 #
 # Usage:
-#   ./setup-dbaas-monitoring.sh [OPTIONS]
+#   ./scripts/dbaas-monitoring-setup/setup-dbaas-monitoring.sh [OPTIONS]
 #
 # Options:
 #   -n <namespace>       Target namespace (default: auto-detect all namespaces with Datastore Cluster CRs)
@@ -22,7 +22,7 @@
 #   --dry-run            Print generated YAML to stdout without applying
 #   --monitoring-ns      Namespace where Prometheus runs (default: openshift-user-workload-monitoring)
 #   --monitoring-label   Label selector for Prometheus namespace (default: network.openshift.io/policy-group=monitoring)
-#   -h                   Show this help
+#   -h, --help           Show this help
 
 set -euo pipefail
 
@@ -82,26 +82,45 @@ MONITORING_NS="openshift-user-workload-monitoring"
 
 # ---------- Help ----------
 usage() {
-  grep '^#' "$0" | grep -v '#!/' | sed 's/^# \{0,1\}//'
-  exit 0
+  sed -n '2,/^set -/ { /^#/ s/^# \{0,1\}//p }' "$0"
 }
 
 # ---------- Argument parsing ----------
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -n) TARGET_NAMESPACES+=("$2"); shift 2 ;;
-    -c) TARGET_CLUSTER="$2"; shift 2 ;;
-    -t) TENANT_ID="$2"; shift 2 ;;
-    -s) RESOURCE_SUFFIX="$2"; shift 2 ;;
-    -k) KUBECONFIG_OPT="--kubeconfig=$2"; shift 2 ;;
+    -n)
+      [[ $# -ge 2 ]] || { echo "ERROR: Option '$1' requires a value." >&2; exit 1; }
+      TARGET_NAMESPACES+=("$2"); shift 2 ;;
+    -c)
+      [[ $# -ge 2 ]] || { echo "ERROR: Option '$1' requires a value." >&2; exit 1; }
+      TARGET_CLUSTER="$2"; shift 2 ;;
+    -t)
+      [[ $# -ge 2 ]] || { echo "ERROR: Option '$1' requires a value." >&2; exit 1; }
+      TENANT_ID="$2"; shift 2 ;;
+    -s)
+      [[ $# -ge 2 ]] || { echo "ERROR: Option '$1' requires a value." >&2; exit 1; }
+      RESOURCE_SUFFIX="$2"; shift 2 ;;
+    -k)
+      [[ $# -ge 2 ]] || { echo "ERROR: Option '$1' requires a value." >&2; exit 1; }
+      KUBECONFIG_OPT="--kubeconfig=$2"; shift 2 ;;
     --dry-run) DRY_RUN=true; shift ;;
-    --monitoring-ns) MONITORING_NS="$2"; shift 2 ;;
+    --monitoring-ns)
+      [[ $# -ge 2 ]] || { echo "ERROR: Option '$1' requires a value." >&2; exit 1; }
+      MONITORING_NS="$2"; shift 2 ;;
     --monitoring-label)
+      [[ $# -ge 2 ]] || { echo "ERROR: Option '$1' requires a value." >&2; exit 1; }
       MONITORING_LABEL_KEY="${2%%=*}"
       MONITORING_LABEL_VAL="${2##*=}"
       shift 2 ;;
-    -h|--help) usage ;;
-    *) echo "Unknown option: $1"; usage ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "ERROR: Unknown option: $1" >&2
+      usage >&2
+      exit 1
+      ;;
   esac
 done
 

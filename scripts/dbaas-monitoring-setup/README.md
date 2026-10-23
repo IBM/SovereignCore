@@ -28,7 +28,7 @@ The following tools must also be installed on your machine:
 
 ### 1. Run the setup script
 
-Run `setup-dbaas-monitoring.sh` from the root of the repository. The script auto-detects all Datastore for PostgreSQL clusters in the target OpenShift cluster and creates the following resources:
+Run `scripts/dbaas-monitoring-setup/setup-dbaas-monitoring.sh` from the root of the repository. The script auto-detects all Datastore for PostgreSQL clusters in the target OpenShift cluster and creates the following resources:
 
 - **PodMonitor** for each PostgreSQL instance pod (port 9187)
 - **PodMonitor** for each PgBouncer pooler pod (port 9127)
@@ -36,7 +36,7 @@ Run `setup-dbaas-monitoring.sh` from the root of the repository. The script auto
 - **PersesDashboard CR** registering the dashboard with the OpenShift Console (`openshift-cluster-observability-operator` namespace)
 
 ```bash
-./scripts/setup-dbaas-monitoring.sh
+./scripts/dbaas-monitoring-setup/setup-dbaas-monitoring.sh
 ```
 
 The script is idempotent — running it multiple times on the same cluster is safe.
@@ -57,19 +57,19 @@ The script is idempotent — running it multiple times on the same cluster is sa
 #### Example: specify tenant ID and suffix
 
 ```bash
-./scripts/setup-dbaas-monitoring.sh -t acme-corp -s 1.3.0
+./scripts/dbaas-monitoring-setup/setup-dbaas-monitoring.sh -t acme-corp -s 1.3.0
 ```
 
 #### Example: dry-run to review generated resources before applying
 
 ```bash
-./scripts/setup-dbaas-monitoring.sh --dry-run
+./scripts/dbaas-monitoring-setup/setup-dbaas-monitoring.sh --dry-run
 ```
 
 #### Example: target a specific namespace and cluster
 
 ```bash
-./scripts/setup-dbaas-monitoring.sh -n nova-system-prod -c nova-pg -t acme-corp
+./scripts/dbaas-monitoring-setup/setup-dbaas-monitoring.sh -n nova-system-prod -c nova-pg -t acme-corp
 ```
 
 On success, the script prints the dashboard URL:
@@ -134,7 +134,7 @@ The NetworkPolicy may not allow Prometheus to reach the pods.
 Re-run the setup script to ensure the NetworkPolicy is applied:
 
 ```bash
-./scripts/setup-dbaas-monitoring.sh
+./scripts/dbaas-monitoring-setup/setup-dbaas-monitoring.sh
 ```
 
 ### Dashboard does not appear in the dropdown
