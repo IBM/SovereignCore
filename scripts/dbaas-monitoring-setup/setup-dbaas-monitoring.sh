@@ -7,7 +7,7 @@
 #   1. PodMonitor (instance) — scrapes postgres instance pods on port 9187
 #   2. PodMonitor (pooler)   — scrapes pgbouncer pooler pods on port 9127
 #   3. NetworkPolicy         — allows ingress from openshift-user-workload-monitoring on ports 9187/9127
-#   4. ConfigMap (dashboard) — adds Datastore for PostgreSQL dashboard to OpenShift Console Observe -> Dashboards
+#   4. PersesDashboard (dbaas-postgresql-manual) — adds Datastore for PostgreSQL dashboard to OpenShift Console Observe -> Dashboards
 #
 # Usage:
 #   ./setup-dbaas-monitoring.sh [OPTIONS]

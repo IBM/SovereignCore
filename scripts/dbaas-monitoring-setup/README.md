@@ -153,17 +153,3 @@ oc get pods -n openshift-cluster-observability-operator | grep perses
 ```
 
 If the CR exists but the dashboard still does not appear, hard-reload the page (`Cmd+Shift+R` on macOS).
-
-### `"Could not parse JSON data"` error in the dashboard view
-
-This error occurs when the dashboard ConfigMap format does not match what the OpenShift Console expects. As of OCP 4.20, the console uses **Perses** (via the Cluster Observability Operator) instead of a Grafana-compatible ConfigMap.
-
-The setup script registers a `PersesDashboard` CR. If you see this error after upgrading OCP or updating the script, re-run the setup script to replace any stale ConfigMap with the correct CR:
-
-```bash
-# Remove the old ConfigMap if it still exists
-oc delete configmap dashboard-nova-postgresql -n openshift-config-managed --ignore-not-found
-
-# Re-apply with the current script
-./scripts/setup-dbaas-monitoring.sh
-```
