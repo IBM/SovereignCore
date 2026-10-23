@@ -142,8 +142,8 @@ Re-run the setup script to ensure the NetworkPolicy is applied:
 First, verify the `PersesDashboard` CR was created and reconciled successfully:
 
 ```bash
-oc get persesdashboard nova-postgresql -n openshift-cluster-observability-operator
-oc describe persesdashboard nova-postgresql -n openshift-cluster-observability-operator
+oc get persesdashboard dbaas-postgresql-manual -n openshift-cluster-observability-operator
+oc describe persesdashboard dbaas-postgresql-manual -n openshift-cluster-observability-operator
 ```
 
 Check that the Perses pod is running:

@@ -255,7 +255,7 @@ gen_dashboard() {
 apiVersion: perses.dev/v1alpha1
 kind: PersesDashboard
 metadata:
-  name: nova-postgresql
+  name: dbaas-postgresql-manual
   namespace: openshift-cluster-observability-operator
   labels:
     nova.ibm.com/managed-by: setup-dbaas-monitoring
@@ -747,7 +747,7 @@ print(m.group(0) if m else d['metadata']['name'])
   # PersesDashboard CR (one per installation)
   echo ""
   echo "=== Dashboard ==="
-  echo "  -> applying PersesDashboard (nova-postgresql) to openshift-cluster-observability-operator"
+  echo "  -> applying PersesDashboard (dbaas-postgresql-manual) to openshift-cluster-observability-operator"
   apply_yaml "$(gen_dashboard)"
 
   echo ""
