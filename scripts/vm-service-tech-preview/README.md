@@ -2,7 +2,7 @@
 
 ## Overview
 
-> [!WARNING] This document is applicable to IBM Sovereign Core 1.2 and earlier versions.
+> [!WARN] This document is applicable to IBM Sovereign Core 1.2 and earlier versions.
 > Virtual Machine Service Tech Preview was replaced with [Virtual Machine as a Service](../vm-as-a-service/README.md) by version 1.3.
 
 This document describes required procedures, additional configuration guides, and runbooks for the VM Service Tech Preview for IBM Sovereign Core.
