@@ -111,6 +111,7 @@ If the change causes unexpected issues, or when the VM cluster is removed, run t
 ```
 
 Leaving a stale IP entry is harmless because the IP is no longer reachable, but it should be cleaned up.
+
 ## Troubleshooting
 
 ### Console still fails after the EgressFirewall has been updated
@@ -133,4 +134,4 @@ oc rollout status deployment vm-service-broker-deployment -n vm-service-broker
 
 Confirm that the new pod logs contain `"Console-credentials endpoint handler initialized"` with a `clusterNamespace` field. After that, retry the [smoke test](#smoke-test-the-vnc-console).
 
-This is a known issue in version 1.3.0. The restart workaround above is required in this version. It is tracked in [sov-core-tracker#558](https://github.ibm.com/Sovereign-Core/sov-core-tracker/issues/558) and will not be necessary in the next release.
+This is a known issue in version 1.3.0. The restart workaround above is required in this version and will not be necessary in the next release.
