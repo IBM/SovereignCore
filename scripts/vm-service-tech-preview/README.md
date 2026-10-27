@@ -1,4 +1,4 @@
-# Virtual Machine Service Tech Preview　(Deprecated)
+# Virtual Machine Service Tech Preview (Deprecated)
 
 ## Overview
 
