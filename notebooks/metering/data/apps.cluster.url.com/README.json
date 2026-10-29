@@ -1,0 +1,92 @@
+{
+  "note": "Synthetic cross-service demo data for Use Case - Cross-Service Analysis. Values are fictional and contain no PII.",
+  "domain": "apps.cluster.url.com",
+  "services": [
+    "cluster-as-a-service",
+    "servicebrokercore"
+  ],
+  "metrics": {
+    "api_calls": {
+      "meteringModel": "total-up-to-date",
+      "transform": "sum"
+    },
+    "users": {
+      "meteringModel": "point-in-time",
+      "transform": "avg"
+    },
+    "instances": {
+      "meteringModel": "point-in-time",
+      "transform": "avg"
+    },
+    "cpu_cores": {
+      "meteringModel": "point-in-time",
+      "transform": "avg"
+    },
+    "gpu_count": {
+      "meteringModel": "point-in-time",
+      "transform": "avg"
+    }
+  },
+  "tenants": [
+    {
+      "tenantId": "BANK_CORP",
+      "industry": "Banking & Financial Services"
+    },
+    {
+      "tenantId": "MOTORVAULT_INC",
+      "industry": "Motor / Vehicle Manufacturing"
+    },
+    {
+      "tenantId": "RETAILPLEX_CO",
+      "industry": "Retail & E-commerce"
+    },
+    {
+      "tenantId": "MANUFACT_WORKS",
+      "industry": "Manufacturing & Industrial IoT"
+    },
+    {
+      "tenantId": "HEALTHNET_ORG",
+      "industry": "Healthcare & Life Sciences"
+    }
+  ],
+  "dates": {
+    "start": "2026-08-03",
+    "end": "2026-09-02"
+  },
+  "anomalies": [
+    {
+      "day": 8,
+      "event": "BANK_CORP quarter-end reconciliation",
+      "details": "servicebrokercore api_calls \u00d72.1 | cluster-as-a-service cpu_cores \u00d71.7"
+    },
+    {
+      "day": 15,
+      "event": "MOTORVAULT_INC EV configurator launch",
+      "details": "servicebrokercore users \u00d72.5 & instances \u00d71.9 | cluster-as-a-service instances \u00d71.8 & cpu_cores \u00d71.6"
+    },
+    {
+      "day": 20,
+      "event": "RETAILPLEX_CO flash-sale spike",
+      "details": "servicebrokercore api_calls \u00d73.0 | cluster-as-a-service api_calls \u00d72.2 & cpu_cores \u00d72.0"
+    },
+    {
+      "day": 24,
+      "event": "MANUFACT_WORKS IoT telemetry storm",
+      "details": "servicebrokercore api_calls \u00d71.8 | cluster-as-a-service gpu_count \u00d73"
+    },
+    {
+      "day": "27-28",
+      "event": "HEALTHNET_ORG GPU training job (2 days)",
+      "details": "cluster-as-a-service gpu_count \u00d74 | servicebrokercore instances flat (compliance freeze)"
+    }
+  ],
+  "structural_constraints": [
+    "BANK_CORP: cluster-as-a-service instances = 2 (compliance-mandated fixed allocation)",
+    "MANUFACT_WORKS: servicebrokercore gpu_count = 0 (no GPU brokered services; edge GPUs are cluster-managed only)"
+  ],
+  "directories": {
+    "raw": "Per-event metering records under meteredUsage[]",
+    "aggregated": "Daily time-bucketed totals under aggregatedMeteredUsagePeriods[]",
+    "grouped": "Daily buckets with groupTenantId / groupWorkspaceId / groupInstanceId"
+  }
+}

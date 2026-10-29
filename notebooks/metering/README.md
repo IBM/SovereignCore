@@ -15,7 +15,7 @@ This repository contains reference notebooks for fetching and visualising the me
 | 3 | [`Processing - Aggregated Usage Data.ipynb`](Processing%20-%20Aggregated%20Usage%20Data.ipynb) | Analyse aggregated (time-bucketed) usage — synced multi-metric dashboard, KPI cards, rolling averages, heatmap, histograms, day-over-day change. |
 | 4 | [`Processing - Grouped Usage Data.ipynb`](Processing%20-%20Grouped%20Usage%20Data.ipynb) | Analyse grouped aggregated usage — compare resource consumption across tenants, workspaces, or instances with multi-line trends, donut share, active vs idle, slope chart, and per-group stats. |
 | 5 | [`Use Case - Telemetry.ipynb`](Use%20Case%20-%20Telemetry.ipynb) | Operational telemetry dashboard — KPI summary, resource usage trend, usage by group, heatmap, data quality + anomaly detection. |
-| 6 | [`Use Case - Billing.ipynb`](Use%20Case%20-%20Billing.ipynb) | Billing use-case demonstration — four pricing models (PayGo, per-instance, contract, contract + overage) applied to real `api_calls` tenant data, with a cross-model cost comparison. |
+| 6 | [`Use Case - Billing.ipynb`](Use%20Case%20-%20Billing.ipynb) | Billing use-case demonstration — four pricing models (PayGo, per-instance, contract, contract + overage) applied to tenant usage data, with a cross-model cost comparison. Defaults to `api_calls`; select any `groupByInstance` metric in Section 2 when using custom data. |
 | — | [`Notebook - Template.ipynb`](Notebook%20-%20Template.ipynb) | **Authoring template** — canonical structure, section conventions, and annotated examples for every notebook category. Read this before creating a new notebook. |
 
 > All charts are fully interactive — hover for exact values, click legend items to toggle series, drag to zoom, double-click to reset.
@@ -98,29 +98,35 @@ cp .env.template .env
 
 | Variable | Description |
 |---|---|
-| `APP_DOMAIN` | Cluster domain, e.g. `apps.cluster.url.com` |
+| `APP_DOMAIN` | Cluster domain, e.g. `apps.my-cluster.cp.fyre.ibm.com` |
 | `SERVICE_ID` | Catalog service ID to query, e.g. `cluster-as-a-service` |
 | `TENANT_ID` | Tenant UUID for tenant-scoped fetch examples, or `all` |
 | `IAM_ACCOUNT_TYPE` | `platform` (MSP), `<tenant-uuid>` (App Developer), or `global_account` (Internal) |
 | `API_KEY` | API key for the chosen IAM account type |
 
-**Required for Processing & Use Case notebooks (optional overrides):**
+**Optional data path overrides (Processing & Use Case notebooks):**
 
 | Variable | Description |
 |---|---|
-| `RAW_DATA_PATH` | Override the raw data directory (optional) |
-| `AGGREGATED_DATA_PATH` | Override the aggregated data directory (optional) |
-| `GROUPED_DATA_PATH` | Override the grouped data directory (optional) |
+| `RAW_DATA_PATH` | Override the raw data directory |
+| `AGGREGATED_DATA_PATH` | Override the aggregated data directory |
+| `GROUPED_DATA_PATH` | Override the grouped data directory |
 
 > `.env` is **not** committed. Never put real credentials in `.env.template`.
 
-If the `*_DATA_PATH` variables are not set, the notebooks derive the paths automatically from `APP_DOMAIN` and `SERVICE_ID`. To point at a specific directory explicitly:
+If the `*_DATA_PATH` variables are not set, the notebooks derive the paths automatically from `APP_DOMAIN` and `SERVICE_ID` using the structure `data/{type}/{APP_DOMAIN}/{SERVICE_ID}/`.
+
+To point at a different directory, set the relevant override in `.env`:
 
 ```
-RAW_DATA_PATH=data/raw/my-service
-AGGREGATED_DATA_PATH=data/aggregated/my-service
-GROUPED_DATA_PATH=data/grouped/my-service
+GROUPED_DATA_PATH=data/sovereigncore_native_data/grouped
 ```
+
+When a custom path is set, the Configuration cell (Section 2) will:
+- **Prompt you to confirm** before switching from the defaults — clicking **Yes** activates the custom path, **No** keeps the defaults. Either way the notebook runs immediately with defaults on **Run All**.
+- **Auto-select the service** if only one `serviceId` is found in the directory.
+- **Show a service dropdown** if multiple services are found, so you can choose one before re-running Load Data.
+- **Show a metric dropdown** (Billing notebook only) listing all `groupByInstance` metrics available in the selected directory.
 
 ---
 
@@ -153,7 +159,7 @@ Open any `.ipynb` file directly in VS Code and select the `.venv` Python kernel 
 2. Processing - Raw Usage Data.ipynb         ← reads data/raw/
 3. Processing - Aggregated Usage Data.ipynb  ← reads data/aggregated/
 4. Processing - Grouped Usage Data.ipynb     ← reads data/grouped/
-5. Use Case - Telemetry.ipynb                ← reads all three data dirs
+5. Use Case - Telemetry.ipynb                ← reads data/aggregated/ and data/grouped/
 6. Use Case - Billing.ipynb                  ← reads data/grouped/
 
 # With a live deployment (run Fetch first)
@@ -205,8 +211,4 @@ The template defines:
 
 ## Reference
 
-- [Official documentation](https://developer.ibm.com/apis/catalog/sovcore--ibm-sovereign-core-apis/api/API--sovcore--ibm-sovereign-core-apis#getRawUsageByServiceProxy) 
-
----
-
-**Published On:** 28 August 2026
+- [Official documentation](https://github.ibm.com/Sovereign-Core/architecture/blob/main/sovCore2.0/metering.md) — metering architecture, data pipeline, metering models, query patterns, pagination, caching, and common gotchas.

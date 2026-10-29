@@ -1,0 +1,1225 @@
+{
+  "params": {
+    "tenantIds": [
+      "all"
+    ],
+    "workspaceIds": [
+      "all"
+    ],
+    "instanceIds": [
+      "all"
+    ],
+    "usageStart": 1785765600000,
+    "usageEnd": 1788357600000,
+    "groupByHrs": 24,
+    "transform": "sum",
+    "metricId": "api_calls",
+    "serviceId": "cluster-as-a-service",
+    "groupBy": "groupByTenant"
+  },
+  "totalGroups": 5,
+  "totalPeriodsPerGroup": 30,
+  "totalPeriodsCount": 150,
+  "aggregatedMeteredUsagePeriods": [
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 1,
+      "periodQuantity": 1504558,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 2,
+      "periodQuantity": 1512163,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 3,
+      "periodQuantity": 1452739,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 4,
+      "periodQuantity": 1552746,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 5,
+      "periodQuantity": 1412173,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 6,
+      "periodQuantity": 1451908,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 7,
+      "periodQuantity": 1453343,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 8,
+      "periodQuantity": 1430937,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 9,
+      "periodQuantity": 1480414,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 10,
+      "periodQuantity": 1533447,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 11,
+      "periodQuantity": 1486119,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 12,
+      "periodQuantity": 1507536,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 13,
+      "periodQuantity": 1480634,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 14,
+      "periodQuantity": 1466072,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 15,
+      "periodQuantity": 1636963,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 16,
+      "periodQuantity": 1490042,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 17,
+      "periodQuantity": 1474970,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 18,
+      "periodQuantity": 1437008,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 19,
+      "periodQuantity": 1469573,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 20,
+      "periodQuantity": 1441481,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 21,
+      "periodQuantity": 1582629,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 22,
+      "periodQuantity": 1545742,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 23,
+      "periodQuantity": 1490689,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 24,
+      "periodQuantity": 1509591,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 25,
+      "periodQuantity": 1553223,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 26,
+      "periodQuantity": 1369660,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 27,
+      "periodQuantity": 1393392,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 28,
+      "periodQuantity": 1435379,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 29,
+      "periodQuantity": 1456242,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "BANK_CORP::",
+      "groupTenantId": "BANK_CORP",
+      "periodNumber": 30,
+      "periodQuantity": 1348893,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 31,
+      "periodQuantity": 1043572,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 32,
+      "periodQuantity": 1048956,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 33,
+      "periodQuantity": 1040468,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 34,
+      "periodQuantity": 1053386,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 35,
+      "periodQuantity": 1037145,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 36,
+      "periodQuantity": 1073886,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 37,
+      "periodQuantity": 1068726,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 38,
+      "periodQuantity": 1035117,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 39,
+      "periodQuantity": 1057267,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 40,
+      "periodQuantity": 1074582,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 41,
+      "periodQuantity": 1065460,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 42,
+      "periodQuantity": 1040068,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 43,
+      "periodQuantity": 1133863,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 44,
+      "periodQuantity": 1055833,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 45,
+      "periodQuantity": 1092630,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 46,
+      "periodQuantity": 1076162,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 47,
+      "periodQuantity": 1066168,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 48,
+      "periodQuantity": 1100496,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 49,
+      "periodQuantity": 1094059,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 50,
+      "periodQuantity": 1076831,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 51,
+      "periodQuantity": 1119187,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 52,
+      "periodQuantity": 1005038,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 53,
+      "periodQuantity": 1033480,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 54,
+      "periodQuantity": 1069004,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 55,
+      "periodQuantity": 1038826,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 56,
+      "periodQuantity": 1075559,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 57,
+      "periodQuantity": 1082786,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 58,
+      "periodQuantity": 1033770,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 59,
+      "periodQuantity": 1087526,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "HEALTHNET_ORG::",
+      "groupTenantId": "HEALTHNET_ORG",
+      "periodNumber": 60,
+      "periodQuantity": 1010624,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 61,
+      "periodQuantity": 2074569,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 62,
+      "periodQuantity": 2084862,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 63,
+      "periodQuantity": 2195714,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 64,
+      "periodQuantity": 2037820,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 65,
+      "periodQuantity": 2035362,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 66,
+      "periodQuantity": 2197621,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 67,
+      "periodQuantity": 2174750,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 68,
+      "periodQuantity": 2205843,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 69,
+      "periodQuantity": 2125873,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 70,
+      "periodQuantity": 2044858,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 71,
+      "periodQuantity": 2131196,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 72,
+      "periodQuantity": 2060681,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 73,
+      "periodQuantity": 2177766,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 74,
+      "periodQuantity": 2078547,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 75,
+      "periodQuantity": 2131846,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 76,
+      "periodQuantity": 2103221,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 77,
+      "periodQuantity": 1994176,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 78,
+      "periodQuantity": 1966613,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 79,
+      "periodQuantity": 2082720,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 80,
+      "periodQuantity": 2050416,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 81,
+      "periodQuantity": 2032222,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 82,
+      "periodQuantity": 1992945,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 83,
+      "periodQuantity": 2039693,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 84,
+      "periodQuantity": 1869134,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 85,
+      "periodQuantity": 2126472,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 86,
+      "periodQuantity": 2056096,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 87,
+      "periodQuantity": 2037478,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 88,
+      "periodQuantity": 2019019,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 89,
+      "periodQuantity": 2247829,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "MANUFACT_WORKS::",
+      "groupTenantId": "MANUFACT_WORKS",
+      "periodNumber": 90,
+      "periodQuantity": 2017961,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 91,
+      "periodQuantity": 457102,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 92,
+      "periodQuantity": 476069,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 93,
+      "periodQuantity": 506471,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 94,
+      "periodQuantity": 473281,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 95,
+      "periodQuantity": 487462,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 96,
+      "periodQuantity": 556171,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 97,
+      "periodQuantity": 530232,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 98,
+      "periodQuantity": 503195,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 99,
+      "periodQuantity": 531945,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 100,
+      "periodQuantity": 524768,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 101,
+      "periodQuantity": 540009,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 102,
+      "periodQuantity": 577109,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 103,
+      "periodQuantity": 541668,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 104,
+      "periodQuantity": 525149,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 105,
+      "periodQuantity": 573563,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 106,
+      "periodQuantity": 559610,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 107,
+      "periodQuantity": 585513,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 108,
+      "periodQuantity": 650177,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 109,
+      "periodQuantity": 623054,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 110,
+      "periodQuantity": 616879,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 111,
+      "periodQuantity": 635858,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 112,
+      "periodQuantity": 629910,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 113,
+      "periodQuantity": 603022,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 114,
+      "periodQuantity": 589159,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 115,
+      "periodQuantity": 663749,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 116,
+      "periodQuantity": 674356,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 117,
+      "periodQuantity": 712662,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 118,
+      "periodQuantity": 623636,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 119,
+      "periodQuantity": 662524,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "MOTORVAULT_INC::",
+      "groupTenantId": "MOTORVAULT_INC",
+      "periodNumber": 120,
+      "periodQuantity": 656165,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 121,
+      "periodQuantity": 2084431,
+      "periodStart": 1785715200000,
+      "periodEnd": 1785801599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 122,
+      "periodQuantity": 1938400,
+      "periodStart": 1785801600000,
+      "periodEnd": 1785887999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 123,
+      "periodQuantity": 1885140,
+      "periodStart": 1785888000000,
+      "periodEnd": 1785974399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 124,
+      "periodQuantity": 1999934,
+      "periodStart": 1785974400000,
+      "periodEnd": 1786060799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 125,
+      "periodQuantity": 1960928,
+      "periodStart": 1786060800000,
+      "periodEnd": 1786147199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 126,
+      "periodQuantity": 1913885,
+      "periodStart": 1786147200000,
+      "periodEnd": 1786233599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 127,
+      "periodQuantity": 1913002,
+      "periodStart": 1786233600000,
+      "periodEnd": 1786319999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 128,
+      "periodQuantity": 2000722,
+      "periodStart": 1786320000000,
+      "periodEnd": 1786406399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 129,
+      "periodQuantity": 1933927,
+      "periodStart": 1786406400000,
+      "periodEnd": 1786492799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 130,
+      "periodQuantity": 1917937,
+      "periodStart": 1786492800000,
+      "periodEnd": 1786579199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 131,
+      "periodQuantity": 1927148,
+      "periodStart": 1786579200000,
+      "periodEnd": 1786665599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 132,
+      "periodQuantity": 1887594,
+      "periodStart": 1786665600000,
+      "periodEnd": 1786751999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 133,
+      "periodQuantity": 1989448,
+      "periodStart": 1786752000000,
+      "periodEnd": 1786838399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 134,
+      "periodQuantity": 1854149,
+      "periodStart": 1786838400000,
+      "periodEnd": 1786924799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 135,
+      "periodQuantity": 1927788,
+      "periodStart": 1786924800000,
+      "periodEnd": 1787011199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 136,
+      "periodQuantity": 1838506,
+      "periodStart": 1787011200000,
+      "periodEnd": 1787097599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 137,
+      "periodQuantity": 1924312,
+      "periodStart": 1787097600000,
+      "periodEnd": 1787183999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 138,
+      "periodQuantity": 1869977,
+      "periodStart": 1787184000000,
+      "periodEnd": 1787270399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 139,
+      "periodQuantity": 1920706,
+      "periodStart": 1787270400000,
+      "periodEnd": 1787356799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 140,
+      "periodQuantity": 3049365,
+      "periodStart": 1787356800000,
+      "periodEnd": 1787443199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 141,
+      "periodQuantity": 1878738,
+      "periodStart": 1787443200000,
+      "periodEnd": 1787529599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 142,
+      "periodQuantity": 1980686,
+      "periodStart": 1787529600000,
+      "periodEnd": 1787615999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 143,
+      "periodQuantity": 1983026,
+      "periodStart": 1787616000000,
+      "periodEnd": 1787702399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 144,
+      "periodQuantity": 1944642,
+      "periodStart": 1787702400000,
+      "periodEnd": 1787788799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 145,
+      "periodQuantity": 1934395,
+      "periodStart": 1787788800000,
+      "periodEnd": 1787875199999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 146,
+      "periodQuantity": 1993152,
+      "periodStart": 1787875200000,
+      "periodEnd": 1787961599999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 147,
+      "periodQuantity": 1846269,
+      "periodStart": 1787961600000,
+      "periodEnd": 1788047999999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 148,
+      "periodQuantity": 1890485,
+      "periodStart": 1788048000000,
+      "periodEnd": 1788134399999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 149,
+      "periodQuantity": 1958707,
+      "periodStart": 1788134400000,
+      "periodEnd": 1788220799999
+    },
+    {
+      "groupId": "RETAILPLEX_CO::",
+      "groupTenantId": "RETAILPLEX_CO",
+      "periodNumber": 150,
+      "periodQuantity": 1987754,
+      "periodStart": 1788220800000,
+      "periodEnd": 1788307199999
+    }
+  ]
+}
