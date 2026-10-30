@@ -325,6 +325,10 @@ Required OS images do not exist in AgentServiceConfig.
    ```bash
    oc get agentserviceconfig -A -o json | jq '.items[].spec.osImages'
    ```
+3. Verify that the same image versions found in step 2 are also configured in ClusterImageSets:
+   ```bash
+   oc get clusterimagesets -A
+   ```
 
 #### Mitigation
 1. Add required OS images to AgentServiceConfig
