@@ -175,7 +175,7 @@ Cluster deployment failure rate exceeds 10% over the last hour.
    ```
 3. Check for stuck resources:
    ```bash
-   oc get managedcluster -A | grep Unknown
+   oc get managedcluster -A | grep -E "Terminating|Unknown"
    ```
 
 #### Mitigation
@@ -548,7 +548,7 @@ General error occurred during cluster deployment.
    oc get pvc -n <cluster-namespace>
    oc get configmap -n <cluster-namespace>
    oc get secret -n <cluster-namespace>
-   oc get crd -n <cluster-namespace>
+   oc get crd
    ```
 
 #### Mitigation
