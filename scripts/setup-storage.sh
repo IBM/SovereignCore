@@ -20,7 +20,8 @@
 #   5. Create RGW user       — RGW user in main RGW for object storage (optional)
 #                            — CA certificate handling (validation, auto-extraction)
 #   6. Create backing bucket — S3 bucket for NooBaa BackingStore (optional)
-#   7. Generate config       — run create-external-cluster-resources.py or manual config
+#   7. Generate config       — run ceph-external-cluster-details-exporter.py, falling back to
+#                              create-external-cluster-resources.py (odf and native modes)
 #   8. Save artifacts        — write JSON to output dir
 #
 # Usage:
@@ -1060,6 +1061,82 @@ ceph_exec() {
     fi
 }
 
+# Locate the external cluster details script (used by Phase 7 in both odf and native modes).
+# Search order: ceph-external-cluster-details-exporter.py first, then
+# create-external-cluster-resources.py. Either script can be used in either mode.
+# Runs via ceph_exec, so in odf mode the search happens inside the toolbox pod.
+# Sets EXTERNAL_SCRIPT_PATH on success; returns 1 (after printing errors) if neither is found.
+find_external_cluster_script() {
+    local exporter_name="ceph-external-cluster-details-exporter.py"
+    local resources_name="create-external-cluster-resources.py"
+    # Same directories are checked for both scripts; exporter is tried in all
+    # directories first, then resources.
+    local -a dirs=(
+        "/root"
+        "/etc/rook-external"
+        "/usr/share/ceph"
+        "/usr/local/share/ceph"
+        "/opt/ceph"
+        "/usr/share/ceph-common"
+        "/usr/local/bin"
+    )
+    local -a candidates=()
+    local path name dir
+
+    for name in "$exporter_name" "$resources_name"; do
+        for dir in "${dirs[@]}"; do
+            candidates+=("${dir}/${name}")
+        done
+    done
+
+    EXTERNAL_SCRIPT_PATH=""
+    print_info "Locating external cluster script (${exporter_name} first, then ${resources_name})..."
+
+    # Pass 1: well-known locations, in priority order
+    for path in "${candidates[@]}"; do
+        print_debug "Checking: ${path}"
+        if ceph_exec test -f "$path" 2>/dev/null; then
+            EXTERNAL_SCRIPT_PATH="$path"
+            break
+        fi
+    done
+
+    # Pass 2: search /usr, still exporter first
+    if [ -z "$EXTERNAL_SCRIPT_PATH" ]; then
+        print_info "Script not found in common locations, searching /usr..."
+        for name in "$exporter_name" "$resources_name"; do
+            path=$(ceph_exec find /usr -name "$name" 2>/dev/null | head -1 || true)
+            if [ -n "$path" ]; then
+                EXTERNAL_SCRIPT_PATH="$path"
+                break
+            fi
+        done
+    fi
+
+    if [ -z "$EXTERNAL_SCRIPT_PATH" ]; then
+        print_error "Neither ${exporter_name} nor ${resources_name} was found"
+        print_error ""
+        print_error "Checked locations:"
+        for path in "${candidates[@]}"; do
+            print_error "  - ${path}"
+        done
+        print_error "  - find /usr (both script names)"
+        print_error ""
+        if [ "$MODE" = "odf" ]; then
+            print_error "To find the script manually:"
+            print_error "  oc rsh -n ${NAMESPACE} ${TOOLBOX_POD}"
+            print_error "  find / -name '*external-cluster*.py' 2>/dev/null"
+        else
+            print_error "It should be included with the ceph-common package."
+            print_error "Or download from: https://github.com/rook/rook/tree/master/deploy/examples"
+        fi
+        return 1
+    fi
+
+    print_success "Using script: ${EXTERNAL_SCRIPT_PATH}"
+    return 0
+}
+
 # Convert size string to bytes (e.g., "1T" -> bytes)
 convert_to_bytes() {
     local size="$1"
@@ -1558,44 +1635,18 @@ update_tenant_storage() {
         
         # Execute Phase 7 logic to regenerate config
         if [ "$MODE" = "odf" ]; then
-            # ODF mode: use create-external-cluster-resources.py
-            print_info "Running create-external-cluster-resources.py in toolbox..."
+            # ODF mode: run the external cluster details script inside the toolbox
+            print_info "Generating external config in toolbox..."
             print_info "This generates the external-cluster-details JSON with updated quotas"
             
-            # Auto-detect the Python script location
-            print_info "Detecting create-external-cluster-resources.py location..."
-            
-            COMMON_PATHS=(
-                "/etc/rook-external/create-external-cluster-resources.py"
-                "/usr/share/ceph/create-external-cluster-resources.py"
-                "/opt/ceph/create-external-cluster-resources.py"
-                "/usr/local/bin/create-external-cluster-resources.py"
-            )
-            
-            SCRIPT_PATH=""
-            for path in "${COMMON_PATHS[@]}"; do
-                if ceph_exec test -f "$path" 2>/dev/null; then
-                    SCRIPT_PATH="$path"
-                    print_success "Found script at: ${SCRIPT_PATH}"
-                    break
-                fi
-            done
-            
-            if [ -z "$SCRIPT_PATH" ]; then
-                print_error "Script not found in any common location"
-                print_error "Checked locations:"
-                for path in "${COMMON_PATHS[@]}"; do
-                    print_error "  - ${path}"
-                done
-                print_error ""
-                print_error "To find the script manually:"
-                print_error "  oc rsh -n ${NAMESPACE} ${TOOLBOX_POD}"
-                print_error "  find / -name 'create-external-cluster-resources.py' 2>/dev/null"
+            # Find the script (exporter first, then create-external-cluster-resources.py)
+            if ! find_external_cluster_script; then
                 print_warning "Configuration regeneration failed - you can manually run phase 7:"
                 print_info "  ./setup-storage.sh --tenant ${TENANT_NAME} --rbd-quota ${RBD_QUOTA} \\"
                 print_info "    --output-dir ${OUTPUT_DIR} --mode ${MODE} --phase 7"
                 return 1
             fi
+            SCRIPT_PATH="$EXTERNAL_SCRIPT_PATH"
             
             # Run the Python script
             SCRIPT_OUTPUT=$(ceph_exec python3 \
@@ -1632,7 +1683,7 @@ update_tenant_storage() {
             print_success "External config saved to: ${OUTPUT_JSON}"
             
         else
-            # Native Ceph mode: use ceph-external-cluster-details-exporter.py
+            # Native Ceph mode: use the external cluster details script
             print_info "Generating external config for native Ceph..."
             
             # Check for Python 3
@@ -1644,37 +1695,16 @@ update_tenant_storage() {
                 return 1
             fi
             
-            # Find the exporter script
-            EXPORTER_SCRIPT=""
-            COMMON_PATHS=(
-                "/root/ceph-external-cluster-details-exporter.py"
-                "/usr/share/ceph/ceph-external-cluster-details-exporter.py"
-                "/usr/local/share/ceph/ceph-external-cluster-details-exporter.py"
-                "/opt/ceph/ceph-external-cluster-details-exporter.py"
-                "/usr/share/ceph-common/ceph-external-cluster-details-exporter.py"
-            )
-            
-            for path in "${COMMON_PATHS[@]}"; do
-                if [ -f "$path" ]; then
-                    EXPORTER_SCRIPT="$path"
-                    print_success "Found exporter script at: ${EXPORTER_SCRIPT}"
-                    break
-                fi
-            done
-            
-            if [ -z "$EXPORTER_SCRIPT" ]; then
-                EXPORTER_SCRIPT=$(find /usr -name "ceph-external-cluster-details-exporter.py" 2>/dev/null | head -1)
-            fi
-            
-            if [ -z "$EXPORTER_SCRIPT" ]; then
-                print_error "ceph-external-cluster-details-exporter.py not found"
+            # Find the script (exporter first, then create-external-cluster-resources.py)
+            if ! find_external_cluster_script; then
                 print_warning "Configuration regeneration failed - you can manually run phase 7:"
                 print_info "  ./setup-storage.sh --tenant ${TENANT_NAME} --rbd-quota ${RBD_QUOTA} \\"
                 print_info "    --output-dir ${OUTPUT_DIR} --mode ${MODE} --phase 7"
                 return 1
             fi
+            EXPORTER_SCRIPT="$EXTERNAL_SCRIPT_PATH"
             
-            # Run the exporter script
+            # Run the script
             SCRIPT_OUTPUT=$(python3 "$EXPORTER_SCRIPT" \
                 --rbd-data-pool-name "$POOL_NAME" \
                 --k8s-cluster-name "$TENANT_NAME" \
@@ -1684,7 +1714,7 @@ update_tenant_storage() {
             SCRIPT_EXIT_CODE=$?
             
             if [ $SCRIPT_EXIT_CODE -ne 0 ]; then
-                print_error "Failed to run ceph-external-cluster-details-exporter.py"
+                print_error "Failed to run $(basename "$EXPORTER_SCRIPT")"
                 print_error "Exit code: ${SCRIPT_EXIT_CODE}"
                 print_warning "Configuration regeneration failed - you can manually run phase 7:"
                 print_info "  ./setup-storage.sh --tenant ${TENANT_NAME} --rbd-quota ${RBD_QUOTA} \\"
@@ -3512,46 +3542,13 @@ else
     OUTPUT_JSON="${OUTPUT_DIR}/${TENANT_NAME}-external-config.json"
     
     if [ "$MODE" = "odf" ]; then
-        # ODF mode: use create-external-cluster-resources.py
-        print_info "Running create-external-cluster-resources.py in toolbox..."
+        # ODF mode: run the external cluster details script inside the toolbox
+        print_info "Generating external config in toolbox..."
         print_info "This generates the external-cluster-details JSON for control plane or LOB Admin UI deployment"
         
-        # Auto-detect the Python script location (varies by ODF version)
-        print_info "Detecting create-external-cluster-resources.py location..."
-        
-        # Check only predefined common locations
-        COMMON_PATHS=(
-            "/etc/rook-external/create-external-cluster-resources.py"
-            "/usr/share/ceph/create-external-cluster-resources.py"
-            "/opt/ceph/create-external-cluster-resources.py"
-            "/usr/local/bin/create-external-cluster-resources.py"
-        )
-        
-        SCRIPT_PATH=""
-        print_info "Checking common locations..."
-        for path in "${COMMON_PATHS[@]}"; do
-            print_debug "Checking: ${path}"
-            if ceph_exec test -f "$path" 2>/dev/null; then
-                SCRIPT_PATH="$path"
-                print_success "Found script at: ${SCRIPT_PATH}"
-                break
-            fi
-        done
-        
-        # If not found in any common location, provide error with instructions
-        if [ -z "$SCRIPT_PATH" ]; then
-            print_error "Script not found in any common location"
-            print_error ""
-            print_error "Checked locations:"
-            for path in "${COMMON_PATHS[@]}"; do
-                print_error "  - ${path}"
-            done
-            print_error ""
-            print_error "To find the script manually:"
-            print_error "  oc rsh -n ${NAMESPACE} ${TOOLBOX_POD}"
-            print_error "  find / -name 'create-external-cluster-resources.py' 2>/dev/null"
-            exit 1
-        fi
+        # Find the script (exporter first, then create-external-cluster-resources.py)
+        find_external_cluster_script || exit 1
+        SCRIPT_PATH="$EXTERNAL_SCRIPT_PATH"
         
         # Run the Python script from detected location
         SCRIPT_OUTPUT=$(ceph_exec python3 \
@@ -3581,8 +3578,8 @@ else
         
         print_success "External config saved to: ${OUTPUT_JSON}"
     else
-        # Native Ceph mode: use ceph-external-cluster-details-exporter.py
-        print_info "Generating external config for native Ceph using ceph-external-cluster-details-exporter.py..."
+        # Native Ceph mode: use the external cluster details script
+        print_info "Generating external config for native Ceph..."
         
         # Check for Python 3
         if ! command -v python3 &>/dev/null; then
@@ -3590,56 +3587,12 @@ else
             exit 1
         fi
         
-        # Find the exporter script
-        print_info "Locating ceph-external-cluster-details-exporter.py..."
-        EXPORTER_SCRIPT=""
+        # Find the script (exporter first, then create-external-cluster-resources.py)
+        find_external_cluster_script || exit 1
+        EXPORTER_SCRIPT="$EXTERNAL_SCRIPT_PATH"
         
-        # Common locations for the script
-        COMMON_PATHS=(
-            "/root/ceph-external-cluster-details-exporter.py"
-            "/usr/share/ceph/ceph-external-cluster-details-exporter.py"
-            "/usr/local/share/ceph/ceph-external-cluster-details-exporter.py"
-            "/opt/ceph/ceph-external-cluster-details-exporter.py"
-            "/usr/share/ceph-common/ceph-external-cluster-details-exporter.py"
-        )
-        
-        for path in "${COMMON_PATHS[@]}"; do
-            if [ -f "$path" ]; then
-                EXPORTER_SCRIPT="$path"
-                print_success "Found exporter script at: ${EXPORTER_SCRIPT}"
-                break
-            fi
-        done
-        
-        # If not found in common locations, try to find it
-        if [ -z "$EXPORTER_SCRIPT" ]; then
-            print_info "Script not found in common locations, searching..."
-            EXPORTER_SCRIPT=$(find /usr -name "ceph-external-cluster-details-exporter.py" 2>/dev/null | head -1)
-            
-            if [ -n "$EXPORTER_SCRIPT" ]; then
-                print_success "Found exporter script at: ${EXPORTER_SCRIPT}"
-            else
-                print_error "ceph-external-cluster-details-exporter.py not found"
-                print_error ""
-                print_error "This script is required for native Ceph external cluster configuration."
-                print_error "It should be included with ceph-common package."
-                print_error ""
-                print_error "Checked locations:"
-                for path in "${COMMON_PATHS[@]}"; do
-                    print_error "  - ${path}"
-                done
-                print_error ""
-                print_error "To install:"
-                print_error "  RHEL/CentOS: yum install ceph-common"
-                print_error "  Ubuntu/Debian: apt-get install ceph-common"
-                print_error ""
-                print_error "Or download from: https://github.com/rook/rook/tree/master/deploy/examples"
-                exit 1
-            fi
-        fi
-        
-        # Run the exporter script
-        print_info "Running ceph-external-cluster-details-exporter.py..."
+        # Run the script
+        print_info "Running $(basename "$EXPORTER_SCRIPT")..."
         print_info "This will generate all necessary ConfigMaps and Secrets for ODF"
         
         # The script needs these parameters:
@@ -3657,7 +3610,7 @@ else
         SCRIPT_EXIT_CODE=$?
         
         if [ $SCRIPT_EXIT_CODE -ne 0 ]; then
-            print_error "Failed to run ceph-external-cluster-details-exporter.py"
+            print_error "Failed to run $(basename "$EXPORTER_SCRIPT")"
             print_error "Exit code: ${SCRIPT_EXIT_CODE}"
             print_error "Output:"
             print_error "$SCRIPT_OUTPUT"
