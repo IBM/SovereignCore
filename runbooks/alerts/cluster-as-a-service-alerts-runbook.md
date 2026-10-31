@@ -108,7 +108,7 @@ Cluster deployment failure rate exceeds 10% over the last hour.
    ```
 3. List recent failed ClusterRequests:
    ```bash
-   oc get clusterrequest -A -o json | jq '.items[] | select(.status.phase=="Failed") | {name: .metadata.name, namespace: .metadata.namespace, reason: .status.conditions[].message}'
+   oc get clusterrequest -n acm-service-broker -o json | jq '.items[] | select(.status.phase=="Failed") | {name: .metadata.name, namespace: .metadata.namespace, reason: .status.conditions[].message}'
    ```
 
 #### Mitigation
@@ -138,7 +138,7 @@ Cluster deployment failure rate exceeds 10% over the last hour.
    ```
 2. Check currently running deployments:
    ```bash
-   oc get clusterrequest -A -o json | jq '.items[] | select(.status.phase | IN("PreChecking", "Provisioning", "Installing", "PostInstall")) | {name: .metadata.name, phase: .status.phase, started: .metadata.annotations["metrics.sovereign.cloud.ibm.com/operation-started"]}'
+   oc get clusterrequest -n acm-service-broker -o json | jq '.items[] | select(.status.phase | IN("PreChecking", "ApplyingACMResources", "BindingAgent", "WaitingForRequirements", "Installing", "PostInstall")) | {name: .metadata.name, phase: .status.phase, started: .metadata.annotations["metrics.sovereign.cloud.ibm.com/operation-started"]}'
    ```
 3. Check agent availability:
    ```bash
@@ -171,11 +171,11 @@ Cluster deployment failure rate exceeds 10% over the last hour.
    ```
 2. Check currently running undeployments:
    ```bash
-   oc get clusterrequest -A -o json | jq '.items[] | select(.status.phase | IN("Deprovisioning", "Deleting")) | {name: .metadata.name, phase: .status.phase, started: .metadata.annotations["metrics.sovereign.cloud.ibm.com/operation-started"]}'
+   oc get clusterrequest -n acm-service-broker -o json | jq '.items[] | select(.status.phase | IN("Deleting")) | {name: .metadata.name, phase: .status.phase, started: .metadata.annotations["metrics.sovereign.cloud.ibm.com/operation-started"]}'
    ```
 3. Check for stuck resources:
    ```bash
-   oc get managedcluster -A | grep Terminating
+   oc get managedcluster -A | grep -E "Terminating|Unknown"
    ```
 
 #### Mitigation
@@ -205,7 +205,7 @@ More than 10 cluster deployments are running concurrently.
    ```
 2. List in-progress deployments:
    ```bash
-   oc get clusterrequest -A -o json | jq '.items[] | select(.status.phase | IN("PreChecking", "Provisioning", "Installing", "PostInstall")) | {name: .metadata.name, namespace: .metadata.namespace, phase: .status.phase}'
+   oc get clusterrequest -n acm-service-broker -o json | jq '.items[] | select(.status.phase | IN("PreChecking", "ApplyingACMResources", "BindingAgent", "WaitingForRequirements", "Installing", "PostInstall")) | {name: .metadata.name, namespace: .metadata.namespace, phase: .status.phase}'
    ```
 
 #### Mitigation
@@ -233,7 +233,7 @@ More than 10 cluster undeployments are running concurrently.
    ```
 2. List in-progress undeployments:
    ```bash
-   oc get clusterrequest -A -o json | jq '.items[] | select(.status.phase | IN("Deprovisioning", "Deleting")) | {name: .metadata.name, namespace: .metadata.namespace, phase: .status.phase}'
+   oc get clusterrequest -n acm-service-broker -o json | jq '.items[] | select(.status.phase | IN("Deleting")) | {name: .metadata.name, namespace: .metadata.namespace, phase: .status.phase}'
    ```
 
 #### Mitigation
@@ -263,7 +263,7 @@ All agents in the specified agent class are currently in use.
    ```
 2. Check failed ClusterRequests:
    ```bash
-   oc get clusterrequest -A -o json | jq '.items[] | select(.status.conditions[].reason=="AgentExhausted") | {name: .metadata.name, namespace: .metadata.namespace, message: .status.conditions[].message}'
+   oc get clusterrequest -n acm-service-broker -o json | jq '.items[] | select(.status.conditions[].reason=="AgentExhausted") | {name: .metadata.name, namespace: .metadata.namespace, message: .status.conditions[].message}'
    ```
 
 #### Mitigation
@@ -325,6 +325,10 @@ Required OS images do not exist in AgentServiceConfig.
    ```bash
    oc get agentserviceconfig -A -o json | jq '.items[].spec.osImages'
    ```
+3. Verify that the same image versions found in step 2 are also configured in ClusterImageSets:
+   ```bash
+   oc get clusterimagesets -A
+   ```
 
 #### Mitigation
 1. Add required OS images to AgentServiceConfig
@@ -347,7 +351,7 @@ Certificate configuration process failed during cluster setup.
 #### Diagnosis
 1. Check ClusterRequest status:
    ```bash
-   oc get clusterrequest <name> -n <namespace> -o yaml
+   oc get clusterrequest <name> -n acm-service-broker -o yaml
    ```
 2. Check certificate resources:
    ```bash
@@ -440,6 +444,9 @@ DNS record deletion failed during cluster cleanup.
 
 #### Diagnosis
 1. Check DNS provider logs
+   ```bash
+   oc logs -n sov-core-networking -l app=sov-core-networking --tail=100 | grep <cluster-name>
+   ```
 2. Verify DNS credentials are valid
 3. Check controller logs:
    ```bash
@@ -466,7 +473,7 @@ Compliance registration process failed.
 #### Diagnosis
 1. Check ComplianceRegistration resources:
    ```bash
-   oc get complianceregistration -A
+   oc get complianceregistration -n acm-service-broker
    ```
 2. Check controller logs:
    ```bash
@@ -499,7 +506,7 @@ AgentClusterInstall failure condition detected during OpenShift installation.
    ```
 2. Check installation logs:
    ```bash
-   oc logs -n <cluster-namespace> -l app=assisted-installer
+   oc logs -n multicluster-engine -l app=assisted-service -c assisted-service --tail=100
    ```
 3. Check agent logs:
    ```bash
@@ -528,7 +535,7 @@ General error occurred during cluster deployment.
 #### Diagnosis
 1. Check ClusterRequest status:
    ```bash
-   oc get clusterrequest <name> -n <namespace> -o yaml
+   oc get clusterrequest <name> -n acm-service-broker -o yaml
    ```
 2. Check controller logs:
    ```bash
@@ -537,6 +544,11 @@ General error occurred during cluster deployment.
 3. Check all related resources:
    ```bash
    oc get all -n <cluster-namespace>
+   oc get route -n <cluster-namespace>
+   oc get pvc -n <cluster-namespace>
+   oc get configmap -n <cluster-namespace>
+   oc get secret -n <cluster-namespace>
+   oc get crd
    ```
 
 #### Mitigation
@@ -578,20 +590,20 @@ curl -k https://localhost:8082/metrics | grep sov_caas_service_broker
 ### Check ClusterRequest Status
 ```bash
 # List all ClusterRequests
-oc get clusterrequest -A
+oc get clusterrequest -n acm-service-broker
 
 # Get detailed status
-oc get clusterrequest <name> -n <namespace> -o yaml
+oc get clusterrequest <name> -n acm-service-broker -o yaml
 
 # Check phase and conditions
-oc get clusterrequest <name> -n <namespace> -o json | jq '{phase: .status.phase, conditions: .status.conditions}'
+oc get clusterrequest <name> -n acm-service-broker -o json | jq '{phase: .status.phase, conditions: .status.conditions}'
 ```
 
 ### Resource Monitoring
 ```bash
 # Check resource usage
-oc top pods -n acm-service-broker
-oc top nodes
+oc adm top pods -n acm-service-broker
+oc adm top nodes
 
 # Check resource limits
 oc describe pod -n acm-service-broker <pod-name> | grep -A 5 Limits
