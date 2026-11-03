@@ -17,6 +17,8 @@ set -euo pipefail
 : "${S3_PREFIX:=pg-dumps}"
 
 NAMESPACE="nova-system-${INSTANCE_NAME}"
+BACKUP_TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
+DUMP_FILE="${DATABASE_NAME}_${BACKUP_TIMESTAMP}.dump.gz"
 
 echo "==> [1/3] Identifying primary PostgreSQL pod in ${NAMESPACE}..."
 PRIMARY_POD=$(oc get cluster nova-pg -n "${NAMESPACE}" -o jsonpath='{.status.currentPrimary}')
@@ -25,7 +27,7 @@ echo "Found primary pod: ${PRIMARY_POD}"
 echo "==> [2/3] Retrieving superuser credentials..."
 PG_PASS=$(oc get secret nova-pg-superuser -n "${NAMESPACE}" -o jsonpath='{.data.password}' | base64 -d)
 
-echo "==> [3/3] Streaming pg_dump to S3: s3://${S3_BUCKET}/${S3_PREFIX}/${DATABASE_NAME}.dump.gz..."
+echo "==> [3/3] Streaming pg_dump to S3: s3://${S3_BUCKET}/${S3_PREFIX}/${DUMP_FILE}..."
 oc exec -n "${NAMESPACE}" "${PRIMARY_POD}" -c nova-bnr -- \
   env S3_ENDPOINT="${S3_ENDPOINT}" \
       S3_ACCESS_KEY="${S3_ACCESS_KEY}" \
@@ -33,6 +35,7 @@ oc exec -n "${NAMESPACE}" "${PRIMARY_POD}" -c nova-bnr -- \
       S3_BUCKET="${S3_BUCKET}" \
       S3_PREFIX="${S3_PREFIX}" \
       SOURCE_DB="${DATABASE_NAME}" \
+      DUMP_FILE="${DUMP_FILE}" \
       S3_REGION="${S3_REGION}" \
   bash -c "
 set -o pipefail
@@ -48,7 +51,7 @@ s3 = boto3.client('s3',
     region_name=os.environ.get('S3_REGION', 'us-east-1'))
 s3.upload_fileobj(sys.stdin.buffer,
     os.environ['S3_BUCKET'],
-    os.environ['S3_PREFIX'] + '/' + os.environ['SOURCE_DB'] + '.dump.gz')
+    os.environ['S3_PREFIX'] + '/' + os.environ['DUMP_FILE'])
 print('Stream upload complete.', flush=True)
 \"
 "
