@@ -105,6 +105,7 @@ RGW_REGION=""  # Will be set based on deployment or default to "default"
 RGW_REALM=""   # RGW realm for multi-realm clusters (e.g. realm-ocp1)
 RGW_PROTOCOL="http"
 MAIN_RGW_ENDPOINT=""
+RGW_ENDPOINT_ARG=""  # --rgw-endpoint [http(s)://]HOST:PORT — skips RGW endpoint auto-detection (native mode)
 ENABLE_OBJECT_STORAGE=false
 CUSTOM_CA_BUNDLE_PATH=""  # Path to custom CA certificate bundle
 CA_BUNDLE_TYPE=""  # Type of CA bundle: custom, extracted-chain, extracted-self-signed, manual-placeholder, http-placeholder
@@ -287,6 +288,8 @@ ${ENABLE_OBJECT_STORAGE}
 ${ENABLE_BLOCK_STORAGE}
 ${CUSTOM_CA_BUNDLE_PATH}
 ${USE_CEPHADM}
+${RGW_REALM}
+${RGW_ENDPOINT_ARG}
 STATE
     print_debug "State saved: phase=$1 tenant=${TENANT_NAME} mode=${MODE}"
 }
@@ -307,6 +310,12 @@ load_state() {
         ENABLE_BLOCK_STORAGE=$(sed -n '12p' "$STATE_FILE")
         CUSTOM_CA_BUNDLE_PATH=$(sed -n '13p' "$STATE_FILE")
         USE_CEPHADM=$(sed -n '14p' "$STATE_FILE")
+        # Lines 15-16 were added later; keep a value given on the command line over an empty/old state
+        _st_realm=$(sed -n '15p' "$STATE_FILE")
+        _st_ep=$(sed -n '16p' "$STATE_FILE")
+        [ -z "$RGW_REALM" ] && RGW_REALM="$_st_realm"
+        [ -z "$RGW_ENDPOINT_ARG" ] && RGW_ENDPOINT_ARG="$_st_ep"
+        unset _st_realm _st_ep
         [ -z "$LOG_LEVEL" ] && LOG_LEVEL="INFO"
         [ -z "$RGW_REGION" ] && RGW_REGION="default"
         [ -z "$ENABLE_OBJECT_STORAGE" ] && ENABLE_OBJECT_STORAGE=false
@@ -361,6 +370,8 @@ while [[ $# -gt 0 ]]; do
             RGW_REGION="$2"; shift 2 ;;
         --rgw-realm)
             RGW_REALM="$2"; shift 2 ;;
+        --rgw-endpoint)
+            RGW_ENDPOINT_ARG="$2"; shift 2 ;;
         --ca-bundle-path)
             CUSTOM_CA_BUNDLE_PATH="$2"; shift 2 ;;
         --resume)
@@ -409,6 +420,11 @@ ${COLOR_BOLD}OBJECT STORAGE (OPTIONAL)${COLOR_RESET}
   --rgw-realm REALM       RGW realm name for multi-realm clusters (native mode)
                           Required when the cluster has named realms (not "default")
                           Example: --rgw-realm realm-ocp1
+  --rgw-endpoint EP       RGW endpoint as [http://|https://]HOST:PORT (native mode)
+                          Skips RGW endpoint auto-detection. Use this when the
+                          orchestrator is unavailable (e.g. Rook-Ceph) or the
+                          detected address is not reachable from the tenant.
+                          Example: --rgw-endpoint http://rook-ceph-rgw-quay-store.rook-ceph.svc:80
 
 ${COLOR_BOLD}HTTPS/TLS OPTIONS${COLOR_RESET}
   --ca-bundle-path PATH   Path to custom CA certificate bundle for HTTPS endpoints
@@ -1154,27 +1170,36 @@ detect_rgw_zone() {
 
     print_debug "Detecting RGW zone..." >&2
 
-    # If --rgw-realm was specified, use `zone get` to obtain the default zone
-    # name for that realm.  `zone list` returns UUIDs in default_info, not names,
-    # so `zone get --rgw-realm=<realm>` (which returns .name) is the reliable path.
+    # If --rgw-realm was specified, find the zone that belongs to that realm.
+    # `zone get --rgw-realm=<realm>` and `zone list --rgw-realm=<realm>` do NOT
+    # filter by realm on some clusters (e.g. Rook with several CephObjectStores
+    # returns the global default zone / every zone).  Instead, resolve the realm
+    # id and pick the zone whose `realm_id` matches it.
     if [ -n "${RGW_REALM}" ]; then
-        local zone_get_out
-        zone_get_out=$(ceph_exec radosgw-admin zone get --rgw-realm="${RGW_REALM}" 2>/dev/null || echo "")
-        detected_zone=$(echo "$zone_get_out" | jq -r '.name' 2>/dev/null || echo "")
-        if [ -n "$detected_zone" ] && [ "$detected_zone" != "null" ]; then
-            print_debug "Using default zone for realm '${RGW_REALM}': ${detected_zone}" >&2
+        local realm_id zone_name zone_realm_id
+        realm_id=$(ceph_exec radosgw-admin realm get --rgw-realm="${RGW_REALM}" 2>/dev/null \
+                   | jq -r '.id' 2>/dev/null || echo "")
+        [ "$realm_id" = "null" ] && realm_id=""
+
+        if [ -n "$realm_id" ]; then
+            zone_list=$(ceph_exec radosgw-admin zone list 2>/dev/null || echo "")
+            while IFS= read -r zone_name; do
+                [ -n "$zone_name" ] || continue
+                zone_realm_id=$(ceph_exec radosgw-admin zone get --rgw-zone="${zone_name}" 2>/dev/null \
+                                | jq -r '.realm_id' 2>/dev/null || echo "")
+                if [ "$zone_realm_id" = "$realm_id" ]; then
+                    detected_zone="$zone_name"
+                    break
+                fi
+            done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
+        fi
+
+        if [ -n "${detected_zone:-}" ]; then
+            print_debug "Using zone '${detected_zone}' for realm '${RGW_REALM}' (realm_id=${realm_id})" >&2
             echo "$detected_zone"
         else
-            # Fall back: list zones and pick the first matching zone-* name
-            zone_list=$(ceph_exec radosgw-admin zone list --rgw-realm="${RGW_REALM}" 2>/dev/null || echo "")
-            detected_zone=$(echo "$zone_list" | sed -n 's/.*"\(zone-[^"]*\)".*/\1/p' | head -1)
-            if [ -n "$detected_zone" ]; then
-                print_debug "Using first zone for realm '${RGW_REALM}': ${detected_zone}" >&2
-                echo "$detected_zone"
-            else
-                print_warning "Could not detect zone for realm '${RGW_REALM}', deriving from realm name" >&2
-                echo "${RGW_REALM/realm-/zone-}"
-            fi
+            print_warning "Could not find a zone for realm '${RGW_REALM}', deriving from realm name" >&2
+            echo "${RGW_REALM/realm-/zone-}"
         fi
         return
     fi
@@ -1697,6 +1722,7 @@ update_tenant_storage() {
             EXPORTER_SCRIPT=""
             COMMON_PATHS=(
                 "/root/create-external-cluster-resources.py"
+                "/etc/ceph/create-external-cluster-resources.py"
                 "/usr/share/ceph/create-external-cluster-resources.py"
                 "/usr/local/share/ceph/create-external-cluster-resources.py"
                 "/opt/ceph/create-external-cluster-resources.py"
@@ -2469,27 +2495,36 @@ detect_rgw_zone() {
 
     print_debug "Detecting RGW zone..." >&2
 
-    # If --rgw-realm was specified, use `zone get` to obtain the default zone
-    # name for that realm.  `zone list` returns UUIDs in default_info, not names,
-    # so `zone get --rgw-realm=<realm>` (which returns .name) is the reliable path.
+    # If --rgw-realm was specified, find the zone that belongs to that realm.
+    # `zone get --rgw-realm=<realm>` and `zone list --rgw-realm=<realm>` do NOT
+    # filter by realm on some clusters (e.g. Rook with several CephObjectStores
+    # returns the global default zone / every zone).  Instead, resolve the realm
+    # id and pick the zone whose `realm_id` matches it.
     if [ -n "${RGW_REALM}" ]; then
-        local zone_get_out
-        zone_get_out=$(ceph_exec radosgw-admin zone get --rgw-realm="${RGW_REALM}" 2>/dev/null || echo "")
-        detected_zone=$(echo "$zone_get_out" | jq -r '.name' 2>/dev/null || echo "")
-        if [ -n "$detected_zone" ] && [ "$detected_zone" != "null" ]; then
-            print_debug "Using default zone for realm '${RGW_REALM}': ${detected_zone}" >&2
+        local realm_id zone_name zone_realm_id
+        realm_id=$(ceph_exec radosgw-admin realm get --rgw-realm="${RGW_REALM}" 2>/dev/null \
+                   | jq -r '.id' 2>/dev/null || echo "")
+        [ "$realm_id" = "null" ] && realm_id=""
+
+        if [ -n "$realm_id" ]; then
+            zone_list=$(ceph_exec radosgw-admin zone list 2>/dev/null || echo "")
+            while IFS= read -r zone_name; do
+                [ -n "$zone_name" ] || continue
+                zone_realm_id=$(ceph_exec radosgw-admin zone get --rgw-zone="${zone_name}" 2>/dev/null \
+                                | jq -r '.realm_id' 2>/dev/null || echo "")
+                if [ "$zone_realm_id" = "$realm_id" ]; then
+                    detected_zone="$zone_name"
+                    break
+                fi
+            done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
+        fi
+
+        if [ -n "${detected_zone:-}" ]; then
+            print_debug "Using zone '${detected_zone}' for realm '${RGW_REALM}' (realm_id=${realm_id})" >&2
             echo "$detected_zone"
         else
-            # Fall back: list zones and pick the first matching zone-* name
-            zone_list=$(ceph_exec radosgw-admin zone list --rgw-realm="${RGW_REALM}" 2>/dev/null || echo "")
-            detected_zone=$(echo "$zone_list" | sed -n 's/.*"\(zone-[^"]*\)".*/\1/p' | head -1)
-            if [ -n "$detected_zone" ]; then
-                print_debug "Using first zone for realm '${RGW_REALM}': ${detected_zone}" >&2
-                echo "$detected_zone"
-            else
-                print_warning "Could not detect zone for realm '${RGW_REALM}', deriving from realm name" >&2
-                echo "${RGW_REALM/realm-/zone-}"
-            fi
+            print_warning "Could not find a zone for realm '${RGW_REALM}', deriving from realm name" >&2
+            echo "${RGW_REALM/realm-/zone-}"
         fi
         return
     fi
@@ -2683,6 +2718,17 @@ auto_detect_storagecluster() {
 # This is called before phases that were skipped to ensure required variables are set
 ensure_runtime_dependencies() {
     local phase=$1
+
+    # Restore the explicit RGW endpoint when Phase 1 was skipped (--resume / --phase N)
+    if [ -n "$RGW_ENDPOINT_ARG" ] && [ -z "${MAIN_RGW_ENDPOINT:-}" ]; then
+        if [[ "$RGW_ENDPOINT_ARG" =~ ^(https?)://(.+)$ ]]; then
+            RGW_PROTOCOL="${BASH_REMATCH[1]}"
+            MAIN_RGW_ENDPOINT="${BASH_REMATCH[2]%/}"
+        else
+            RGW_PROTOCOL="http"
+            MAIN_RGW_ENDPOINT="${RGW_ENDPOINT_ARG%/}"
+        fi
+    fi
     
     # TOOLBOX_POD is needed for phases 2, 3, 4, 5 in ODF mode (any phase using ceph_exec)
     if [ "$MODE" = "odf" ] && [ "$phase" -ge 2 ] && [ -z "$TOOLBOX_POD" ]; then
@@ -2752,6 +2798,7 @@ else
         _ecr_found=false
         for _p in \
             "/root/create-external-cluster-resources.py" \
+            "/etc/ceph/create-external-cluster-resources.py" \
             "/usr/share/ceph/create-external-cluster-resources.py" \
             "/usr/local/share/ceph/create-external-cluster-resources.py" \
             "/opt/ceph/create-external-cluster-resources.py" \
@@ -2977,20 +3024,24 @@ else
             fi
             print_success "Ceph configuration found"
 
-            # Verify Ceph keyring (check both naming conventions)
+            # Verify Ceph keyring (check all known naming conventions)
             # cephadm shell environment uses /etc/ceph/ceph.keyring
             # standard ceph-common install uses /etc/ceph/ceph.client.admin.keyring
+            # Rook toolbox uses /etc/ceph/keyring (referenced from ceph.conf)
             admin_keyring=""
             if [ -f /etc/ceph/ceph.client.admin.keyring ]; then
                 admin_keyring="/etc/ceph/ceph.client.admin.keyring"
             elif [ -f /etc/ceph/ceph.keyring ]; then
                 admin_keyring="/etc/ceph/ceph.keyring"
+            elif [ -f /etc/ceph/keyring ]; then
+                admin_keyring="/etc/ceph/keyring"
             fi
 
             if [ -z "$admin_keyring" ]; then
                 print_error "Ceph admin keyring not found."
                 print_error "Checked: /etc/ceph/ceph.client.admin.keyring"
                 print_error "         /etc/ceph/ceph.keyring"
+                print_error "         /etc/ceph/keyring"
                 print_error "If the host ceph binary version differs from the cluster, use --use-cephadm"
                 exit 1
             fi
@@ -3006,7 +3057,28 @@ else
         fi
         
         # Detect RGW endpoint if object storage is enabled
-        if [ "$ENABLE_OBJECT_STORAGE" = true ]; then
+        if [ "$ENABLE_OBJECT_STORAGE" = true ] && [ -n "$RGW_ENDPOINT_ARG" ]; then
+            # Explicit endpoint given — skip auto-detection entirely
+            if [[ "$RGW_ENDPOINT_ARG" =~ ^(https?)://(.+)$ ]]; then
+                RGW_PROTOCOL="${BASH_REMATCH[1]}"
+                MAIN_RGW_ENDPOINT="${BASH_REMATCH[2]%/}"
+            else
+                RGW_PROTOCOL="http"
+                MAIN_RGW_ENDPOINT="${RGW_ENDPOINT_ARG%/}"
+            fi
+            if ! [[ "$MAIN_RGW_ENDPOINT" =~ ^[^:/]+:[0-9]+$ ]]; then
+                print_error "Invalid --rgw-endpoint: '${RGW_ENDPOINT_ARG}' (expected [http(s)://]HOST:PORT)"
+                exit 1
+            fi
+            print_info "Using RGW endpoint from --rgw-endpoint: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}"
+            http_code=$(curl -k -s -o /dev/null -w "%{http_code}" --connect-timeout 5 "${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}/" 2>/dev/null || true)
+            if echo "$http_code" | grep -q "^[23]"; then
+                print_success "RGW endpoint is reachable: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}"
+            else
+                print_warning "RGW endpoint may not be reachable from this host: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}"
+                print_warning "This is OK if it is only reachable from the tenant cluster"
+            fi
+        elif [ "$ENABLE_OBJECT_STORAGE" = true ]; then
             print_info "Detecting RGW endpoint for native Ceph mode..."
             
             # Strategy:
@@ -3168,7 +3240,7 @@ else
                         print_error "  ./setup-storage.sh --tenant TENANT --rbd-quota SIZE --mode native --output-dir DIR"
                         print_error ""
                         print_error "Or set the endpoint manually:"
-                        print_error "  export MAIN_RGW_ENDPOINT=<hostname>:<port>"
+                        print_error "  --rgw-endpoint [http(s)://]<hostname>:<port>"
                         exit 1
                     fi
                 fi
@@ -3178,7 +3250,7 @@ else
             if [ -z "$RGW_HOST" ] || [ "$RGW_HOST" = "localhost" ] || [ "$RGW_HOST" = "127.0.0.1" ]; then
                 print_error "Invalid RGW hostname detected: '${RGW_HOST}'"
                 print_error "RGW must be accessible from external clusters (ODF client), not localhost"
-                print_error "Please configure a proper hostname/IP in ceph.conf or set MAIN_RGW_ENDPOINT manually"
+                print_error "Please configure a proper hostname/IP in ceph.conf or pass --rgw-endpoint [http(s)://]HOST:PORT"
                 exit 1
             fi
             
@@ -3949,6 +4021,7 @@ else
         
         COMMON_PATHS=(
             "/root/create-external-cluster-resources.py"
+            "/etc/ceph/create-external-cluster-resources.py"
             "/usr/share/ceph/create-external-cluster-resources.py"
             "/usr/local/share/ceph/create-external-cluster-resources.py"
             "/opt/ceph/create-external-cluster-resources.py"
