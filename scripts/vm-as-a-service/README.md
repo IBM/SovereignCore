@@ -35,3 +35,4 @@ Once a shared VM cluster has been created, one additional script must be run aga
 - [Allowing VM Console Access to the VM Cluster](./allowing-vm-cluster-console-access.md) — how to allow the VM Dashboard to reach the shared VM cluster API server, and how to revert it
 - [Configuring the MetalLB Advertisement Mode](./configuring-metallb-advertisement-mode.md) — how to configure L2 or BGP advertisement mode before VM cluster initialization
 - [Configuring Platform Storage Fallback](./configuring-platform-storage-fallback.md) — how to configure platform storage fallback when tenant storage is not configured
+- [Hardening virt-launcher Network Access](./hardening-virt-launcher-network-access.md) — how to apply a NetworkPolicy to limit cross-namespace access to VM guest ports
