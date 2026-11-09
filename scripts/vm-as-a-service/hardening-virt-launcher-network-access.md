@@ -24,7 +24,7 @@ Egress is not restricted.
 
 This policy is an interim hardening measure. The following restrictions are known and intentional for v1.3.x.
 
-Same-namespace traffic is not restricted. Every Pod in the same tenant namespace can reach all guest ports. Tenant namespace isolation is a v1.4.0 feature.
+Same-namespace traffic is not restricted. Every Pod in the same tenant namespace can reach all guest ports. Tenant namespace isolation is planned for a future release.
 
 TCP/22 is open to every source for compatibility with SSH access and the Concert compliance scanner. The source IP seen by the guest for SSH through the LoadBalancer is a node IP or an overlay address, not the external client IP, because the Service uses `externalTrafficPolicy: Cluster`. Restricting SSH sources at the pod level is therefore not effective; use `loadBalancerSourceRanges` on the LoadBalancer Service or an upstream network control instead.
 
