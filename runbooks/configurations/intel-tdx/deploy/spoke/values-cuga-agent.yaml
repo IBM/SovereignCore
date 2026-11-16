@@ -1,0 +1,48 @@
+# CUGA agent wiring, added to a tenant profile when TENANT_AGENT_NAMESPACE is set
+# (scripts/lib/add-agent.yq; the agent namespace also joins workloadNamespaces).
+clusterGroup:
+  applications:
+    coco-kyverno-policies:
+      overrides:
+        - name: confidentialWorkloads[0].name
+          value: cuga-agent
+        - name: confidentialWorkloads[0].namespaces[0]
+          value: '{{ .Values.global.tenantAgentNamespace }}'
+        - name: confidentialWorkloads[0].podSelector.app\.kubernetes\.io/name
+          value: cuga
+        - name: confidentialWorkloads[0].runtimeClassName
+          value: kata-cc
+        - name: confidentialWorkloads[0].initdata
+          value: initdata
+        - name: confidentialWorkloads[0].defaultMemoryMiB
+          value: "24576"
+        - name: confidentialWorkloads[0].memoryLimit
+          value: 24Gi
+        - name: confidentialWorkloads[0].defaultVcpus
+          value: "2"
+        - name: confidentialWorkloads[0].cpuLimit
+          value: "2"
+        - name: confidentialWorkloads[0].containerEnv[0].name
+          value: OMP_NUM_THREADS
+        - name: confidentialWorkloads[0].containerEnv[0].value
+          value: "2"
+        - name: confidentialWorkloads[0].containerEnv[1].name
+          value: LITELLM_LOCAL_MODEL_COST_MAP
+        - name: confidentialWorkloads[0].containerEnv[1].value
+          value: "True"
+        - name: confidentialWorkloads[0].containerEnv[2].name
+          value: OPENLIT_PRICING_JSON
+        - name: confidentialWorkloads[0].containerEnv[2].value
+          value: /dev/null
+
+    cuga-jwt-leeway:
+      name: cuga-jwt-leeway
+      namespace: openshift-sandboxed-containers-operator
+      project: sandbox
+      chart: cuga-jwt-leeway
+      targetRevision: 0.1.3
+      overrides:
+        - name: namespaces[0]
+          value: '{{ .Values.global.tenantAgentNamespace }}'
+        - name: images[0]
+          value: '{{ (split "/" .Values.global.repoURL)._0 }}/sovcloud/cp/sovereign-cloud-platform/automation-saas-platform-dev/cuga:0.2.27'

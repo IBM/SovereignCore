@@ -1,0 +1,15 @@
+apiVersion: v2
+name: coco-initdata
+description: |
+  Self-contained CoCo init-data generator for the DISCONNECTED / git-less OCI
+  deployment. The stock Validated Patterns imperative CronJob clones
+  global.repoURL as a GIT repo to obtain the ansible/ playbooks, but in this
+  deployment global.repoURL is the in-cluster Quay OCI registry (not a git
+  server), so that clone fails and the initdata/debug-initdata ConfigMaps are
+  never produced (leaving trustee's rvps-policy NonCompliant). This chart bundles
+  ansible/init-data-gzipper.yaml plus its two initdata-*.toml.tpl templates into a
+  ConfigMap and runs them once via a PostSync-hook Job using the same
+  imperative-container image -- no git clone, no Ansible Galaxy access required.
+type: application
+version: 0.0.11
+appVersion: "0.1.0"

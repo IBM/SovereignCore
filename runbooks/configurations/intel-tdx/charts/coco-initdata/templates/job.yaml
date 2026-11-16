@@ -1,0 +1,54 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: coco-initdata-gzipper
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: coco-initdata
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 4
+  activeDeadlineSeconds: 900
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: coco-initdata
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      containers:
+        - name: init-data-gzipper
+          image: {{ .Values.image }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          # Ansible needs a HOME writable by the restricted-SCC UID.
+          env:
+            - name: HOME
+              value: /tmp
+          workingDir: /opt/initdata
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+              cd /opt/initdata
+              exec ansible-playbook {{ .Values.verbosity }} \
+                -e @/values/values.yaml \
+                -e registry_ca_required={{ .Values.mirrorCA.enabled }} \
+                init-data-gzipper.yaml
+          volumeMounts:
+            - name: playbooks
+              mountPath: /opt/initdata
+              readOnly: true
+            - name: values
+              mountPath: /values
+              readOnly: true
+      volumes:
+        - name: playbooks
+          configMap:
+            name: coco-initdata-playbooks
+        - name: values
+          configMap:
+            name: {{ .Values.valuesConfigMap }}

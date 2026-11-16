@@ -1,0 +1,45 @@
+Target: ansible
+Base: https://github.com/validatedpatterns/coco-pattern v7.6.0 (9800bf1f200a0b41545926d56908d524b17c2cb2)
+What: guest registry mirror map (registry_configuration_uri, a runtime KBS resource) in both initdata
+  templates; the gzipper waits for the registry-ca Secret when registry_ca_required, so initdata is never
+  rendered (and measured) without the mirror CA because ESO had not synced yet.
+License: Apache-2.0; modifies upstream files (see NOTICE).
+---
+diff --git a/ansible/init-data-gzipper.yaml b/ansible/init-data-gzipper.yaml
+index 38f753a..bdfe797 100644
+--- a/ansible/init-data-gzipper.yaml
++++ b/ansible/init-data-gzipper.yaml
+@@ -43,6 +43,9 @@
+         name: registry-ca
+         namespace: imperative
+       register: ca_secret_result
++      until: not (registry_ca_required | default(false) | bool) or (ca_secret_result.resources | default([]) | length > 0)
++      retries: 20
++      delay: 6
+ 
+     - name: Extract and split CA certificates
+       ansible.builtin.shell: |
+diff --git a/ansible/initdata-debug.toml.tpl b/ansible/initdata-debug.toml.tpl
+index e53f392..55d1803 100644
+--- a/ansible/initdata-debug.toml.tpl
++++ b/ansible/initdata-debug.toml.tpl
+@@ -29,6 +29,7 @@ image_security_policy_uri = 'kbs:///default/security-policy/{{ security_policy_f
+ # CDH does NOT use this URI — registry auth is handled via imagePullSecrets
+ # on the workload's service account instead. Kept here for baremetal support.
+ authenticated_registry_credentials_uri = 'kbs:///default/credential/regcred'
++registry_configuration_uri = 'kbs:///default/registry-config/config'
+ {% if registry_ca_certs | default([]) | length > 0 %}
+ extra_root_certificates = [{% for cert in registry_ca_certs %}"""
+ {{ cert }}"""{%- if not loop.last %}, {% endif %}{% endfor %}]
+diff --git a/ansible/initdata-default.toml.tpl b/ansible/initdata-default.toml.tpl
+index 5079fd8..2961d2b 100644
+--- a/ansible/initdata-default.toml.tpl
++++ b/ansible/initdata-default.toml.tpl
+@@ -29,6 +29,7 @@ image_security_policy_uri = 'kbs:///default/security-policy/{{ security_policy_f
+ # CDH does NOT use this URI — registry auth is handled via imagePullSecrets
+ # on the workload's service account instead. Kept here for baremetal support.
+ authenticated_registry_credentials_uri = 'kbs:///default/credential/regcred'
++registry_configuration_uri = 'kbs:///default/registry-config/config'
+ {% if registry_ca_certs | default([]) | length > 0 %}
+ extra_root_certificates = [{% for cert in registry_ca_certs %}"""
+ {{ cert }}"""{%- if not loop.last %}, {% endif %}{% endfor %}]

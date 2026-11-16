@@ -1,0 +1,7 @@
+apiVersion: v2
+name: kubelet-podresources-gate
+description: >-
+  Enables the kubelet PodResources Get API (KubeletPodResourcesGet) that kata confidential-GPU
+  cold plug needs on kubelet < 1.34, via a systemd generator installed by MachineConfig.
+type: application
+version: 0.1.1

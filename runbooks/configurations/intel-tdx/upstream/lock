@@ -1,0 +1,10 @@
+# Only public upstream bases; build-upstream.sh verifies every commit or SHA256 pin.
+# git: ref = tag, pin = commit; helm: ref = chart version, pin = tgz SHA256.
+# name                 type  source                                                ref     pin
+coco-pattern           git   https://github.com/validatedpatterns/coco-pattern.git v7.6.0  9800bf1f200a0b41545926d56908d524b17c2cb2
+trustee                helm  https://charts.validatedpatterns.io                   0.10.2  265cc1a69f9392bbd98ea62ddba3d2e2a4194e77a829d6690f73b54379d5f658
+clustergroup           helm  https://charts.validatedpatterns.io                   0.9.58  435300d2678ef38d6e507684fbf3fa647d0b658673361c002c177faf90e03ff6
+acm                    helm  https://charts.validatedpatterns.io                   0.1.27  7253af8d12a3b50bcd1c5d6cb441f308478bd1ebc0be93c659f5539997ccc913
+sandboxed-containers   helm  https://charts.validatedpatterns.io                   0.2.1   74149703ae8f4cb5adee52ebda5107df150ceb62c99e1dc8ba5375c07fb98a84
+sandboxed-policies     helm  https://charts.validatedpatterns.io                   0.2.0   5c54ee37adbd7eea3ef566c1ed0c266e0a060dadebe63345fa5207b89c4140c8
+kyverno                helm  https://kyverno.github.io/kyverno/                    3.7.2   bc35fc5752f52a7f6cd1e30156156f5707d8484285906aabf01e91ea3704ee48

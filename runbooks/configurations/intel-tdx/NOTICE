@@ -1,0 +1,13 @@
+Intel TDX pattern for IBM Sovereign Core
+
+This directory contains no third-party source. scripts/build-upstream.sh downloads, at the
+versions pinned in upstream/lock, works licensed under the Apache License 2.0:
+
+  validatedpatterns/coco-pattern   https://github.com/validatedpatterns/coco-pattern
+  trustee chart                    https://github.com/butler54/trustee-chart (released via
+                                   https://charts.validatedpatterns.io)
+
+and modifies them with the files in patches/. The resulting build/ directory therefore contains
+MODIFIED versions of those works (and some unmodified upstream charts in build/external/). Each
+patch states its base and purpose; build/NOTICE lists the exact bases and patch checksums of a
+build. A copy of the Apache License 2.0 is written to build/pattern/LICENSE.

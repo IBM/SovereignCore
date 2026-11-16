@@ -1,0 +1,94 @@
+{{- if .Values.sgxPluginResources.enabled }}
+{{- /* WORKAROUND ONLY; remove when SgxDevicePlugin supports resources. Mutate-existing covers DaemonSets created before admission policy installation. */ -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno:background-controller:sgx-plugin-resources
+  labels:
+    rbac.kyverno.io/aggregate-to-background-controller: "true"
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+rules:
+  - apiGroups: [apps]
+    resources: [daemonsets]
+    resourceNames:
+      {{- range .Values.sgxPluginResources.daemonSetNames }}
+      - {{ . | quote }}
+      {{- end }}
+    verbs: [get, update, patch]
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sgx-plugin-resources
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    policies.kyverno.io/description: >-
+      Raise the Intel SGX device plugin's CPU/memory limits. The operator
+      hardcodes cpu=100m, which throttles device registration until the plugin
+      crash-loops, dropping sgx.intel.com/enclave to 0 and leaving tdx-qgs
+      unschedulable (TDX attestation then fails with "TDX Quote is empty").
+spec:
+  background: false
+  rules:
+    - name: sgx-plugin-daemonset-resources
+      match:
+        any:
+          - resources:
+              kinds:
+                - apps/v1/DaemonSet
+              namespaces:
+                - {{ .Values.sgxPluginResources.namespace }}
+              names:
+                {{- range .Values.sgxPluginResources.daemonSetNames }}
+                - {{ . | quote }}
+                {{- end }}
+      mutate:
+        patchStrategicMerge:
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: {{ .Values.sgxPluginResources.containerName }}
+                    resources:
+                      requests:
+                        cpu: {{ .Values.sgxPluginResources.requests.cpu | quote }}
+                        memory: {{ .Values.sgxPluginResources.requests.memory | quote }}
+                      limits:
+                        cpu: {{ .Values.sgxPluginResources.limits.cpu | quote }}
+                        memory: {{ .Values.sgxPluginResources.limits.memory | quote }}
+    - name: sgx-plugin-daemonset-resources-existing
+      match:
+        any:
+          - resources:
+              kinds:
+                - apps/v1/DaemonSet
+              namespaces:
+                - {{ .Values.sgxPluginResources.namespace }}
+              names:
+                {{- range .Values.sgxPluginResources.daemonSetNames }}
+                - {{ . | quote }}
+                {{- end }}
+      mutate:
+        mutateExistingOnPolicyUpdate: true
+        targets:
+          {{- range .Values.sgxPluginResources.daemonSetNames }}
+          - apiVersion: apps/v1
+            kind: DaemonSet
+            namespace: {{ $.Values.sgxPluginResources.namespace }}
+            name: {{ . | quote }}
+          {{- end }}
+        patchStrategicMerge:
+          spec:
+            template:
+              spec:
+                containers:
+                  - name: {{ .Values.sgxPluginResources.containerName }}
+                    resources:
+                      requests:
+                        cpu: {{ .Values.sgxPluginResources.requests.cpu | quote }}
+                        memory: {{ .Values.sgxPluginResources.requests.memory | quote }}
+                      limits:
+                        cpu: {{ .Values.sgxPluginResources.limits.cpu | quote }}
+                        memory: {{ .Values.sgxPluginResources.limits.memory | quote }}
+{{- end }}

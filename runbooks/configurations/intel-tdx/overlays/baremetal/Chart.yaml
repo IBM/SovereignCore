@@ -1,0 +1,5 @@
+name: baremetal
+version: 0.0.5
+description: >-
+  Bare metal platform configuration (coco-pattern v6.0.0) for IBM Sovereign Core: the NFD
+  instance can be left to the tenant platform.

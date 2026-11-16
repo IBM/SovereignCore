@@ -1,0 +1,5 @@
+name: intel-dcap
+version: 0.0.17
+description: >-
+  Intel TDX DCAP operator CR (offline platform registration) and SGX device plugin (coco-pattern
+  v7.6.0), for IBM Sovereign Core hubs and tenants.

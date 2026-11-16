@@ -1,0 +1,25 @@
+Target: baremetal
+Base: https://github.com/validatedpatterns/coco-pattern v7.6.0 (9800bf1f200a0b41545926d56908d524b17c2cb2) charts/all/baremetal
+What: Make NFD instance creation optional.
+License: Apache-2.0; modified upstream files (see NOTICE).
+---
+diff --git a/templates/nfd-instance.yaml b/templates/nfd-instance.yaml
+index ec967a1..6ec2107 100644
+--- a/templates/nfd-instance.yaml
++++ b/templates/nfd-instance.yaml
+@@ -1,3 +1,4 @@
++{{- if .Values.nfdInstance.enabled }}
+ apiVersion: nfd.openshift.io/v1
+ kind: NodeFeatureDiscovery
+ metadata:
+@@ -5,8 +6,9 @@ metadata:
+   namespace: openshift-nfd
+ spec:
+   operand:
+-    image: registry.redhat.io/openshift4/ose-node-feature-discovery-rhel9:v{{ .Values.global.clusterVersion }}
++    image: registry.redhat.io/openshift4/ose-node-feature-discovery-rhel9:v{{ (.Values.global | default dict).clusterVersion | default "4.20" }}
+     imagePullPolicy: Always
+     servicePort: 12000
+   workerConfig:
+     configData: |
++{{- end }}

@@ -1,0 +1,8 @@
+apiVersion: v2
+name: cuga-jwt-leeway
+description: >-
+  INTERIM. Mounts a JWT validator with a 30 s leeway into the CUGA agent so its login does not loop
+  when the agent runs in a TDX guest (guest clock ~1 s behind, agent validates with leeway 0).
+  Only for the agent images listed in values; remove when IBM ships the leeway fix.
+type: application
+version: 0.1.3

@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coco-initdata-playbooks
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: coco-initdata
+data:
+  init-data-gzipper.yaml: |
+{{ .Files.Get "files/init-data-gzipper.yaml" | indent 4 }}
+  initdata-default.toml.tpl: |
+{{ .Files.Get "files/initdata-default.toml.tpl" | indent 4 }}
+  initdata-debug.toml.tpl: |
+{{ .Files.Get "files/initdata-debug.toml.tpl" | indent 4 }}

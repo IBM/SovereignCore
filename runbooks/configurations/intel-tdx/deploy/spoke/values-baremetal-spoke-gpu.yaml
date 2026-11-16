@@ -1,0 +1,266 @@
+
+clusterGroup:
+  name: baremetal-spoke
+  isHubCluster: false
+  namespaces:
+  - openshift-sandboxed-containers-operator
+  - hello-openshift
+  - kbs-access
+  - baremetal
+  - intel-dcap
+  - intel-dcap-operator-system:
+      operatorGroup: true
+      targetNamespaces: []
+  - kyverno
+  - intel-device-plugins-operator:
+      operatorGroup: true
+      targetNamespaces: []
+  - nvidia-gpu-operator
+  - gpu-workload
+
+  operatorgroupExcludes:
+  - nvidia-gpu-operator
+
+  subscriptions:
+    sandbox:
+      name: sandboxed-containers-operator
+      namespace: openshift-sandboxed-containers-operator
+      source: cs-redhat-operator-index-coco-v4-20
+      channel: stable
+      installPlanApproval: Manual
+      csv: sandboxed-containers-operator.v1.13.1
+    intel-device-plugins:
+      name: intel-device-plugins-operator
+      namespace: intel-device-plugins-operator
+      source: cs-certified-operator-index-coco-v4-20
+      channel: stable
+    intel-tdx-dcap:
+      name: intel-tdx-dcap-operator
+      namespace: intel-dcap-operator-system
+      source: cs-certified-operator-index-coco-v4-20
+      channel: alpha
+      csv: intel-tdx-dcap-operator.v0.1.0
+    gpu-operator:
+      name: gpu-operator-certified
+      namespace: nvidia-gpu-operator
+      source: cs-certified-operator-index-coco-v4-20
+      channel: v26.3
+      installPlanApproval: Manual
+      csv: gpu-operator-certified.v26.3.0
+
+  projects:
+  - hub
+  - sandbox
+  - workloads
+  - default
+
+  applications:
+    # Applying baremetal MachineConfig changes reboots the tenant node.
+    baremetal:
+      name: baremetal
+      namespace: baremetal
+      project: hub
+      chart: baremetal
+      targetRevision: 0.0.5
+      overrides:
+        - name: nfdInstance.enabled
+          value: "false"
+
+    sandbox:
+      name: sandbox
+      namespace: openshift-sandboxed-containers-operator
+      project: sandbox
+      chart: sandboxed-containers
+      targetRevision: 0.2.1
+      overrides:
+        - name: global.secretStore.backend
+          value: vault
+        - name: secretStore.name
+          value: sovcloud-vault-cluster-secret-store
+        - name: secretStore.kind
+          value: ClusterSecretStore
+        - name: enablePeerPods
+          value: "false"
+
+    intel-dcap:
+      name: intel-dcap
+      namespace: intel-dcap
+      project: hub
+      chart: intel-dcap
+      targetRevision: 0.0.17
+      # As upstream: both operators rewrite the spec of these objects.
+      ignoreDifferences:
+        - group: deviceplugin.intel.com
+          kind: SgxDevicePlugin
+          name: sgxdeviceplugin-sample
+          jsonPointers:
+            - /spec
+        - group: trustedservices.intel.com
+          kind: TdxQuoteGenerationService
+          name: intel-tdx-dcap
+          jsonPointers:
+            - /spec
+            - /status
+
+    coco-initdata:
+      name: coco-initdata
+      namespace: imperative
+      project: hub
+      chart: coco-initdata
+      # Must match the hub coco-initdata version: RVPS validates the measured hash.
+      targetRevision: 0.0.11
+      overrides:
+        - name: secretStore.name
+          value: sovcloud-vault-cluster-secret-store
+        - name: secretStore.kind
+          value: ClusterSecretStore
+        - name: vaultTenantScoped
+          value: "true"
+        - name: valuesConfigMap
+          value: helm-values-configmap-baremetal-spoke
+        - name: kbsRouteCert.enabled
+          value: "true"
+
+    kyverno:
+      name: kyverno
+      namespace: kyverno
+      project: hub
+      chart: kyverno
+      targetRevision: 3.7.2
+      syncPolicy:
+        automated: {}
+        retry:
+          limit: 20
+        syncOptions:
+          - ServerSideApply=true
+      overrides:
+        # The kyverno-api CRDs render empty labels/annotations maps, which Kubernetes does not store:
+        # ArgoCD would show the app OutOfSync forever. One real entry each removes the diff.
+        - name: kyverno-api.labels.app\.kubernetes\.io/part-of
+          value: kyverno
+        - name: kyverno-api.annotations.argocd\.argoproj\.io/sync-options
+          value: ServerSideApply=true
+        - name: admissionController.container.image.registry
+          value: ghcr.io
+        - name: admissionController.initContainer.image.registry
+          value: ghcr.io
+        - name: backgroundController.image.registry
+          value: ghcr.io
+        - name: cleanupController.image.registry
+          value: ghcr.io
+        - name: crds.migration.image.registry
+          value: ghcr.io
+        - name: admissionController.container.securityContext
+          value: "null"
+        - name: admissionController.initContainer.securityContext
+          value: "null"
+        - name: backgroundController.securityContext
+          value: "null"
+        - name: cleanupController.securityContext
+          value: "null"
+        - name: reportsController.securityContext
+          value: "null"
+        - name: crds.migration.securityContext
+          value: "null"
+        - name: webhooksCleanup.securityContext
+          value: "null"
+        - name: test.securityContext
+          value: "null"
+        - name: crds.groups.wgpolicyk8s.policyreports
+          value: "false"
+        - name: crds.groups.wgpolicyk8s.clusterpolicyreports
+          value: "false"
+        - name: reportsController.enabled
+          value: "false"
+        - name: admissionController.replicas
+          value: "3"
+        - name: backgroundController.resources.limits.memory
+          value: "512Mi"
+        - name: backgroundController.resources.requests.memory
+          value: "256Mi"
+
+    coco-kyverno-policies:
+      name: coco-kyverno-policies
+      namespace: openshift-sandboxed-containers-operator
+      project: sandbox
+      chart: coco-kyverno-policies
+      targetRevision: 0.1.14
+      overrides:
+        - name: workloadNamespaces[0]
+          value: hello-openshift
+        - name: workloadNamespaces[1]
+          value: kbs-access
+        - name: workloadNamespaces[2]
+          value: gpu-workload
+        - name: workloadNamespaces[3]
+          value: llms
+        - name: confidentialGpu.namespaces[0]
+          value: llms
+        - name: confidentialGpu.initdata
+          value: initdata
+
+    nvidia-gpu:
+      name: nvidia-gpu
+      namespace: nvidia-gpu-operator
+      project: hub
+      chart: nvidia-gpu
+      targetRevision: 0.0.9
+
+    kubelet-podresources-gate:
+      name: kubelet-podresources-gate
+      namespace: nvidia-gpu-operator
+      project: hub
+      chart: kubelet-podresources-gate
+      targetRevision: 0.1.1
+      overrides:
+        - name: podResourcesGet.enabled
+          value: "true"
+        - name: runtimeRequestTimeout.enabled
+          value: "true"
+        - name: runtimeRequestTimeout.value
+          value: 20m
+
+    sgx-plugin-resources:
+      name: sgx-plugin-resources
+      namespace: intel-device-plugins-operator
+      project: hub
+      chart: sgx-plugin-resources
+      targetRevision: 0.1.3
+      overrides:
+        - name: sgxPluginResources.namespace
+          value: intel-device-plugins-operator
+
+
+    kbs-access-curl:
+      name: kbs-access-curl
+      namespace: kbs-access
+      project: workloads
+      chart: kbs-access-curl
+      targetRevision: 0.1.0
+      syncPolicy:
+        automated:
+          prune: true
+      overrides:
+        # The v7 samples read global.coco.runtimeClassName; apps only receive explicit parameters.
+        - name: global.coco.runtimeClassName
+          value: kata-cc
+        - name: defaultMemory
+          value: "8192"
+
+    hello-openshift:
+      name: hello-openshift
+      namespace: hello-openshift
+      project: workloads
+      chart: hello-openshift
+      targetRevision: 0.0.1
+      syncPolicy:
+        automated:
+          prune: true
+      overrides:
+        # The v7 samples read global.coco.runtimeClassName; apps only receive explicit parameters.
+        - name: global.coco.runtimeClassName
+          value: kata-cc
+
+  imperative:
+    image: ghcr.io/butler54/imperative-container@sha256:1885602ea5e2cc0052145ef33451a7003b9b6e523cfbf27bc94556f857682cd2
+    jobs: []

@@ -1,0 +1,40 @@
+global:
+  pattern: coco-pattern
+  clusterPlatform: BareMetal
+  singleArgoCD: true
+  vpArgoNamespace: openshift-gitops
+  # hubClusterDomain must name the management hub: it determines the guest's KBS URL.
+  localClusterName: local-cluster
+  multiSourceSupport: false
+  multiSourceTargetRevision: main
+  privateRepo: false
+  experimentalCapabilities: none
+  deletePattern: keep
+  gitOpsSubNamespace: openshift-gitops
+  baremetalStorageProvider: hpp
+  secretStore:
+    backend: vault
+  # Disable the secret loader to avoid modifying the tenant Vault.
+  secretLoader:
+    disabled: true
+  options:
+    useCSV: false
+    syncPolicy: Automatic
+    installPlanApproval: Automatic
+    autoApproveManualInstallPlans: true
+  coco:
+    securityPolicyFlavour: "insecure"
+    secured: true
+    enableSSHDebug: false
+    azure:
+      defaultVMFlavour: "Standard_DC2as_v5"
+      VMFlavours: "Standard_DC2as_v5,Standard_DC4as_v5,Standard_DC8as_v5,Standard_DC16as_v5"
+main:
+  clusterGroupName: baremetal-spoke
+  multiSourceConfig:
+    enabled: true
+    clusterGroupChartVersion: 0.9.*
+
+secretStore:
+  name: sovcloud-vault-cluster-secret-store
+  kind: ClusterSecretStore

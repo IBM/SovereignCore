@@ -1,0 +1,9 @@
+# Add the CUGA agent (AGENT_VALUES, deploy/spoke/values-cuga-agent.yaml) to a tenant profile:
+# its namespace as the next workloadNamespaces entry, its coco-kyverno-policies overrides and apps.
+load(strenv(AGENT_VALUES)) as $a
+| (.clusterGroup.applications["coco-kyverno-policies"].overrides
+    | map(select(.name | test("^workloadNamespaces\\["))) | length) as $n
+| .clusterGroup.applications["coco-kyverno-policies"].overrides +=
+    [{"name": "workloadNamespaces[" + ($n | tostring) + "]", "value": "{{ .Values.global.tenantAgentNamespace }}"}]
+    + $a.clusterGroup.applications["coco-kyverno-policies"].overrides
+| .clusterGroup.applications += ($a.clusterGroup.applications | del(.["coco-kyverno-policies"]))

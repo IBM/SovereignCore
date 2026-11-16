@@ -1,0 +1,22 @@
+# Chart pins: each chart's Chart.yaml version and every profile's targetRevision must match.
+# Hub and all tenants must run the same coco-initdata version: hub RVPS validates their measured initdata.
+
+trustee: 0.8.1-sovcore.3
+baremetal: 0.0.5
+intel-dcap: 0.0.17
+coco-kyverno-policies: 0.1.14
+nvidia-gpu: 0.0.9
+coco-initdata: 0.0.11
+kubelet-podresources-gate: 0.1.1
+sgx-plugin-resources: 0.1.3
+cuga-jwt-leeway: 0.1.3
+clustergroup: 0.9.58
+acm: 0.1.27
+sandboxed-containers: 0.2.1
+sandboxed-policies: 0.2.0
+kyverno: 3.7.2
+# coco-pattern samples, at their upstream versions.
+storage: 0.0.2
+kbs-access-curl: 0.1.0
+hello-openshift: 0.0.1
+gpu-workload: 0.0.1

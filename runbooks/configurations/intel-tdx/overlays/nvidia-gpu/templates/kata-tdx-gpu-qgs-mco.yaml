@@ -1,0 +1,22 @@
+{{- /* The DCAP operator's QGS listens only on /var/run/tdx-qgs/qgs.socket; port 0 makes QEMU use that
+  socket. The baremetal chart sets it for kata-tdx only, so GPU guests asked vsock 4050 and attested with an
+  empty TDX quote. */ -}}
+{{- range list "master" "worker" }}
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: {{ . }}
+  name: 99-kata-tdx-nvidia-gpu-qgs-{{ . }}
+spec:
+  config:
+    ignition:
+      version: 3.2.0
+    storage:
+      files:
+        - path: /etc/kata-containers/kata-tdx-nvidia-gpu/config.d/96-kata-kernel-config
+          mode: 0644
+          contents:
+            source: data:text/plain;charset=utf-8;base64,{{ "[hypervisor.qemu]\ntdx_quote_generation_service_socket_port=0\n" | b64enc }}
+{{- end }}

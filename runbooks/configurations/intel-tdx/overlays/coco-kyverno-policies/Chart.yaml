@@ -1,0 +1,5 @@
+name: coco-kyverno-policies
+version: 0.1.14
+description: >-
+  Kyverno policies for CoCo cc_init_data injection and validation (coco-pattern v6.0.0) plus IBM
+  Sovereign Core confidential GPU and confidential workload rules.

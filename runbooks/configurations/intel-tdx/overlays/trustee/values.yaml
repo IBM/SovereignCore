@@ -1,0 +1,6 @@
+kbs:
+  # Replace the upstream list: the credential resource is defined in kbs.secretResources from the
+  # dedicated read-only TDX registry credential (Vault tdxRegistryAuth, field regcred).
+  extraSecrets: []
+  # Off: it would publish the hub's whole pull secret as the guests' registry credential.
+  pullSecretCredentialPolicy: false
