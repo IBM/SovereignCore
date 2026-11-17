@@ -2766,15 +2766,16 @@ else
             RGW_HTTPS_ENDPOINT=$(oc get route "$https_route_name" \
                                  -n "$NAMESPACE" -o jsonpath='{.spec.host}' 2>/dev/null || echo "")
             
-            # Prefer HTTPS if available, otherwise use HTTP
-            if [ -n "$RGW_HTTPS_ENDPOINT" ]; then
-                MAIN_RGW_ENDPOINT="$RGW_HTTPS_ENDPOINT"
-                RGW_PROTOCOL="https"
-                print_info "Using HTTPS endpoint (secure)"
-            elif [ -n "$RGW_HTTP_ENDPOINT" ]; then
+            # Prefer HTTP if available, otherwise use HTTPS
+            # (HTTPS is not yet fully supported: CA bundle handling is untested)
+            if [ -n "$RGW_HTTP_ENDPOINT" ]; then
                 MAIN_RGW_ENDPOINT="$RGW_HTTP_ENDPOINT"
                 RGW_PROTOCOL="http"
-                print_warning "HTTPS endpoint not found, falling back to HTTP"
+                print_info "Using HTTP endpoint"
+            elif [ -n "$RGW_HTTPS_ENDPOINT" ]; then
+                MAIN_RGW_ENDPOINT="$RGW_HTTPS_ENDPOINT"
+                RGW_PROTOCOL="https"
+                print_warning "HTTP endpoint not found, falling back to HTTPS"
             fi
             
             # Fallback to service endpoint if no routes exist
