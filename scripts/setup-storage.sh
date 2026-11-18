@@ -2671,9 +2671,17 @@ detect_rgw_endpoint() {
             [ -n "$host" ] && [ -n "$port" ] && MAIN_RGW_ENDPOINT="${host}:${port}"
         fi
     fi
-    if [ -n "${MAIN_RGW_ENDPOINT:-}" ]; then
-        print_info "Detected RGW endpoint: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}"
+    if [ -z "${MAIN_RGW_ENDPOINT:-}" ]; then
+        print_error "Could not detect the RGW endpoint."
+        if [ "$MODE" = "odf" ]; then
+            print_error "Looked for route/CephObjectStore '${store}' in namespace '${NAMESPACE}'."
+            print_error "Check --storagecluster (current: '${STORAGECLUSTER_NAME}') and --namespace."
+        else
+            print_error "No RGW daemon was reported by 'ceph orch ps --daemon-type rgw'."
+        fi
+        exit 1
     fi
+    print_info "Detected RGW endpoint: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}"
 }
 
 # Restore RGW_ACCESS_KEY / RGW_SECRET_KEY from the credentials file written by Phase 5.
