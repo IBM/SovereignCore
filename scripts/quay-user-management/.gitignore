@@ -1,0 +1,9 @@
+# Environment variables (contains sensitive information)
+.env
+
+# Generated secrets (contains credentials)
+generated/*.yaml
+generated/*.json
+
+# Keep the generated directory structure
+!generated/.gitkeep
