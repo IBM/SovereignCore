@@ -2609,6 +2609,15 @@ ensure_runtime_dependencies() {
     
     # TOOLBOX_POD is needed for phases 2, 3, 4, 5 in ODF mode (any phase using ceph_exec)
     if [ "$MODE" = "odf" ] && [ "$phase" -ge 2 ] && [ -z "$TOOLBOX_POD" ]; then
+        # NAMESPACE may be empty when --phase N skips Phase 1; auto-detect it now.
+        if [ -z "$NAMESPACE" ]; then
+            print_debug "NAMESPACE not set, attempting auto-detection for phase ${phase}..."
+            auto_detect_namespace || true
+        fi
+        if [ -z "$NAMESPACE" ]; then
+            print_error "Could not determine ODF namespace. Specify with: --namespace <namespace>"
+            exit 1
+        fi
         print_debug "Initializing TOOLBOX_POD for phase ${phase}..."
         TOOLBOX_POD=$(oc get pods -n "$NAMESPACE" -l app=rook-ceph-tools \
                       -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
@@ -2629,6 +2638,91 @@ ensure_runtime_dependencies() {
             exit 1
         fi
         print_debug "Ceph command available"
+    fi
+}
+
+# Detect MAIN_RGW_ENDPOINT (and RGW_PROTOCOL) when Phase 1 was skipped.
+# ODF mode: OpenShift route (HTTP preferred) or CephObjectStore service endpoint.
+# Native mode: first RGW daemon reported by the Ceph orchestrator.
+# Leaves MAIN_RGW_ENDPOINT unchanged if nothing can be detected.
+detect_rgw_endpoint() {
+    local svc host port store
+    print_info "MAIN_RGW_ENDPOINT not set, detecting RGW endpoint..."
+    if [ "$MODE" = "odf" ]; then
+        store="${STORAGECLUSTER_NAME}-cephobjectstore"
+        host=$(oc get route "$store" -n "$NAMESPACE" -o jsonpath='{.spec.host}' 2>/dev/null || true)
+        if [ -n "$host" ]; then
+            RGW_PROTOCOL="http"
+        else
+            host=$(oc get route "${store}-secure" -n "$NAMESPACE" -o jsonpath='{.spec.host}' 2>/dev/null || true)
+            [ -n "$host" ] && RGW_PROTOCOL="https"
+        fi
+        if [ -z "$host" ]; then
+            host=$(oc get cephobjectstore "$store" -n "$NAMESPACE" -o jsonpath='{.status.info.endpoint}' 2>/dev/null || true)
+            [[ "$host" =~ ^https:// ]] && RGW_PROTOCOL="https"
+            host=$(echo "$host" | sed -E 's|^https?://||; s|:[0-9]*$||')
+        fi
+        [ -n "$host" ] && MAIN_RGW_ENDPOINT="$host"
+    else
+        svc=$(ceph_exec ceph orch ps --daemon-type rgw 2>/dev/null | grep -v "^NAME" | head -1 || true)
+        if [ -n "$svc" ]; then
+            host=$(echo "$svc" | awk '{print $2}')
+            port=$(echo "$svc" | awk '{print $3}' | grep -oE '[0-9]+$' || true)
+            [ -n "$host" ] && [ -n "$port" ] && MAIN_RGW_ENDPOINT="${host}:${port}"
+        fi
+    fi
+    if [ -z "${MAIN_RGW_ENDPOINT:-}" ]; then
+        print_error "Could not detect the RGW endpoint."
+        if [ "$MODE" = "odf" ]; then
+            print_error "Looked for route/CephObjectStore '${store}' in namespace '${NAMESPACE}'."
+            print_error "Check --storagecluster (current: '${STORAGECLUSTER_NAME}') and --namespace."
+        else
+            print_error "No RGW daemon was reported by 'ceph orch ps --daemon-type rgw'."
+        fi
+        exit 1
+    fi
+    print_info "Detected RGW endpoint: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}"
+}
+
+# Restore RGW_ACCESS_KEY / RGW_SECRET_KEY from the credentials file written by Phase 5.
+# Needed when Phase 5 was skipped (--resume / --phase N).
+restore_rgw_credentials() {
+    local creds_file="${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt"
+    if [ -n "${RGW_ACCESS_KEY:-}" ] && [ -n "${RGW_SECRET_KEY:-}" ]; then
+        return 0
+    fi
+    if [ ! -f "$creds_file" ]; then
+        print_error "RGW credentials file not found: ${creds_file}"
+        print_error "Cannot continue without RGW credentials."
+        print_error "Re-run from Phase 5: --phase 5"
+        exit 1
+    fi
+    print_info "Restoring RGW credentials from saved file..."
+    RGW_ACCESS_KEY=$(grep "^RGW_ACCESS_KEY=" "$creds_file" | cut -d'=' -f2- || true)
+    RGW_SECRET_KEY=$(grep "^RGW_SECRET_KEY=" "$creds_file" | cut -d'=' -f2- || true)
+    if [ -z "$RGW_ACCESS_KEY" ] || [ -z "$RGW_SECRET_KEY" ]; then
+        print_error "RGW_ACCESS_KEY/RGW_SECRET_KEY not found in: ${creds_file}"
+        print_error "Re-run from Phase 5: --phase 5"
+        exit 1
+    fi
+    print_debug "Restored RGW credentials from: ${creds_file}"
+}
+
+# Restore MAIN_RGW_ENDPOINT from the credentials file written by Phase 5,
+# falling back to orchestrator detection.
+restore_rgw_endpoint() {
+    local creds_file="${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt"
+    local saved
+    if [ -n "${MAIN_RGW_ENDPOINT:-}" ]; then
+        return 0
+    fi
+    saved=$(grep "^RGW_ENDPOINT=" "$creds_file" 2>/dev/null | cut -d'=' -f2- || true)
+    if [[ "$saved" =~ ^(https?)://(.+)$ ]]; then
+        RGW_PROTOCOL="${BASH_REMATCH[1]}"
+        MAIN_RGW_ENDPOINT="${BASH_REMATCH[2]}"
+        print_debug "Restored MAIN_RGW_ENDPOINT from credentials file: ${MAIN_RGW_ENDPOINT}"
+    else
+        detect_rgw_endpoint
     fi
 }
 
@@ -3330,6 +3424,12 @@ else
         
         print_success "RGW quota set and enabled: ${RGW_USER_QUOTA}"
         
+        # If MAIN_RGW_ENDPOINT is still empty at this point (resumed from phase 5,
+        # so Phase 1 detection was skipped), detect it now.
+        if [ -z "${MAIN_RGW_ENDPOINT:-}" ]; then
+            detect_rgw_endpoint
+        fi
+        
         # Save RGW credentials
         RGW_CREDS_FILE="${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt"
         cat > "$RGW_CREDS_FILE" <<RGWCREDS
@@ -3483,6 +3583,12 @@ else
         print_header "PHASE 6: Create Backing Bucket in Main RGW"
         print_header "============================================================"
         echo ""
+        # When resuming from a saved state, RGW credentials and the endpoint may
+        # not be set (Phase 1 was skipped).  Restore them from the credentials file
+        # that Phase 5 wrote.
+        restore_rgw_credentials
+        restore_rgw_endpoint
+
         print_info "Creating backing bucket: ${BACKING_BUCKET}"
         print_info "Note: Bucket will be created using S3 API"
         
@@ -3790,7 +3896,11 @@ else
     # Add RGW credentials to JSON if object storage is enabled
     if [ "$ENABLE_OBJECT_STORAGE" = true ]; then
         print_info "Adding RGW object storage resources to external config JSON..."
-        
+        # Restore RGW credentials and endpoint when resuming from a saved state
+        # (Phase 1 was skipped so these variables may be unset).
+        restore_rgw_credentials
+        restore_rgw_endpoint
+
         # Prepare CA bundle content (always include, even if placeholder)
         CA_BUNDLE_CONTENT=""
         if [ -f "$CA_BUNDLE_FILE" ]; then
@@ -3890,7 +4000,13 @@ else
     echo ""
     # Create summary file
     SUMMARY_FILE="${OUTPUT_DIR}/${TENANT_NAME}-summary.txt"
-    
+    # Ensure file-path variables are set when resuming from phase 8
+    : "${RGW_CREDS_FILE:=${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt}"
+    : "${OUTPUT_JSON:=${OUTPUT_DIR}/${TENANT_NAME}-external-config.json}"
+    if [ "$ENABLE_OBJECT_STORAGE" = true ]; then
+        restore_rgw_endpoint
+    fi
+
     if [ "$MODE" = "odf" ]; then
         CLUSTER_INFO=$(oc whoami --show-server)
     else
