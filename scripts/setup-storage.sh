@@ -42,6 +42,10 @@
 #   ./setup-storage.sh --tenant staging --rbd-quota 1T --rgw-user-quota 2T \
 #     --rgw-region us-east-1 --mode odf --output-dir ~/staging-configs
 #
+#   # Block + Object storage on a multi-realm Ceph cluster (native mode)
+#   ./setup-storage.sh --tenant dev-team --rbd-quota 500G --rgw-user-quota 1T \
+#     --rgw-realm realm-ocp1 --mode native --output-dir ~/ceph-configs
+#
 #   # Block + Object storage with custom region and CA bundle
 #   ./setup-storage.sh --tenant prod-eu --rbd-quota 2T --rgw-user-quota 5T \
 #     --rgw-region eu-west-1 --ca-bundle-path /etc/ssl/certs/company-ca.crt \
@@ -404,7 +408,8 @@ ${COLOR_BOLD}OBJECT STORAGE (OPTIONAL)${COLOR_RESET}
   --region REGION         S3 region for RGW (default: us-east-1)
   --rgw-region REGION     Alias for --region
   --rgw-realm REALM       RGW realm name for multi-realm clusters (native mode)
-                          Required when the cluster has named realms (not the default realm)
+                          Required when the cluster has multiple realms; without it the
+                          script fails and lists the available realms
                           Example: --rgw-realm realm-ocp1
 
 ${COLOR_BOLD}HTTPS/TLS OPTIONS${COLOR_RESET}
@@ -467,8 +472,14 @@ ${COLOR_BOLD}EXAMPLES${COLOR_RESET}
   # Block + Object storage (auto-detects namespace and storage cluster)
   $0 --tenant dev-team --rbd-quota 500G --rgw-user-quota 1T --output-dir ~/odf-configs --mode odf
   
+  # Block + Object storage on a multi-realm cluster (--rgw-realm is required when several realms exist)
+  $0 --tenant dev-team --rbd-quota 500G --rgw-user-quota 1T --rgw-realm realm-ocp1 --output-dir ~/ceph-configs --mode native
+  
   # Update tenant quotas
   $0 --tenant customer-a --rbd-quota 2T --rgw-user-quota 2T --output-dir ~/ceph-configs --mode odf --update
+  
+  # Update RGW quota on a multi-realm cluster
+  $0 --tenant dev-team --rgw-user-quota 2T --rgw-realm realm-ocp1 --output-dir ~/ceph-configs --mode native --update
   
   # Block storage with manual namespace/cluster override
   $0 --tenant prod-app --rbd-quota 2T --output-dir ~/prod-configs --mode odf \
@@ -480,6 +491,9 @@ ${COLOR_BOLD}EXAMPLES${COLOR_RESET}
   
   # Delete tenant storage (with customer warning prompts)
   $0 --tenant customer-a --output-dir ~/ceph-configs --mode odf --delete
+  
+  # Delete tenant storage on a multi-realm cluster
+  $0 --tenant dev-team --rgw-realm realm-ocp1 --output-dir ~/ceph-configs --mode native --delete
 
 ${COLOR_BOLD}SECURITY${COLOR_RESET}
   - Always set umask 077 before running this script
@@ -1272,15 +1286,48 @@ detect_rgw_zone() {
         return
     fi
     
-    # Get default zone
+    # Get default zone. "default_info" is the zone's UUID, not its name, so
+    # resolve the name by matching it against each zone's id.
     default_zone=$(echo "$zone_list" | sed -n 's/.*"default_info":[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
     
     if [ -n "$default_zone" ]; then
-        print_debug "Using default zone from zone list"
-        echo "default"
-    else
-        print_debug "No specific zone detected, using 'default'"
-        echo "default"
+        local zn zid
+        while IFS= read -r zn; do
+            [ -n "$zn" ] || continue
+            zid=$(ceph_exec radosgw-admin zone get --rgw-zone="${zn}" 2>/dev/null \
+                  | jq -r '.id' 2>/dev/null || echo "")
+            if [ "$zid" = "$default_zone" ]; then
+                print_debug "Resolved default zone '${zn}' from default_info (${default_zone})" >&2
+                echo "$zn"
+                return
+            fi
+        done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
+    fi
+    
+    print_debug "No specific zone detected, using 'default'" >&2
+    echo "default"
+}
+
+
+###############################################################################
+# Fail with a clear message when several RGW realms exist and --rgw-realm was
+# not given. Must be called from the main flow (not inside $(...)) so that the
+# exit terminates the script. Single-realm clusters are unaffected.
+###############################################################################
+require_rgw_realm_if_ambiguous() {
+    [ -n "${RGW_REALM}" ] && return 0
+
+    local realm_json realm_names realm_count
+    realm_json=$(ceph_exec radosgw-admin realm list 2>/dev/null || echo "")
+    realm_names=$(echo "$realm_json" | jq -r '.realms[]?' 2>/dev/null || echo "")
+    realm_count=$(echo "$realm_names" | grep -c . || true)
+
+    if [ "$realm_count" -gt 1 ]; then
+        echo "ERROR: Multiple RGW realms found (${realm_count}) and --rgw-realm was not specified." >&2
+        echo "       Available realms:" >&2
+        echo "$realm_names" | sed 's/^/         - /' >&2
+        echo "       Re-run with --rgw-realm <name> to select the target realm." >&2
+        exit 1
     fi
 }
 
@@ -1517,12 +1564,18 @@ update_tenant_storage() {
         rgw_zone=$(detect_rgw_zone)
         print_info "Detected RGW zone: ${rgw_zone}"
         
+        # Realm flag for every radosgw-admin call below (empty when --rgw-realm is not given)
+        local -a realm_args=()
+        if [ -n "${RGW_REALM}" ]; then
+            realm_args=(--rgw-realm="${RGW_REALM}")
+        fi
+        
         # Check if RGW user exists (with zone parameter)
-        if ceph_exec radosgw-admin user info --uid="${rgw_user}" --rgw-zone="${rgw_zone}" &>/dev/null; then
+        if ceph_exec radosgw-admin user info --uid="${rgw_user}" --rgw-zone="${rgw_zone}" ${realm_args[@]+"${realm_args[@]}"} &>/dev/null; then
             # Get current quota and usage
             print_info "Analyzing current quota and usage..."
             local user_info
-            user_info=$(ceph_exec radosgw-admin user info --uid="${rgw_user}" --rgw-zone="${rgw_zone}" 2>/dev/null || echo "")
+            user_info=$(ceph_exec radosgw-admin user info --uid="${rgw_user}" --rgw-zone="${rgw_zone}" ${realm_args[@]+"${realm_args[@]}"} 2>/dev/null || echo "")
             
             local current_quota_bytes=0
             local current_quota_display="unlimited"
@@ -1545,7 +1598,7 @@ update_tenant_storage() {
             
             # Get current usage from stats
             local stats_output
-            stats_output=$(ceph_exec radosgw-admin user stats --uid="${rgw_user}" --rgw-zone="${rgw_zone}" 2>/dev/null || echo "")
+            stats_output=$(ceph_exec radosgw-admin user stats --uid="${rgw_user}" --rgw-zone="${rgw_zone}" ${realm_args[@]+"${realm_args[@]}"} 2>/dev/null || echo "")
             
             local current_usage_bytes=0
             local current_usage_str="0"
@@ -1645,8 +1698,8 @@ update_tenant_storage() {
                 print_info "Setting new RGW user quota: ${RGW_USER_QUOTA}"
                 local quota_bytes
                 quota_bytes=$(convert_to_bytes "$RGW_USER_QUOTA")
-                if ceph_exec radosgw-admin quota set --uid="${rgw_user}" --quota-scope=user --max-size="${quota_bytes}" --rgw-zone="${rgw_zone}"; then
-                    if ceph_exec radosgw-admin quota enable --uid="${rgw_user}" --quota-scope=user --rgw-zone="${rgw_zone}"; then
+                if ceph_exec radosgw-admin quota set --uid="${rgw_user}" --quota-scope=user --max-size="${quota_bytes}" --rgw-zone="${rgw_zone}" ${realm_args[@]+"${realm_args[@]}"}; then
+                    if ceph_exec radosgw-admin quota enable --uid="${rgw_user}" --quota-scope=user --rgw-zone="${rgw_zone}" ${realm_args[@]+"${realm_args[@]}"}; then
                         print_success "RGW user quota updated to ${RGW_USER_QUOTA}"
                         updated=true
                     else
@@ -2208,6 +2261,9 @@ if [ "$DELETE_MODE" = true ]; then
         print_info "Using toolbox pod: ${TOOLBOX_POD}"
     fi
     
+    # Multiple realms without --rgw-realm: fail and list the available realms
+    require_rgw_realm_if_ambiguous
+
     # Scope radosgw-admin calls to the --rgw-realm zone (empty when --rgw-realm is not given)
     RGW_SCOPE_ARGS=()
     if [ -n "$RGW_REALM" ]; then
@@ -2304,6 +2360,9 @@ if [ "$UPDATE_MODE" = true ]; then
         print_info "Using toolbox pod: ${TOOLBOX_POD}"
     fi
     
+    # Multiple realms without --rgw-realm: fail and list the available realms
+    [ -n "$RGW_USER_QUOTA" ] && require_rgw_realm_if_ambiguous
+
     # Run update operation
     # Temporarily disable 'set -e' to allow return 2 without exiting the script
     set +e
@@ -2464,6 +2523,13 @@ else
 fi
 echo ""
 
+# Fail early (before any provisioning) when multiple RGW realms exist and
+# --rgw-realm was not specified. In odf mode the toolbox pod is not known yet,
+# so the check is repeated at the start of Phase 5.
+if [ "$ENABLE_OBJECT_STORAGE" = true ] && [ "$MODE" = "native" ]; then
+    require_rgw_realm_if_ambiguous
+fi
+
 ###############################################################################
 # HELPER FUNCTIONS
 ###############################################################################
@@ -2525,16 +2591,26 @@ detect_rgw_zone() {
         return
     fi
     
-    # Get default zone
+    # Get default zone. "default_info" is the zone's UUID, not its name, so
+    # resolve the name by matching it against each zone's id.
     default_zone=$(echo "$zone_list" | sed -n 's/.*"default_info":[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
     
     if [ -n "$default_zone" ]; then
-        print_debug "Using default zone from zone list"
-        echo "default"
-    else
-        print_debug "No specific zone detected, using 'default'"
-        echo "default"
+        local zn zid
+        while IFS= read -r zn; do
+            [ -n "$zn" ] || continue
+            zid=$(ceph_exec radosgw-admin zone get --rgw-zone="${zn}" 2>/dev/null \
+                  | jq -r '.id' 2>/dev/null || echo "")
+            if [ "$zid" = "$default_zone" ]; then
+                print_debug "Resolved default zone '${zn}' from default_info (${default_zone})" >&2
+                echo "$zn"
+                return
+            fi
+        done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
     fi
+    
+    print_debug "No specific zone detected, using 'default'" >&2
+    echo "default"
 }
 
 extract_json_string_field() {
@@ -3418,6 +3494,8 @@ else
         print_header "PHASE 5: Create RGW User in Main RGW"
         print_header "============================================================"
         echo ""
+        require_rgw_realm_if_ambiguous
+
         # Detect the correct RGW zone
         RGW_ZONE=$(detect_rgw_zone)
         print_info "Detected RGW zone: ${RGW_ZONE}"
