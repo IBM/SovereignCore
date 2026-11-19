@@ -2705,7 +2705,7 @@ restore_rgw_credentials() {
         print_error "Re-run from Phase 5: --phase 5"
         exit 1
     fi
-    print_debug "Restored: ACCESS_KEY=${RGW_ACCESS_KEY}"
+    print_debug "Restored RGW credentials from: ${creds_file}"
 }
 
 # Restore MAIN_RGW_ENDPOINT from the credentials file written by Phase 5,
