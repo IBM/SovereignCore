@@ -1,0 +1,4 @@
+dcap:
+  # Air-gapped: offline platform registration; PCK certificates are imported per platform
+  # (scripts/dcap-pck.py), so no Intel PCS API key reaches the cluster.
+  connected: false

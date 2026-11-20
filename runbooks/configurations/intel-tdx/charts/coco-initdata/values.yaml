@@ -1,0 +1,35 @@
+
+namespace: imperative
+
+# Own SA with the narrow Role in rbac.yaml; imperative-admin-sa (clustergroup, */*/*) stays with the InstallPlan CronJob.
+serviceAccountName: coco-initdata
+createServiceAccount: true
+
+# Name must match <imperative.valuesConfigMap>-<clusterGroup.name>.
+valuesConfigMap: helm-values-configmap-baremetal
+
+image: ghcr.io/butler54/imperative-container@sha256:1885602ea5e2cc0052145ef33451a7003b9b6e523cfbf27bc94556f857682cd2
+imagePullPolicy: Always
+
+verbosity: -vvv
+
+# Disable mirrorCA only for a plain-HTTP mirror. The upstream gzipper reads Secret registry-ca, key pem.
+mirrorCA:
+  enabled: true
+  secretName: registry-ca
+  vaultLeaf: mirrorCA
+  vaultKey: ""
+
+# Enable only on tenants; the hub trustee chart supplies this Secret.
+kbsRouteCert:
+  enabled: false
+  secretName: kbs-tls-self-signed
+  vaultLeaf: kbsRouteCert
+  vaultKey: ""
+
+secretStore:
+  kind: ClusterSecretStore
+  name: sovcloud-vault-cluster-secret-store
+
+# Tenant Vault access is limited to secret/data/<first DNS label of global.clusterDomain>/*.
+vaultTenantScoped: false

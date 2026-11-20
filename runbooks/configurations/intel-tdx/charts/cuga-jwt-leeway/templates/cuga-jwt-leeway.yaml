@@ -1,0 +1,60 @@
+{{- if and .Values.namespaces .Values.images }}
+{{- /* WORKAROUND ONLY; remove when the agent image ships JWT leeway. */ -}}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: cuga-jwt-leeway
+  annotations:
+    policies.kyverno.io/description: >-
+      INTERIM: mount the leeway-patched jwt_validator.py (ConfigMap cuga-jwt-leeway) into the
+      listed CUGA agent images. Remove when the agent ships a JWT leeway.
+spec:
+  background: false
+  rules:
+    - name: mount-jwt-validator
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              operations:
+                - CREATE
+              namespaces:
+                {{- range .Values.namespaces }}
+                - {{ . | quote }}
+                {{- end }}
+              selector:
+                matchLabels:
+                  app.kubernetes.io/name: cuga
+      context:
+        - name: leewayConfigMaps
+          apiCall:
+            urlPath: "/api/v1/namespaces/{{ "{{" }}request.namespace{{ "}}" }}/configmaps"
+            jmesPath: "items[?metadata.name=='cuga-jwt-leeway'] | length(@)"
+      preconditions:
+        all:
+          - key: "{{ "{{" }} request.object.spec.containers[?name=='cuga'].image | [0] || '' {{ "}}" }}"
+            operator: AnyIn
+            value:
+              {{- range .Values.images }}
+              - {{ . | quote }}
+              {{- end }}
+          - key: "{{ "{{" }} leewayConfigMaps {{ "}}" }}"
+            operator: GreaterThan
+            value: 0
+      mutate:
+        patchStrategicMerge:
+          spec:
+            containers:
+              - name: cuga
+                volumeMounts:
+                  - name: cuga-jwt-leeway
+                    mountPath: /app/src/cuga/backend/server/auth/jwt_validator.py
+                    subPath: jwt_validator.py
+                    readOnly: true
+            volumes:
+              - name: cuga-jwt-leeway
+                configMap:
+                  name: cuga-jwt-leeway
+                  defaultMode: 292
+{{- end }}

@@ -1,0 +1,13 @@
+# Changing this reboots nodes in each selected role.
+podResourcesGet:
+  enabled: false
+  roles:
+    - master
+
+# Effective timeout is min(kubelet runtimeRequestTimeout, kata create_container_timeout); changes reboot nodes.
+# Opt in deliberately: this node-wide timeout also delays detection of hung CRI calls.
+runtimeRequestTimeout:
+  enabled: false
+  value: 20m
+  roles:
+    - master

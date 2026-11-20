@@ -1,0 +1,330 @@
+
+clusterGroup:
+  name: baremetal
+  isHubCluster: true
+  # Sovereign Core installs ACM, cert-manager and ODF with its own OperatorGroups; declaring their namespaces
+  # or Subscriptions here adds a second OperatorGroup and OLM fails those operators (TooManyOperatorGroups).
+  namespaces:
+  - openshift-sandboxed-containers-operator
+  - trustee-operator-system
+  - hello-openshift
+  - kbs-access
+  - openshift-cnv
+  - openshift-nfd
+  - baremetal
+  - intel-dcap
+  - intel-dcap-operator-system:
+      operatorGroup: true
+      targetNamespaces: []
+  - kyverno
+  - intel-device-plugins-operator:
+      operatorGroup: true
+      targetNamespaces: []
+
+  subscriptions:
+    sandbox:
+      name: sandboxed-containers-operator
+      namespace: openshift-sandboxed-containers-operator
+      source: cs-redhat-operator-index-coco-v4-20
+      channel: stable
+      installPlanApproval: Manual
+      csv: sandboxed-containers-operator.v1.13.1
+    trustee:
+      name: trustee-operator
+      namespace: trustee-operator-system
+      source: cs-redhat-operator-index-coco-v4-20
+      channel: stable
+      installPlanApproval: Manual
+      csv: trustee-operator.v1.2.1
+      # The KBS controller caches cluster-wide Secrets, requiring more than the default 128Mi.
+      config:
+        resources:
+          requests:
+            memory: 256Mi
+          limits:
+            memory: 1Gi
+    cnv:
+      name: kubevirt-hyperconverged
+      namespace: openshift-cnv
+      source: cs-redhat-operator-index-v4-20
+      channel: stable
+      installPlanApproval: Automatic
+    nfd:
+      name: nfd
+      namespace: openshift-nfd
+      source: cs-redhat-operator-index-coco-v4-20
+      channel: stable
+    intel-device-plugins:
+      name: intel-device-plugins-operator
+      namespace: intel-device-plugins-operator
+      source: cs-certified-operator-index-coco-v4-20
+      channel: stable
+    intel-tdx-dcap:
+      name: intel-tdx-dcap-operator
+      namespace: intel-dcap-operator-system
+      source: cs-certified-operator-index-coco-v4-20
+      channel: alpha
+      csv: intel-tdx-dcap-operator.v0.1.0
+  projects:
+  - hub
+  - trustee
+  - sandbox
+  - workloads
+  - default
+
+  applications:
+    # Use targetRevision for OCI; chartVersion adds an unreachable git value-files source.
+    acm:
+      name: acm
+      namespace: open-cluster-management
+      project: hub
+      chart: acm
+      targetRevision: 0.1.27
+
+    trustee:
+      name: trustee
+      namespace: trustee-operator-system
+      project: trustee
+      chart: trustee
+      targetRevision: 0.8.1-sovcore.3
+      overrides:
+        - name: secretStore.name
+          value: sovcloud-vault-cluster-secret-store
+        - name: global.coco.secured
+          value: "true"
+        - name: kbs.secretResources[0].name
+          value: kbsres1
+        - name: kbs.secretResources[0].key
+          value: secret/data/hub/kbsres1
+        - name: kbs.tdx.enabled
+          value: "true"
+        - name: kbs.baremetal.enabled
+          value: "true"
+        - name: kbs.secretResources[1].name
+          value: passphrase
+        - name: kbs.secretResources[1].key
+          value: secret/data/hub/passphrase
+        - name: kbs.secretResources[2].name
+          value: registry-config
+        - name: kbs.secretResources[2].key
+          value: secret/data/hub/registryConfig
+        # Guests read kbs:///default/credential/regcred: the dedicated read-only TDX registry credential.
+        - name: kbs.secretResources[3].name
+          value: credential
+        - name: kbs.secretResources[3].key
+          value: secret/data/hub/tdxRegistryAuth
+        - name: kbs.gpu.enabled
+          value: "true"
+
+    storage:
+      name: storage
+      namespace: openshift-storage
+      project: hub
+      chart: storage
+      targetRevision: 0.0.2
+      overrides:
+        # The storage chart receives no global values file; specify its provider here.
+        - name: global.baremetalStorageProvider
+          value: hpp
+
+    baremetal:
+      name: baremetal
+      namespace: baremetal
+      project: hub
+      chart: baremetal
+      targetRevision: 0.0.5
+
+    sandbox:
+      name: sandbox
+      namespace: openshift-sandboxed-containers-operator
+      project: sandbox
+      chart: sandboxed-containers
+      targetRevision: 0.2.1
+      overrides:
+        - name: global.secretStore.backend
+          value: vault
+        - name: secretStore.name
+          value: sovcloud-vault-cluster-secret-store
+        - name: secretStore.kind
+          value: ClusterSecretStore
+        - name: enablePeerPods
+          value: "false"
+
+
+    intel-dcap:
+      name: intel-dcap
+      namespace: intel-dcap
+      project: hub
+      chart: intel-dcap
+      targetRevision: 0.0.17
+      # As upstream: both operators rewrite the spec of these objects.
+      ignoreDifferences:
+        - group: deviceplugin.intel.com
+          kind: SgxDevicePlugin
+          name: sgxdeviceplugin-sample
+          jsonPointers:
+            - /spec
+        - group: trustedservices.intel.com
+          kind: TdxQuoteGenerationService
+          name: intel-tdx-dcap
+          jsonPointers:
+            - /spec
+            - /status
+
+    sandbox-policies:
+      name: sandbox-policies
+      namespace: openshift-sandboxed-containers-operator
+      chart: sandboxed-policies
+      targetRevision: 0.2.0
+
+    kbs-access-curl:
+      name: kbs-access-curl
+      namespace: kbs-access
+      project: workloads
+      chart: kbs-access-curl
+      targetRevision: 0.1.0
+      syncPolicy:
+        automated:
+          prune: true
+      overrides:
+        # The v7 samples read global.coco.runtimeClassName; apps only receive explicit parameters.
+        - name: global.coco.runtimeClassName
+          value: kata-cc
+        - name: defaultMemory
+          value: "8192"
+
+    hello-openshift:
+      name: hello-openshift
+      namespace: hello-openshift
+      project: workloads
+      chart: hello-openshift
+      targetRevision: 0.0.1
+      syncPolicy:
+        automated:
+          prune: true
+      overrides:
+        # The v7 samples read global.coco.runtimeClassName; apps only receive explicit parameters.
+        - name: global.coco.runtimeClassName
+          value: kata-cc
+
+    kyverno:
+      name: kyverno
+      namespace: kyverno
+      project: hub
+      chart: kyverno
+      targetRevision: 3.7.2
+      syncPolicy:
+        automated: {}
+        retry:
+          limit: 20
+        syncOptions:
+          - ServerSideApply=true
+      overrides:
+        # The kyverno-api CRDs render empty labels/annotations maps, which Kubernetes does not store:
+        # ArgoCD would show the app OutOfSync forever. One real entry each removes the diff.
+        - name: kyverno-api.labels.app\.kubernetes\.io/part-of
+          value: kyverno
+        - name: kyverno-api.annotations.argocd\.argoproj\.io/sync-options
+          value: ServerSideApply=true
+        # Override controller registries individually; their ghcr.io images are mirrored, as are the chart hooks.
+        - name: admissionController.container.image.registry
+          value: ghcr.io
+        - name: admissionController.initContainer.image.registry
+          value: ghcr.io
+        - name: backgroundController.image.registry
+          value: ghcr.io
+        - name: cleanupController.image.registry
+          value: ghcr.io
+        - name: crds.migration.image.registry
+          value: ghcr.io
+        - name: admissionController.container.securityContext
+          value: "null"
+        - name: admissionController.initContainer.securityContext
+          value: "null"
+        - name: backgroundController.securityContext
+          value: "null"
+        - name: cleanupController.securityContext
+          value: "null"
+        - name: reportsController.securityContext
+          value: "null"
+        - name: crds.migration.securityContext
+          value: "null"
+        - name: webhooksCleanup.securityContext
+          value: "null"
+        - name: test.securityContext
+          value: "null"
+        - name: crds.groups.wgpolicyk8s.policyreports
+          value: "false"
+        - name: crds.groups.wgpolicyk8s.clusterpolicyreports
+          value: "false"
+        - name: reportsController.enabled
+          value: "false"
+        # Multiple replicas prevent lease-update webhook stalls from blocking leader election.
+        - name: admissionController.replicas
+          value: "3"
+        - name: backgroundController.resources.limits.memory
+          value: "512Mi"
+        - name: backgroundController.resources.requests.memory
+          value: "256Mi"
+
+    coco-kyverno-policies:
+      name: coco-kyverno-policies
+      namespace: openshift-sandboxed-containers-operator
+      project: sandbox
+      chart: coco-kyverno-policies
+      targetRevision: 0.1.14
+      # Vault server pods move into a TDX guest only after install step vault-tdx labels namespace vault
+      # (coco.io/confidential-workloads=enabled); from then on a Vault pod start needs hub attestation.
+      overrides:
+        - name: workloadNamespaces[0]
+          value: hello-openshift
+        - name: workloadNamespaces[1]
+          value: kbs-access
+        - name: workloadNamespaces[2]
+          value: gpu-workload
+        - name: workloadNamespaces[3]
+          value: vault
+        - name: confidentialWorkloads[0].name
+          value: vault
+        - name: confidentialWorkloads[0].namespaces[0]
+          value: vault
+        - name: confidentialWorkloads[0].podSelector.app\.kubernetes\.io/name
+          value: vault
+        - name: confidentialWorkloads[0].podSelector.component
+          value: server
+        - name: confidentialWorkloads[0].runtimeClassName
+          value: kata-cc
+        - name: confidentialWorkloads[0].initdata
+          value: initdata
+        - name: confidentialWorkloads[0].defaultMemoryMiB
+          value: "8192"
+        - name: confidentialWorkloads[0].memoryLimit
+          value: 12Gi
+        - name: confidentialWorkloads[0].namespaceSelector.coco\.io/confidential-workloads
+          value: enabled
+
+    sgx-plugin-resources:
+      name: sgx-plugin-resources
+      namespace: openshift-sandboxed-containers-operator
+      project: sandbox
+      chart: sgx-plugin-resources
+      targetRevision: 0.1.3
+      overrides:
+        - name: sgxPluginResources.enabled
+          value: "false"
+        # Match the SGX operator namespace; a mismatch silently leaves the plugin without resources.
+        - name: sgxPluginResources.namespace
+          value: intel-device-plugins-operator
+
+    coco-initdata:
+      name: coco-initdata
+      namespace: imperative
+      project: hub
+      chart: coco-initdata
+      # Hub and tenants must run the same coco-initdata version to produce matching measured hashes.
+      targetRevision: 0.0.11
+
+  imperative:
+    image: ghcr.io/butler54/imperative-container@sha256:1885602ea5e2cc0052145ef33451a7003b9b6e523cfbf27bc94556f857682cd2
+    # Keep imperative RBAC and values ConfigMap, but disable jobs that require git or Ansible Galaxy.
+    jobs: []

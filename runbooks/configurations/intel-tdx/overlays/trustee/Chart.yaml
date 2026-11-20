@@ -1,0 +1,5 @@
+name: trustee
+version: 0.8.1-sovcore.3
+description: >-
+  Trustee 0.10.2 for IBM Sovereign Core: air-gapped Local-mode NVIDIA GPU attestation policy and
+  offline GPU reference values in RVPS.

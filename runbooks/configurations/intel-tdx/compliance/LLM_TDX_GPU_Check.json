@@ -1,0 +1,481 @@
+{
+  "name": "LLM_TDX_GPU_Check",
+  "platform": "node",
+  "blocks": [
+    {
+      "action": "system/Common/HTTP/HTTP Request",
+      "name": "HTTPRequest_1",
+      "inputs": [
+        {
+          "name": "method",
+          "value": "\"GET\""
+        },
+        {
+          "name": "host",
+          "value": "$SpokeHostname"
+        },
+        {
+          "name": "path",
+          "value": "\"/api/v1/namespaces/\" + $llm_namespace + \"/pods\""
+        },
+        {
+          "name": "query",
+          "value": "{ \"labelSelector\": $llm_pod_selector }"
+        },
+        {
+          "name": "authKey",
+          "value": "$spoke_ocp_auth"
+        }
+      ]
+    },
+    {
+      "action": "system/Common/HTTP/HTTP Request",
+      "name": "HTTPRequest_2",
+      "inputs": [
+        {
+          "name": "method",
+          "value": "\"GET\""
+        },
+        {
+          "name": "host",
+          "value": "$SpokeHostname"
+        },
+        {
+          "name": "path",
+          "value": "\"/apis/node.k8s.io/v1/runtimeclasses\""
+        },
+        {
+          "name": "authKey",
+          "value": "$spoke_ocp_auth"
+        }
+      ]
+    },
+    {
+      "action": "system/Common/HTTP/HTTP Request",
+      "name": "HTTPRequest_3",
+      "inputs": [
+        {
+          "name": "method",
+          "value": "\"GET\""
+        },
+        {
+          "name": "host",
+          "value": "$SpokeHostname"
+        },
+        {
+          "name": "path",
+          "value": "\"/api/v1/nodes\""
+        },
+        {
+          "name": "query",
+          "value": "{ \"labelSelector\": $tdx_label + \"=true\" }"
+        },
+        {
+          "name": "authKey",
+          "value": "$spoke_ocp_auth"
+        }
+      ]
+    },
+    {
+      "action": "system/Common/HTTP/HTTP Request",
+      "name": "HTTPRequest_6",
+      "inputs": [
+        {
+          "name": "method",
+          "value": "\"GET\""
+        },
+        {
+          "name": "host",
+          "value": "$HubHostname"
+        },
+        {
+          "name": "path",
+          "value": "\"/api/v1/namespaces/\" + $initdata_namespace + \"/configmaps/\" + $expected_initdata"
+        },
+        {
+          "name": "authKey",
+          "value": "$hub_ocp_auth"
+        }
+      ]
+    },
+    {
+      "name": "Resolve_LlmWorkload",
+      "function": "// Concert: pass JSON strings between blocks; read dollar-prefixed variables only at block top level.\n// Concert: keep dollar characters out of comments and avoid block-result references in inputs.\n// GPU requests distinguish inference pods from KServe routers sharing the same label.\nfunction unwrap(v) {\n    var keys = [\"body\", \"data\", \"payload\", \"response\", \"result\"];\n    for (var depth = 0; depth < 5; depth++) {\n        if (typeof v === \"string\") { v = JSON.parse(v); }\n        if (!v || typeof v !== \"object\") { break; }\n        if (v.spec || v.items || v.kind) { return v; }\n        var next;\n        for (var i = 0; i < keys.length; i++) {\n            if (v[keys[i]] !== undefined) { next = v[keys[i]]; break; }\n        }\n        if (next === undefined) { break; }\n        v = next;\n    }\n    return v;\n}\n\nfunction require_(v, blockName, what, test) {\n    var got = unwrap(v);\n    if (!test(got)) {\n        throw new Error(\"$\" + blockName + \".result is not \" + what +\n                        \" -- got: \" + JSON.stringify(got).substring(0, 400));\n    }\n    return got;\n}\n\nfunction isList(o) { return o && o.items instanceof Array; }\nfunction verdict(id, title, ok, detail, evidence) {\n    return JSON.stringify({ id: id, title: title, ok: !!ok, detail: detail,\n                            evidence: evidence || {} });\n}\nvar pods = require_($HTTPRequest_1.result, \"HTTPRequest_1\", \"a Pod list\", isList);\nvar GPU_RES = $gpu_resource;\nvar PLAIN_RES = $plain_gpu_resource;\nvar NS_NAME = $llm_namespace;\nfunction gpuContainers(pod) {\n    var out = [];\n    var all = [].concat(pod.spec.initContainers || [], pod.spec.containers);\n    for (var c = 0; c < all.length; c++) {\n        var lim = (all[c].resources || {}).limits || {};\n        if (lim[GPU_RES] === undefined && lim[PLAIN_RES] === undefined) { continue; }\n        out.push({\n            container: all[c].name,\n            pgpu: lim[GPU_RES] !== undefined ? String(lim[GPU_RES]) : \"\",\n            gpu: lim[PLAIN_RES] !== undefined ? String(lim[PLAIN_RES]) : \"\"\n        });\n    }\n    return out;\n}\nfunction terminating(pod) {\n    var phase = (pod.status || {}).phase;\n    return !!(pod.metadata || {}).deletionTimestamp || phase === \"Succeeded\" || phase === \"Failed\";\n}\nvar subjects = [];\nvar initdatas = [];\nvar skipped = 0;\nfor (var p = 0; p < pods.items.length; p++) {\n    var cand = pods.items[p];\n    if (!cand.spec || !(cand.spec.containers instanceof Array)) { continue; }\n    var gpus = gpuContainers(cand);\n    if (gpus.length === 0) { continue; }\n    if (terminating(cand)) { skipped++; continue; }\n    var annotations = (cand.metadata || {}).annotations || {};\n    subjects.push({\n        name: (cand.metadata || {}).name || \"unknown\",\n        runtime_class: cand.spec.runtimeClassName || \"\",\n        node: cand.spec.nodeName || \"\",\n        initdata: annotations[\"coco.io/initdata-configmap\"] || \"\",\n        gpus: gpus\n    });\n    initdatas.push(annotations[\"io.katacontainers.config.hypervisor.cc_init_data\"] || \"\");\n}\n\nif (subjects.length === 0) {\n    throw new Error(\"no non-terminating GPU-requesting pod found in namespace '\" + NS_NAME +\n                    \"' -- saw \" + pods.items.length + \" pod(s), \" + skipped +\n                    \" terminating. Is the LLM deployed?\");\n}\n\n$llm_cc_init_data = JSON.stringify(initdatas);\n$llm_pods = JSON.stringify(subjects);\n"
+    },
+    {
+      "name": "Check_ConfidentialRuntime",
+      "function": "// Concert: pass JSON strings between blocks; read dollar-prefixed variables only at block top level.\n// Concert: keep dollar characters out of comments and avoid block-result references in inputs.\n// Resolve the RuntimeClass handler: its name alone does not select confidential execution.\nfunction unwrap(v) {\n    var keys = [\"body\", \"data\", \"payload\", \"response\", \"result\"];\n    for (var depth = 0; depth < 5; depth++) {\n        if (typeof v === \"string\") { v = JSON.parse(v); }\n        if (!v || typeof v !== \"object\") { break; }\n        if (v.spec || v.items || v.kind) { return v; }\n        var next;\n        for (var i = 0; i < keys.length; i++) {\n            if (v[keys[i]] !== undefined) { next = v[keys[i]]; break; }\n        }\n        if (next === undefined) { break; }\n        v = next;\n    }\n    return v;\n}\n\nfunction require_(v, blockName, what, test) {\n    var got = unwrap(v);\n    if (!test(got)) {\n        throw new Error(\"$\" + blockName + \".result is not \" + what +\n                        \" -- got: \" + JSON.stringify(got).substring(0, 400));\n    }\n    return got;\n}\n\nfunction isList(o) { return o && o.items instanceof Array; }\nfunction verdict(id, title, ok, detail, evidence) {\n    return JSON.stringify({ id: id, title: title, ok: !!ok, detail: detail,\n                            evidence: evidence || {} });\n}\nvar rcs = require_($HTTPRequest_2.result, \"HTTPRequest_2\", \"a RuntimeClass list\", isList);\nvar subjects = JSON.parse($llm_pods);\nvar EXPECTED = $expected_handler;\n\nvar allOk = true;\nvar details = [];\nvar perPod = [];\nfor (var s = 0; s < subjects.length; s++) {\n    var runtime = subjects[s].runtime_class;\n    var handler = \"\";\n    for (var i = 0; i < rcs.items.length; i++) {\n        if (rcs.items[i].metadata && rcs.items[i].metadata.name === runtime) {\n            handler = rcs.items[i].handler || \"\";\n            break;\n        }\n    }\n    var ok = handler === EXPECTED;\n    allOk = allOk && ok;\n    details.push(subjects[s].name + \": runtimeclass=\" + (runtime || \"none\") + \" handler=\" + (handler || \"none\"));\n    perPod.push({ pod: subjects[s].name, ok: ok, runtime_class: runtime || \"none\", handler: handler || \"none\" });\n}\n\n$check_runtime = verdict(\n    \"confidential_runtime\",\n    \"Every inference pod runs on an Intel TDX confidential runtime\",\n    allOk,\n    details.join(\"; \") + \" (expected handler=\" + EXPECTED + \")\",\n    { pods: perPod }\n);\n"
+    },
+    {
+      "name": "Check_ConfidentialGpuPassthrough",
+      "function": "// Concert: pass JSON strings between blocks; read dollar-prefixed variables only at block top level.\n// Concert: keep dollar characters out of comments and avoid block-result references in inputs.\n// Any plain GPU request exposes a host-visible device, even alongside a passthrough GPU.\nfunction unwrap(v) {\n    var keys = [\"body\", \"data\", \"payload\", \"response\", \"result\"];\n    for (var depth = 0; depth < 5; depth++) {\n        if (typeof v === \"string\") { v = JSON.parse(v); }\n        if (!v || typeof v !== \"object\") { break; }\n        if (v.spec || v.items || v.kind) { return v; }\n        var next;\n        for (var i = 0; i < keys.length; i++) {\n            if (v[keys[i]] !== undefined) { next = v[keys[i]]; break; }\n        }\n        if (next === undefined) { break; }\n        v = next;\n    }\n    return v;\n}\n\nfunction require_(v, blockName, what, test) {\n    var got = unwrap(v);\n    if (!test(got)) {\n        throw new Error(\"$\" + blockName + \".result is not \" + what +\n                        \" -- got: \" + JSON.stringify(got).substring(0, 400));\n    }\n    return got;\n}\n\nfunction isList(o) { return o && o.items instanceof Array; }\nfunction verdict(id, title, ok, detail, evidence) {\n    return JSON.stringify({ id: id, title: title, ok: !!ok, detail: detail,\n                            evidence: evidence || {} });\n}\nvar subjects = JSON.parse($llm_pods);\nvar GPU_RES = $gpu_resource;\nvar PLAIN_RES = $plain_gpu_resource;\n\nvar allOk = true;\nvar details = [];\nvar perPod = [];\nfor (var s = 0; s < subjects.length; s++) {\n    var gpus = subjects[s].gpus;\n    var pgpu = 0;\n    var plainGpu = false;\n    for (var j = 0; j < gpus.length; j++) {\n        if (gpus[j].pgpu !== \"\") { pgpu += parseInt(gpus[j].pgpu, 10) || 0; }\n        if (gpus[j].gpu !== \"\") { plainGpu = true; }\n    }\n    var ok = pgpu >= 1 && !plainGpu;\n    allOk = allOk && ok;\n    details.push(subjects[s].name + \": \" + GPU_RES + \"=\" + pgpu + \" \" + PLAIN_RES + \"_requested=\" + plainGpu);\n    perPod.push({ pod: subjects[s].name, ok: ok, confidential_gpus: pgpu, plain_gpu_requested: plainGpu });\n}\n\n$check_gpu = verdict(\n    \"confidential_gpu_passthrough\",\n    \"GPU is passed through confidentially (\" + GPU_RES + \", not \" + PLAIN_RES + \") in every inference pod\",\n    allOk,\n    details.join(\"; \"),\n    { pods: perPod }\n);\n"
+    },
+    {
+      "name": "Check_PlatformTdxAndGpuCcMode",
+      "function": "// Concert: pass JSON strings between blocks; read dollar-prefixed variables only at block top level.\n// Concert: keep dollar characters out of comments and avoid block-result references in inputs.\n// Validate node labels directly because a missing HTTP labelSelector could return every node.\nfunction unwrap(v) {\n    var keys = [\"body\", \"data\", \"payload\", \"response\", \"result\"];\n    for (var depth = 0; depth < 5; depth++) {\n        if (typeof v === \"string\") { v = JSON.parse(v); }\n        if (!v || typeof v !== \"object\") { break; }\n        if (v.spec || v.items || v.kind) { return v; }\n        var next;\n        for (var i = 0; i < keys.length; i++) {\n            if (v[keys[i]] !== undefined) { next = v[keys[i]]; break; }\n        }\n        if (next === undefined) { break; }\n        v = next;\n    }\n    return v;\n}\n\nfunction require_(v, blockName, what, test) {\n    var got = unwrap(v);\n    if (!test(got)) {\n        throw new Error(\"$\" + blockName + \".result is not \" + what +\n                        \" -- got: \" + JSON.stringify(got).substring(0, 400));\n    }\n    return got;\n}\n\nfunction isList(o) { return o && o.items instanceof Array; }\nfunction verdict(id, title, ok, detail, evidence) {\n    return JSON.stringify({ id: id, title: title, ok: !!ok, detail: detail,\n                            evidence: evidence || {} });\n}\nvar nodes = require_($HTTPRequest_3.result, \"HTTPRequest_3\", \"a Node list\", isList);\nvar subjects = JSON.parse($llm_pods);\nvar TDX = $tdx_label;\nvar CC_MODE = $cc_mode_label;\nvar CC_READY = $cc_ready_label;\n\nvar allOk = true;\nvar details = [];\nvar perPod = [];\nfor (var s = 0; s < subjects.length; s++) {\n    var nodeName = subjects[s].node;\n    var labels = null;\n    for (var k = 0; k < nodes.items.length; k++) {\n        var md = nodes.items[k].metadata || {};\n        if (md.name === nodeName) { labels = md.labels || {}; break; }\n    }\n    var onTdx   = !!labels && labels[TDX] === \"true\";\n    var ccMode  = !!labels && labels[CC_MODE] === \"on\";\n    var ccReady = !!labels && labels[CC_READY] === \"true\";\n    var ok = onTdx && ccMode && ccReady;\n    allOk = allOk && ok;\n    details.push(subjects[s].name + \": node=\" + (nodeName || \"unknown\") + \" tdx=\" + onTdx +\n                 \" cc.mode=\" + ccMode + \" cc.ready=\" + ccReady);\n    perPod.push({ pod: subjects[s].name, ok: ok, node: nodeName || \"unknown\", tdx: onTdx,\n                  cc_mode_on: ccMode, cc_ready: ccReady });\n}\n\n$check_platform = verdict(\n    \"platform_tdx_and_gpu_cc_mode\",\n    \"Every inference pod's host exposes Intel TDX and its GPU is in CC mode and ready\",\n    allOk,\n    details.join(\"; \"),\n    { pods: perPod }\n);\n"
+    },
+    {
+      "name": "Check_LockedMeasuredBootPolicy",
+      "function": "// Concert: pass JSON strings between blocks; read dollar-prefixed variables only at block top level.\n// Concert: keep dollar characters out of comments and avoid block-result references in inputs.\n// Compare measured annotation bytes with hub locked INITDATA; configured policy is not attestation evidence.\nfunction unwrap(v) {\n    var keys = [\"body\", \"data\", \"payload\", \"response\", \"result\"];\n    for (var depth = 0; depth < 5; depth++) {\n        if (typeof v === \"string\") { v = JSON.parse(v); }\n        if (!v || typeof v !== \"object\") { break; }\n        if (v.spec || v.items || v.kind) { return v; }\n        var next;\n        for (var i = 0; i < keys.length; i++) {\n            if (v[keys[i]] !== undefined) { next = v[keys[i]]; break; }\n        }\n        if (next === undefined) { break; }\n        v = next;\n    }\n    return v;\n}\n\nfunction require_(v, blockName, what, test) {\n    var got = unwrap(v);\n    if (!test(got)) {\n        throw new Error(\"$\" + blockName + \".result is not \" + what +\n                        \" -- got: \" + JSON.stringify(got).substring(0, 400));\n    }\n    return got;\n}\n\nfunction isList(o) { return o && o.items instanceof Array; }\nfunction verdict(id, title, ok, detail, evidence) {\n    return JSON.stringify({ id: id, title: title, ok: !!ok, detail: detail,\n                            evidence: evidence || {} });\n}\nvar cm = require_($HTTPRequest_6.result, \"HTTPRequest_6\", \"a ConfigMap with data.INITDATA\",\n                  function (o) { return o && o.data && typeof o.data.INITDATA === \"string\"; });\nvar CM_NS = $initdata_namespace;\nvar CM_NAME = $expected_initdata;\nvar expectedInitdata = cm.data.INITDATA;\nif (expectedInitdata === \"\") {\n    throw new Error(\"ConfigMap \" + CM_NS + \"/\" + CM_NAME + \" has an empty INITDATA -- cannot \" +\n                    \"check the init_data policy\");\n}\nvar ref = String(cm.data.RAW_HASH || \"\").replace(/\\s+/g, \"\").toLowerCase();\n\nvar podInitdatas = JSON.parse($llm_cc_init_data);\nvar subjects = JSON.parse($llm_pods);\n\nvar allOk = true;\nvar details = [];\nvar perPod = [];\nfor (var s = 0; s < subjects.length; s++) {\n    var podInitdata = podInitdatas[s] || \"\";\n    var present = podInitdata !== \"\";\n    var match = present && podInitdata === expectedInitdata;\n    allOk = allOk && match;\n    details.push(subjects[s].name + \": \" + (!present\n        ? \"no io.katacontainers.config.hypervisor.cc_init_data annotation\"\n        : \"cc_init_data (\" + podInitdata.length + \" chars) \" +\n          (match ? \"is byte-identical to\" : \"differs from\") + \" the reference\"));\n    perPod.push({\n        pod: subjects[s].name,\n        ok: match,\n        pod_cc_init_data_present: present,\n        pod_cc_init_data_length: podInitdata.length,\n        pod_cc_init_data_matches_reference: match,\n        initdata_annotation_info_only: subjects[s].initdata || \"none\"\n    });\n}\n\n$check_initdata = verdict(\n    \"locked_measured_boot_policy\",\n    \"Every LLM pod is configured to boot the locked init_data policy (no exec/log access)\",\n    allOk,\n    details.join(\"; \") + \"; reference = INITDATA of \" + CM_NS + \"/\" + CM_NAME + \" (\" +\n        expectedInitdata.length + \" chars), RAW_HASH=\" + (ref || \"absent\").substring(0, 16) +\n        \"... is what the hub RVPS expects\",\n    {\n        pods: perPod,\n        reference_configmap: CM_NS + \"/\" + CM_NAME,\n        reference_initdata_length: expectedInitdata.length,\n        reference_raw_hash: ref || \"absent\"\n    }\n);\n"
+    },
+    {
+      "name": "Build_AssessmentResult",
+      "function": "// Concert: pass JSON strings between blocks; read dollar-prefixed variables only at block top level.\n// Concert: keep dollar characters out of comments and avoid block-result references in inputs.\n// A missing verdict is an execution error, not a non-compliant result.\nvar NS = \"https://oscal-compass.github.io/compliance-trestle/schemas/oscal/ar/OpenSCAP\";\nvar raw = [$check_runtime, $check_gpu, $check_initdata, $check_platform];\nvar checks = [];\nfor (var r = 0; r < raw.length; r++) {\n    checks.push(typeof raw[r] === \"string\" && raw[r] !== \"\" ? JSON.parse(raw[r]) : raw[r]);\n}\nvar names  = [\"Check_ConfidentialRuntime\", \"Check_ConfidentialGpuPassthrough\",\n              \"Check_LockedMeasuredBootPolicy\", \"Check_PlatformTdxAndGpuCcMode\"];\nfor (var v = 0; v < checks.length; v++) {\n    if (!checks[v] || typeof checks[v].ok !== \"boolean\") {\n        throw new Error(\"block \" + names[v] + \" produced no verdict -- refusing to report a \" +\n                        \"compliance result from an incomplete run\");\n    }\n}\n\nvar failed = [];\nfor (var f = 0; f < checks.length; f++) { if (!checks[f].ok) { failed.push(checks[f].id); } }\nvar passed = failed.length === 0;\nvar result = passed ? \"pass\" : \"fail\";\n\nfunction uuid4() {\n    return \"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx\".replace(/[xy]/g, function (c) {\n        var r = Math.random() * 16 | 0;\n        return (c === \"x\" ? r : (r & 0x3 | 0x8)).toString(16);\n    });\n}\n\nvar now = new Date().toISOString();\nvar SYSTEM_UUID    = uuid4();\nvar VALIDATOR_UUID = uuid4();\nvar PLATFORM_UUID  = uuid4();\n\nvar CHECK_IDS = $oscal_check_ids;\nif (!(CHECK_IDS instanceof Array)) { CHECK_IDS = String(CHECK_IDS).split(\",\"); }\nfor (var ci = 0; ci < CHECK_IDS.length; ci++) {\n    CHECK_IDS[ci] = String(CHECK_IDS[ci]).replace(/^\\s+/, \"\").replace(/\\s+$/, \"\");\n}\nif (CHECK_IDS.length === 0 || CHECK_IDS[0] === \"\") {\n    throw new Error(\"oscal_check_ids is empty -- set the ISCF control ids to report against\");\n}\nvar INV_UUID = {};\nfor (var q = 0; q < CHECK_IDS.length; q++) { INV_UUID[CHECK_IDS[q]] = uuid4(); }\nvar ENVIRONMENT  = $oscal_environment;\nvar TARGET_TYPE  = $oscal_target_type;\nvar PROFILE_NAME = $oscal_profile_name;\n\nfunction prop(name, value) { return { name: name, ns: NS, value: value }; }\n\nvar expected = {\n    Validate: \"LLM_inference_is_configured_for_an_Intel_TDX_guest_with_a_confidential_GPU_and_the_locked_init_data\",\n    checks: [\n        \"assessed: every non-terminating GPU-requesting pod in \" + $llm_namespace + \"; each must pass every check\",\n        \"confidential_runtime: RuntimeClass handler = \" + $expected_handler,\n        \"confidential_gpu_passthrough: \" + $gpu_resource + \" >= 1 and no \" + $plain_gpu_resource,\n        \"locked_measured_boot_policy: each pod cc_init_data annotation = INITDATA of \" + $initdata_namespace + \"/\" + $expected_initdata + \" (byte-identical)\",\n        \"platform_tdx_and_gpu_cc_mode: \" + $tdx_label + \"=true, \" + $cc_mode_label + \"=on, \" + $cc_ready_label + \"=true\"\n    ],\n    not_checked: \"attestation evidence (Trustee appraisal of the running guest and GPU)\",\n    apis_used: [\n        \"GET /api/v1/namespaces/\" + $llm_namespace + \"/pods?labelSelector=\" + $llm_pod_selector,\n        \"GET /apis/node.k8s.io/v1/runtimeclasses\",\n        \"GET /api/v1/nodes?labelSelector=\" + $tdx_label + \"=true\",\n        \"GET /api/v1/namespaces/\" + $initdata_namespace + \"/configmaps/\" + $expected_initdata\n    ]\n};\n\nvar subjects = JSON.parse($llm_pods);\nvar PODS = [];\nfor (var sp = 0; sp < subjects.length; sp++) { PODS.push(subjects[sp].name); }\n\nvar actual = {\n    compliance_result: result,\n    failed_checks: failed,\n    checks: checks,\n    pods: PODS,\n    message: passed ? \"LLM_configured_for_Intel_TDX_with_a_confidential_GPU_and_locked_init_data\"\n                    : \"LLM_confidentiality_not_proven: \" + failed.join(\",\")\n};\n\nfunction evidence(checkId) {\n    return \"# Expected Value\\n\\n```json\\n\" + JSON.stringify(expected, null, 2) +\n           \"\\n```\\n\\n## \" + INV_UUID[checkId] + \"\\n\\n```json\\n\" +\n           JSON.stringify(actual, null, 2) + \"\\n```\";\n}\n\nfunction inventoryItem(checkId) {\n    return {\n        uuid: INV_UUID[checkId],\n        description: checkId,\n        props: [\n            prop(\"target\", ENVIRONMENT),\n            prop(\"target_type\", TARGET_TYPE),\n            prop(\"finding_count\", String(CHECK_IDS.length))\n        ],\n        \"implemented-components\": [{ \"component-uuid\": SYSTEM_UUID }]\n    };\n}\n\nfunction observation(checkId) {\n    return {\n        uuid: uuid4(),\n        description: \"Compliance check for confidential LLM inference (Intel TDX + NVIDIA CC): \" + checkId,\n        props: [\n            prop(\"idref\", checkId),\n            prop(\"result\", result),\n            prop(\"time\", now),\n            prop(\"severity\", \"high\")\n        ],\n        methods: [\"TEST-AUTOMATED\"],\n        subjects: [{ \"subject-uuid\": INV_UUID[checkId], type: \"inventory-item\" }],\n        collected: now,\n        \"relevant-evidence\": [{ description: evidence(checkId) }]\n    };\n}\n\nvar inventoryItems = [];\nvar observations   = [];\nfor (var t = 0; t < CHECK_IDS.length; t++) {\n    inventoryItems.push(inventoryItem(CHECK_IDS[t]));\n    observations.push(observation(CHECK_IDS[t]));\n}\n\n$assessment_result = {\n    results: [{\n        uuid: uuid4(),\n        title: \"Sovereign core controls\",\n        description: \"Sovereign Core assessment results.\",\n        start: now,\n        end: now,\n        \"local-definitions\": {\n            components: [{\n                uuid: SYSTEM_UUID,\n                description: \"Compliance assessment results from all sovereign control frameworks.\",\n                status: { state: \"operational\" },\n                title: \"Sovereign Software\",\n                type: \"system\"\n            }],\n            \"inventory-items\": inventoryItems,\n            \"assessment-assets\": {\n                components: [{\n                    uuid: VALIDATOR_UUID,\n                    type: \"Validator\",\n                    title: \"Sovereign Validation\",\n                    description: \"Automated validation compliance\",\n                    props: [\n                        prop(\"scanner_name\", \"Sovereign Validation\"),\n                        prop(\"scanner_version\", \"1.0.0\"),\n                        prop(\"scan_method\", \"checks\"),\n                        prop(\"version\", \"0.0.1\"),\n                        prop(\"id\", PROFILE_NAME)\n                    ],\n                    status: { state: \"operational\" }\n                }],\n                \"assessment-platforms\": [{ uuid: PLATFORM_UUID }]\n            }\n        },\n        \"reviewed-controls\": { \"control-selections\": [{}] },\n        observations: observations\n    }]\n};"
+    },
+    {
+      "action": "system/IBM/Concert v2/Import Data/Upload Files to Concert",
+      "name": "IBM_1",
+      "inputs": [
+        {
+          "name": "authKey",
+          "value": "$concert_auth_key"
+        },
+        {
+          "name": "file",
+          "value": "{ \"filename\": JSON.stringify($assessment_result), \"data_type\": $data_type }"
+        },
+        {
+          "name": "fileType",
+          "value": "\"json\""
+        }
+      ]
+    },
+    {
+      "action": "assign",
+      "name": "Assign_2",
+      "variable": "$result",
+      "value": "$IBM_1.result"
+    }
+  ],
+  "variables": [
+    {
+      "name": "SpokeHostname",
+      "required": true,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"https://api.<tenant-cluster-domain>:6443\""
+    },
+    {
+      "name": "HubHostname",
+      "required": true,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"https://api.<hub-cluster-domain>:6443\""
+    },
+    {
+      "name": "spoke_ocp_auth",
+      "required": true,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"<compliance-user>@local/spoke-token\"",
+      "meta": {
+        "authType": "Common/BearerToken",
+        "subType": "authentication"
+      }
+    },
+    {
+      "name": "hub_ocp_auth",
+      "required": true,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"<compliance-user>@local/hub-token\"",
+      "meta": {
+        "authType": "Common/BearerToken",
+        "subType": "authentication"
+      }
+    },
+    {
+      "name": "concert_auth_key",
+      "required": true,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"<compliance-user>@local/concertAPIKeyAuth\"",
+      "meta": {
+        "authType": "IBM/ConcertAPIKey",
+        "subType": "authentication"
+      }
+    },
+    {
+      "name": "llm_namespace",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"llms\""
+    },
+    {
+      "name": "llm_pod_selector",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"kserve.io/component=workload\""
+    },
+    {
+      "name": "expected_handler",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"kata-tdx-nvidia-gpu\""
+    },
+    {
+      "name": "expected_initdata",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"initdata\""
+    },
+    {
+      "name": "initdata_namespace",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"imperative\""
+    },
+    {
+      "name": "gpu_resource",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"nvidia.com/pgpu\""
+    },
+    {
+      "name": "plain_gpu_resource",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"nvidia.com/gpu\""
+    },
+    {
+      "name": "tdx_label",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"intel.feature.node.kubernetes.io/tdx\""
+    },
+    {
+      "name": "cc_mode_label",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"nvidia.com/cc.mode.state\""
+    },
+    {
+      "name": "cc_ready_label",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"nvidia.com/cc.ready.state\""
+    },
+    {
+      "name": "oscal_environment",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"ControlPlane_1.0.0\""
+    },
+    {
+      "name": "oscal_profile_name",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"profile_llm_tdx_gpu\""
+    },
+    {
+      "name": "oscal_target_type",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"MSP-Controlled Confidential Computing\""
+    },
+    {
+      "name": "oscal_check_ids",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"msp_confidential_computing_runtime_validation_check\""
+    },
+    {
+      "name": "data_type",
+      "required": false,
+      "isInput": true,
+      "isOutput": false,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"compliance_posture\""
+    },
+    {
+      "name": "llm_pods",
+      "required": false,
+      "isInput": false,
+      "isOutput": true,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"\""
+    },
+    {
+      "name": "llm_cc_init_data",
+      "required": false,
+      "isInput": false,
+      "isOutput": true,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"\""
+    },
+    {
+      "name": "check_runtime",
+      "required": false,
+      "isInput": false,
+      "isOutput": true,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"\""
+    },
+    {
+      "name": "check_gpu",
+      "required": false,
+      "isInput": false,
+      "isOutput": true,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"\""
+    },
+    {
+      "name": "check_initdata",
+      "required": false,
+      "isInput": false,
+      "isOutput": true,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"\""
+    },
+    {
+      "name": "check_platform",
+      "required": false,
+      "isInput": false,
+      "isOutput": true,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "string"
+      },
+      "value": "\"\""
+    },
+    {
+      "name": "assessment_result",
+      "required": false,
+      "isInput": false,
+      "isOutput": true,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "any"
+      },
+      "value": "\"\""
+    },
+    {
+      "name": "result",
+      "required": false,
+      "isInput": false,
+      "isOutput": true,
+      "level": "INTERMEDIATE",
+      "type": {
+        "type": "any"
+      },
+      "value": "\"\""
+    }
+  ],
+  "meta": {
+    "workerGroup": "default",
+    "created": 1790804217063,
+    "lastUpdated": 1790804217063,
+    "layout": "flat",
+    "numberOfBlocks": 12,
+    "version": 5
+  },
+  "finally": null
+}

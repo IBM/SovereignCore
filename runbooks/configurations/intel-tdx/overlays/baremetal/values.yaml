@@ -1,0 +1,3 @@
+# Disable where the platform owns the NFD instance to avoid competing controllers.
+nfdInstance:
+  enabled: true

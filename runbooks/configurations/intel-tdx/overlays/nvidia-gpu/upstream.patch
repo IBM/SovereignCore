@@ -1,0 +1,17 @@
+Target: nvidia-gpu
+Base: https://github.com/validatedpatterns/coco-pattern v7.6.0 (9800bf1f200a0b41545926d56908d524b17c2cb2) charts/all/nvidia-gpu
+What: Replace ClusterPolicy on sync to discard host-driver fields; preserve MachineConfig sync behavior.
+License: Apache-2.0; modified upstream files (see NOTICE).
+---
+diff --git a/templates/cluster-policy.yaml b/templates/cluster-policy.yaml
+index 3f9119b..87bac87 100644
+--- a/templates/cluster-policy.yaml
++++ b/templates/cluster-policy.yaml
+@@ -5,6 +5,7 @@ metadata:
+   name: gpu-cluster-policy
+   annotations:
+     argocd.argoproj.io/sync-wave: "110"
++    argocd.argoproj.io/sync-options: Replace=true
+ spec:
+   ccManager:
+     defaultMode: {{ .Values.ccManager.defaultMode | quote }}

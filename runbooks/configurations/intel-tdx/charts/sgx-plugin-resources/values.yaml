@@ -1,0 +1,13 @@
+# WORKAROUND ONLY; remove when the SgxDevicePlugin CRD supports resources.
+sgxPluginResources:
+  enabled: true
+  namespace: intel-device-plugins-operator
+  containerName: intel-sgx-plugin
+  daemonSetNames:
+    - intel-sgx-plugin-sgxdeviceplugin-sample
+  requests:
+    cpu: 200m
+    memory: 64Mi
+  limits:
+    cpu: "1"
+    memory: 256Mi

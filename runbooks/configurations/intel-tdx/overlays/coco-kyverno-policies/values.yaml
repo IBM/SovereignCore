@@ -1,0 +1,32 @@
+# Also list workload namespaces in workloadNamespaces; missing initdata fails admission closed.
+# Mutate pods because cuga-service-broker reconciles the CugaAgent spec.patches field.
+# Size both guest RAM and the pod memory limit: the guest rootfs uses RAM and qemu shares the pod cgroup.
+# Optional per entry: defaultVcpus (guest vCPUs; give cpuLimit the same value so the pod quota does not
+# throttle them), cpuLimit, containerEnv [{name, value}].
+confidentialWorkloads: []
+
+confidentialGpu:
+  namespaces: []
+  podSelector:
+    kserve.io/component: workload
+  runtimeClassName: kata-cc-nvidia-gpu
+  # Use debug-initdata only for diagnosis; it allows guest exec and log streaming.
+  initdata: initdata
+  # Guest RAM is sized by image bytes, not by the GPU: the RAM-backed rootfs uses about half of guest memory.
+  # Precedence: the pod's own default_memory annotation, then the first models entry whose podSelector
+  # matches (added to podSelector above), then defaultMemoryMiB. scripts/size-cc-guest.sh prints an entry.
+  # The container memory limit and request follow the chosen guest size.
+  #   models:
+  #     - name: granite-8b
+  #       podSelector: {app.kubernetes.io/name: granite-8b}
+  #       memoryMiB: 65536
+  #       createContainerTimeoutSec: 1800   # optional
+  models: []
+  defaultMemoryMiB: 196608
+  # Allow qemu/virtiofsd overhead beyond guest RAM to avoid cgroup OOMs and stranded GPUs.
+  memoryOverheadMiB: 4096
+  createContainerTimeoutSec: 7200
+  # Exclude /usr/local/cuda/compat so CUDA uses the guest driver's libcuda (avoids error 803).
+  containerEnv:
+    - name: LD_LIBRARY_PATH
+      value: /usr/lib64:/usr/local/cuda/lib64

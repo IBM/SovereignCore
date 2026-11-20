@@ -1,0 +1,42 @@
+global:
+  pattern: coco-pattern
+  # Site domains and registry parameters are supplied by deploy-coco-hub.sh.
+  clusterPlatform: BareMetal
+  singleArgoCD: true
+  vpArgoNamespace: openshift-gitops
+  # Non-empty string placeholders prevent unquoted Helm parameters from rendering null or boolean values.
+  localClusterName: local-cluster
+  multiSourceSupport: false
+  multiSourceTargetRevision: main
+  privateRepo: false
+  experimentalCapabilities: none
+  deletePattern: keep
+  gitOpsSubNamespace: openshift-gitops
+  baremetalStorageProvider: hpp
+  secretStore:
+    backend: vault
+  # Disable the secret loader to avoid modifying the existing Vault.
+  secretLoader:
+    disabled: true
+  options:
+    useCSV: false
+    syncPolicy: Automatic
+    installPlanApproval: Automatic
+    autoApproveManualInstallPlans: true
+  coco:
+    securityPolicyFlavour: "insecure"
+    secured: true
+    enableSSHDebug: false
+    azure:
+      defaultVMFlavour: "Standard_DC2as_v5"
+      VMFlavours: "Standard_DC2as_v5,Standard_DC4as_v5,Standard_DC8as_v5,Standard_DC16as_v5"
+main:
+  clusterGroupName: baremetal
+  multiSourceConfig:
+    enabled: true
+    clusterGroupChartVersion: 0.9.*
+
+# Top-level secretStore is not propagated; set it in each child Application override.
+secretStore:
+  name: sovcloud-vault-cluster-secret-store
+  kind: ClusterSecretStore

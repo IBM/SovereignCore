@@ -1,0 +1,9 @@
+apiVersion: v2
+name: sgx-plugin-resources
+description: >-
+  Kyverno mutation giving the Intel SGX device plugin enough CPU and memory. The
+  intel-device-plugins-operator hardcodes 100m CPU and the SgxDevicePlugin CRD has no resources
+  field; throttled, the plugin crash-loops at boot, SGX resources drop to 0, QGS cannot schedule
+  and every TDX attestation fails with "TDX Quote is empty".
+type: application
+version: 0.1.3

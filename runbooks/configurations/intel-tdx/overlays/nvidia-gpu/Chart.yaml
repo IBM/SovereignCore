@@ -1,0 +1,5 @@
+name: nvidia-gpu
+version: 0.0.9
+description: >-
+  NVIDIA GPU Operator configuration for confidential containers (coco-pattern v6.0.0:
+  ClusterPolicy, IOMMU MachineConfig); the ClusterPolicy is replaced, not merged, on sync.

@@ -1,0 +1,24 @@
+{{- if .Values.kbs.gpu.enabled }}
+---
+apiVersion: "external-secrets.io/v1"
+kind: ExternalSecret
+metadata:
+  annotations:
+    # Last wave: until a GPU tenant loads hub/gpuReferenceValues this ExternalSecret cannot sync,
+    # and in an early wave it would hold back the KbsConfig and certificates.
+    argocd.argoproj.io/sync-wave: "9"
+  name: gpu-refvals-eso
+  namespace: trustee-operator-system
+spec:
+  refreshInterval: 15s
+  secretStoreRef:
+    name: {{ .Values.secretStore.name }}
+    kind: {{ .Values.secretStore.kind }}
+  target:
+    name: gpu-reference-values
+    template:
+      type: generic
+  dataFrom:
+  - extract:
+      key: 'secret/data/hub/gpuReferenceValues'
+{{- end }}

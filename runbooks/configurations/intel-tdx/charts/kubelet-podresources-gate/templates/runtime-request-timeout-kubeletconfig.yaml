@@ -1,0 +1,16 @@
+{{- if .Values.runtimeRequestTimeout.enabled }}
+{{- /* Applying this reboots nodes; the effective timeout is the lesser of kubelet and kata timeouts. */ -}}
+{{- range .Values.runtimeRequestTimeout.roles }}
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: KubeletConfig
+metadata:
+  name: 99-runtime-request-timeout-{{ . }}
+spec:
+  machineConfigPoolSelector:
+    matchLabels:
+      pools.operator.machineconfiguration.openshift.io/{{ . }}: ""
+  kubeletConfig:
+    runtimeRequestTimeout: {{ $.Values.runtimeRequestTimeout.value | quote }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,75 @@
+#!/bin/bash
+# systemd generator enabling PodResources Get on kubelet < 1.34.
+# Prerequisites: bash, systemd and a readable MCO kubelet unit; first argument is the generator output directory.
+# Effects: Writes a runtime kubelet drop-in; on uncertainty or kubelet >= 1.34 writes nothing.
+# Exit: Always 0: this generator must never prevent boot.
+# WORKAROUND ONLY; remove after upgrading to kubelet >= 1.34 (OpenShift 4.21).
+# ENV (name: meaning; default in parentheses)
+#   UNIT  kubelet unit file (/etc/systemd/system/kubelet.service)
+#   KUBELET_VERSION  version override for tests (unset: run kubelet --version)
+#   KMSG  kernel log sink (/dev/kmsg)
+
+set -u
+OUT_DIR="${1:-/run/systemd/generator}"
+UNIT="${UNIT:-/etc/systemd/system/kubelet.service}"
+GATE="--feature-gates=KubeletPodResourcesGet=true"
+DROPIN_DIR="${OUT_DIR}/kubelet.service.d"
+DROPIN="${DROPIN_DIR}/99-podresources-get.conf"
+
+KMSG="${KMSG:-/dev/kmsg}"
+# systemd discards generator stderr on daemon-reload; use the kernel log too.
+log() {
+  local msg="kubelet-podresources-gate: $*"
+  [[ -w "$KMSG" ]] && echo "<6>${msg}" > "$KMSG" 2>/dev/null
+  echo "$msg" >&2
+}
+
+ver="${KUBELET_VERSION:-$(/usr/bin/kubelet --version 2>/dev/null)}"
+if [[ ! "$ver" =~ v([0-9]+)\.([0-9]+) ]]; then
+  log "cannot read kubelet version ('$ver'); leaving kubelet unchanged"
+  exit 0
+fi
+major="${BASH_REMATCH[1]}"; minor="${BASH_REMATCH[2]}"
+if (( major > 1 || minor >= 34 )); then
+  log "kubelet ${major}.${minor} does not need the gate; nothing to do"
+  exit 0
+fi
+
+[[ -r "$UNIT" ]] || { log "$UNIT not readable; leaving kubelet unchanged"; exit 0; }
+
+exec_start="$(awk '
+  /^ExecStart=/ { grab = 1 }
+  grab { print; if ($0 !~ /\\[[:space:]]*$/) exit }
+' "$UNIT")"
+
+if [[ -z "$exec_start" ]] \
+   || [[ "$(grep -c '^ExecStart=' "$UNIT")" -ne 1 ]] \
+   || [[ "$exec_start" != *"/usr/bin/kubelet"* ]] \
+   || [[ "$exec_start" != *"--config="* ]]; then
+  log "unexpected ExecStart in $UNIT; leaving kubelet unchanged"
+  exit 0
+fi
+if [[ "$exec_start" == *"KubeletPodResourcesGet"* ]]; then
+  log "ExecStart already sets KubeletPodResourcesGet; nothing to do"
+  exit 0
+fi
+
+gated="$(awk -v gate="$GATE" '
+  { print }
+  !done && /--config=/ && /\\[[:space:]]*$/ { print "      " gate " \\"; done = 1 }
+' <<<"$exec_start")"
+if [[ "$gated" != *"$GATE"* ]]; then
+  gated="$(printf '%s \\\n      %s' "${exec_start%$'\n'}" "$GATE")"
+fi
+
+mkdir -p "$DROPIN_DIR" || exit 0
+tmp="${DROPIN}.tmp"
+{
+  echo "# Generated at boot by kubelet-podresources-gate from ${UNIT}."
+  echo "# Adds the PodResources Get gate for kata confidential-GPU cold plug (kubelet < 1.34)."
+  echo "[Service]"
+  echo "ExecStart="
+  echo "$gated"
+} > "$tmp" && mv -f "$tmp" "$DROPIN" || { rm -f "$tmp"; exit 0; }
+log "wrote ${DROPIN} (kubelet ${major}.${minor})"
+exit 0

@@ -1,0 +1,263 @@
+Target: coco-kyverno-policies
+Base: https://github.com/validatedpatterns/coco-pattern v7.6.0 (9800bf1f200a0b41545926d56908d524b17c2cb2) charts/all/coco-kyverno-policies
+What: Add confidential workload/GPU admission rules and bounded policy names.
+License: Apache-2.0; modified upstream files (see NOTICE).
+---
+diff --git a/templates/initdata-namespace-propagation.yaml b/templates/initdata-namespace-propagation.yaml
+index 90d6e44..754b634 100644
+--- a/templates/initdata-namespace-propagation.yaml
++++ b/templates/initdata-namespace-propagation.yaml
+@@ -3,7 +3,9 @@
+ apiVersion: kyverno.io/v1
+ kind: ClusterPolicy
+ metadata:
+-  name: propagate-initdata-to-{{ . }}
++  {{- /* Hash long policy names to avoid truncation collisions. */}}
++  {{- $n := printf "propagate-initdata-to-%s" . }}
++  name: {{ if le (len $n) 63 }}{{ $n }}{{ else }}{{ printf "%s-%s" ($n | trunc 54 | trimSuffix "-") (sha256sum . | trunc 8) }}{{ end }}
+   annotations:
+     argocd.argoproj.io/sync-wave: "1"
+ spec:
+diff --git a/templates/inject-coco-initdata.yaml b/templates/inject-coco-initdata.yaml
+index d7b220a..7658611 100644
+--- a/templates/inject-coco-initdata.yaml
++++ b/templates/inject-coco-initdata.yaml
+@@ -16,6 +16,238 @@ metadata:
+     pod-policies.kyverno.io/autogen-controllers: none
+ spec:
+   rules:
++{{- with .Values.confidentialGpu }}
++{{- if .namespaces }}
++{{- $gpu := . }}
++{{- /* A pod requests a GPU when any container limit is an nvidia.com/ resource: nvidia.com/gpu, or
++       nvidia.com/pgpu where the platform already offers the passthrough name. */}}
++{{- $requestsGpu := "{{ length(request.object.spec.containers[?resources.limits && length(keys(resources.limits)[?starts_with(@, 'nvidia.com/')]) > `0`]) }}" }}
++    # Guest size precedence: the pod's own annotations, then the first matching models entry, then the defaults.
++{{- range .models }}
++    - name: confidential-gpu-size-{{ .name }}
++      match:
++        any:
++          - resources:
++              kinds:
++                - Pod
++              operations:
++                - CREATE
++              namespaces: {{ toJson $gpu.namespaces }}
++              selector:
++                matchLabels: {{ toJson (merge (dict) .podSelector $gpu.podSelector) }}
++      preconditions:
++        all:
++          - key: "{{ $requestsGpu }}"
++            operator: GreaterThan
++            value: 0
++      mutate:
++        patchStrategicMerge:
++          metadata:
++            annotations:
++              +(io.katacontainers.config.hypervisor.default_memory): {{ .memoryMiB | quote }}
++              {{- with .createContainerTimeoutSec }}
++              +(io.katacontainers.config.runtime.create_container_timeout): {{ . | quote }}
++              {{- end }}
++{{- end }}
++    # Keep before inject-initdata: it supplies the runtime class and initdata annotation.
++    - name: confidential-gpu-runtime
++      match:
++        any:
++          - resources:
++              kinds:
++                - Pod
++              operations:
++                - CREATE
++              namespaces: {{ toJson .namespaces }}
++              selector:
++                matchLabels: {{ toJson .podSelector }}
++      preconditions:
++        all:
++          - key: "{{ $requestsGpu }}"
++            operator: GreaterThan
++            value: 0
++          - key: "{{ "{{" }} request.object.spec.runtimeClassName || '' {{ "}}" }}"
++            operator: AnyIn
++            value: ["", {{ .runtimeClassName | quote }}]
++      mutate:
++        patchStrategicMerge:
++          metadata:
++            annotations:
++              coco.io/initdata-configmap: {{ .initdata | default "initdata" | quote }}
++              +(io.katacontainers.config.hypervisor.default_memory): {{ .defaultMemoryMiB | quote }}
++              +(io.katacontainers.config.runtime.create_container_timeout): {{ .createContainerTimeoutSec | quote }}
++          spec:
++            runtimeClassName: {{ .runtimeClassName }}
++    - name: confidential-gpu-resource
++      match:
++        any:
++          - resources:
++              kinds:
++                - Pod
++              operations:
++                - CREATE
++              namespaces: {{ toJson .namespaces }}
++              selector:
++                matchLabels: {{ toJson .podSelector }}
++      preconditions:
++        all:
++          - key: "{{ "{{" }} request.object.spec.runtimeClassName || '' {{ "}}" }}"
++            operator: Equals
++            value: {{ .runtimeClassName }}
++      mutate:
++        foreach:
++{{- range list "limits" "requests" }}
++          - list: "request.object.spec.containers"
++            preconditions:
++              all:
++                - key: "{{ "{{" }} element.resources.{{ . }}.\"nvidia.com/gpu\" || '' {{ "}}" }}"
++                  operator: NotEquals
++                  value: ""
++            patchesJson6902: |-
++              - op: add
++                path: /spec/containers/{{ "{{" }}elementIndex{{ "}}" }}/resources/{{ . }}/nvidia.com~1pgpu
++                value: '{{ "{{" }} element.resources.{{ . }}."nvidia.com/gpu" {{ "}}" }}'
++              - op: remove
++                path: /spec/containers/{{ "{{" }}elementIndex{{ "}}" }}/resources/{{ . }}/nvidia.com~1gpu
++{{- end }}
++          - list: "request.object.spec.containers"
++            preconditions:
++              all:
++                - key: "{{ "{{" }} element.resources.limits.\"nvidia.com/pgpu\" || '' {{ "}}" }}"
++                  operator: NotEquals
++                  value: ""
++            # Size the cgroup from the guest annotation set above, whichever source it came from; a pod that
++            # arrives already confidential (pgpu, no annotation) gets the default, as kata does.
++            patchesJson6902: |-
++              - op: add
++                path: /spec/containers/{{ "{{" }}elementIndex{{ "}}" }}/resources/limits/memory
++                value: '{{ "{{" }} add(to_number(request.object.metadata.annotations."io.katacontainers.config.hypervisor.default_memory" || `"{{ int .defaultMemoryMiB }}"`), `{{ int .memoryOverheadMiB }}`) {{ "}}" }}Mi'
++              # Reserve guest RAM as well as limiting it to avoid node overcommit and unrelated OOM victims.
++              - op: add
++                path: /spec/containers/{{ "{{" }}elementIndex{{ "}}" }}/resources/requests/memory
++                value: '{{ "{{" }} request.object.metadata.annotations."io.katacontainers.config.hypervisor.default_memory" || `"{{ int .defaultMemoryMiB }}"` {{ "}}" }}Mi'
++{{- if .containerEnv }}
++          - list: "request.object.spec.containers"
++            preconditions:
++              all:
++                - key: "{{ "{{" }} element.resources.limits.\"nvidia.com/pgpu\" || '' {{ "}}" }}"
++                  operator: NotEquals
++                  value: ""
++            patchesJson6902: |-
++{{- range $i, $e := .containerEnv }}
++              - op: add
++                path: /spec/containers/{{ "{{" }}elementIndex{{ "}}" }}/env/-
++                value:
++                  name: {{ $e.name }}
++                  value: {{ $e.value | quote }}
++{{- end }}
++{{- end }}
++{{- end }}
++{{- end }}
++{{- range .Values.confidentialWorkloads }}
++    - name: confidential-workload-{{ .name }}
++      match:
++        any:
++          - resources:
++              kinds: [Pod]
++              operations: [CREATE]
++              namespaces: {{ toJson .namespaces }}
++              selector:
++                matchLabels: {{ toJson .podSelector }}
++{{- with .namespaceSelector }}
++              # Opt-in per namespace: the rule applies only while the namespace carries these labels.
++              namespaceSelector:
++                matchLabels: {{ toJson . }}
++{{- end }}
++      preconditions:
++        all:
++          - key: "{{ "{{" }} request.object.spec.runtimeClassName || '' {{ "}}" }}"
++            operator: Equals
++            value: ""
++      mutate:
++        patchStrategicMerge:
++          metadata:
++            annotations:
++              coco.io/initdata-configmap: {{ .initdata | default "initdata" | quote }}
++              # Mark only pods moved by this rule so explicit confidential-pod sizing survives.
++              coco.io/confidential-workload: {{ .name | quote }}
++              {{- if .defaultMemoryMiB }}
++              io.katacontainers.config.hypervisor.default_memory: {{ .defaultMemoryMiB | quote }}
++              {{- end }}
++              {{- if .defaultVcpus }}
++              io.katacontainers.config.hypervisor.default_vcpus: {{ .defaultVcpus | quote }}
++              {{- end }}
++          spec:
++            runtimeClassName: {{ .runtimeClassName }}
++{{- if .memoryLimit }}
++    - name: confidential-workload-{{ .name }}-mem
++      match:
++        any:
++          - resources:
++              kinds: [Pod]
++              operations: [CREATE]
++              namespaces: {{ toJson .namespaces }}
++              selector:
++                matchLabels: {{ toJson .podSelector }}
++{{- with .namespaceSelector }}
++              # Opt-in per namespace: the rule applies only while the namespace carries these labels.
++              namespaceSelector:
++                matchLabels: {{ toJson . }}
++{{- end }}
++      preconditions:
++        all:
++          - key: "{{ "{{" }} request.object.metadata.annotations.\"coco.io/confidential-workload\" || '' {{ "}}" }}"
++            operator: Equals
++            value: {{ .name | quote }}
++      mutate:
++        foreach:
++          - list: "request.object.spec.containers"
++            patchesJson6902: |-
++              - op: add
++                path: /spec/containers/{{ "{{" }}elementIndex{{ "}}" }}/resources/limits/memory
++                value: "{{ .memoryLimit }}"
++{{- end }}
++{{- if or .cpuLimit .containerEnv }}
++    - name: confidential-workload-{{ .name }}-tune
++      match:
++        any:
++          - resources:
++              kinds: [Pod]
++              operations: [CREATE]
++              namespaces: {{ toJson .namespaces }}
++              selector:
++                matchLabels: {{ toJson .podSelector }}
++{{- with .namespaceSelector }}
++              namespaceSelector:
++                matchLabels: {{ toJson . }}
++{{- end }}
++      preconditions:
++        all:
++          - key: "{{ "{{" }} request.object.metadata.annotations.\"coco.io/confidential-workload\" || '' {{ "}}" }}"
++            operator: Equals
++            value: {{ .name | quote }}
++      mutate:
++        foreach:
++          # Strategic merge: env entries replace same-named ones instead of duplicating them.
++          - list: "request.object.spec.containers"
++            patchStrategicMerge:
++              spec:
++                containers:
++                  - name: "{{ "{{" }} element.name {{ "}}" }}"
++{{- with .cpuLimit }}
++                    resources:
++                      limits:
++                        cpu: {{ . | quote }}
++{{- end }}
++{{- with .containerEnv }}
++                    env:
++{{- range . }}
++                      - name: {{ .name }}
++                        value: {{ .value | toString | quote }}
++{{- end }}
++{{- end }}
++{{- end }}
++{{- end }}
+     - name: inject-initdata
+       match:
+         any:

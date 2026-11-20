@@ -1,0 +1,4 @@
+# WORKAROUND ONLY; remove when the agent image ships JWT leeway.
+namespaces: []
+# Match exact agent images to avoid mounting incompatible validator code after an upgrade.
+images: []
