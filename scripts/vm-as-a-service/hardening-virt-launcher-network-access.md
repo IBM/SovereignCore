@@ -4,7 +4,7 @@
 
 Each virtual machine in VMaaS runs inside a KubeVirt virt-launcher Pod on the VM cluster. Without a NetworkPolicy, any Pod on the VM cluster can reach guest OS ports on the virt-launcher Pod IP, regardless of namespace. This guide explains how to apply a NetworkPolicy that limits cross-namespace access to TCP/22, while leaving same-namespace traffic unrestricted.
 
-This procedure applies to VMaaS v1.3.x. The operator does not distribute the policy automatically in this release; it must be applied manually. The policy has been tested on Clear Edition (Canal/Calico) and Purple Edition (OVN-Kubernetes).
+This procedure applies to VMaaS v1.3.x. The operator does not distribute the policy automatically in this release; it must be applied manually. The policy has been tested on CNCF Kubernetes (RKE2) with Canal/Calico and on OpenShift with OVN-Kubernetes.
 
 When to apply:
 
@@ -216,7 +216,7 @@ The `vm.kubevirt.io/name` value in both outputs must be identical.
 
 ### The policy does not appear to take effect immediately
 
-NetworkPolicy enforcement is handled by the CNI plugin (Canal/Calico on Clear Edition, OVN-Kubernetes on Purple Edition). Both CNIs apply rules within a few seconds of the policy being created. If traffic is not blocked after 10 seconds, verify that the policy exists and that its `podSelector` matches the virt-launcher Pod as described above.
+NetworkPolicy enforcement is handled by the CNI plugin (Canal/Calico on CNCF Kubernetes (RKE2), OVN-Kubernetes on OpenShift). Both CNIs apply rules within a few seconds of the policy being created. If traffic is not blocked after 10 seconds, verify that the policy exists and that its `podSelector` matches the virt-launcher Pod as described above.
 
 ### A VM was deleted but the policy is still present
 
