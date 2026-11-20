@@ -101,7 +101,8 @@ CEPH_MON_HOST=""
 CEPH_FSID=""
 RGW_REGION=""  # Will be set based on deployment or default to "default"
 RGW_PROTOCOL="http"
-MAIN_RGW_ENDPOINT=""
+MAIN_RGW_ENDPOINT=""  # host[:port] without scheme; the scheme is in RGW_PROTOCOL
+RGW_ENDPOINT_OVERRIDE=""  # Value of --rgw-endpoint (http(s)://HOST[:PORT]); used as-is instead of the detected endpoint
 ENABLE_OBJECT_STORAGE=false
 CUSTOM_CA_BUNDLE_PATH=""  # Path to custom CA certificate bundle
 CA_BUNDLE_TYPE=""  # Type of CA bundle: custom, extracted-chain, extracted-self-signed, manual-placeholder, http-placeholder
@@ -282,6 +283,8 @@ ${RGW_REGION}
 ${ENABLE_OBJECT_STORAGE}
 ${ENABLE_BLOCK_STORAGE}
 ${CUSTOM_CA_BUNDLE_PATH}
+${MAIN_RGW_ENDPOINT}
+${RGW_PROTOCOL}
 STATE
     print_debug "State saved: phase=$1 tenant=${TENANT_NAME} mode=${MODE}"
 }
@@ -301,6 +304,9 @@ load_state() {
         ENABLE_OBJECT_STORAGE=$(sed -n '11p' "$STATE_FILE")
         ENABLE_BLOCK_STORAGE=$(sed -n '12p' "$STATE_FILE")
         CUSTOM_CA_BUNDLE_PATH=$(sed -n '13p' "$STATE_FILE")
+        MAIN_RGW_ENDPOINT=$(sed -n '14p' "$STATE_FILE")
+        RGW_PROTOCOL=$(sed -n '15p' "$STATE_FILE")
+        [ -z "$RGW_PROTOCOL" ] && RGW_PROTOCOL="http"
         [ -z "$LOG_LEVEL" ] && LOG_LEVEL="INFO"
         [ -z "$RGW_REGION" ] && RGW_REGION="default"
         [ -z "$ENABLE_OBJECT_STORAGE" ] && ENABLE_OBJECT_STORAGE=false
@@ -354,6 +360,13 @@ while [[ $# -gt 0 ]]; do
             RGW_REGION="$2"; shift 2 ;;
         --ca-bundle-path)
             CUSTOM_CA_BUNDLE_PATH="$2"; shift 2 ;;
+        --rgw-endpoint)
+            RGW_ENDPOINT_OVERRIDE="$2"
+            if ! [[ "$RGW_ENDPOINT_OVERRIDE" =~ ^https?://[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?(:[0-9]{1,5})?$ ]]; then
+                echo "ERROR: Invalid --rgw-endpoint: $2. Use the form http(s)://HOST[:PORT] (no path)" >&2
+                exit 1
+            fi
+            shift 2 ;;
         --resume)
             RESUME_MODE=true; shift ;;
         --phase)
@@ -395,6 +408,13 @@ ${COLOR_BOLD}OBJECT STORAGE (OPTIONAL)${COLOR_RESET}
                           Note: Requires --rbd-quota for NooBaa PostgreSQL PVC
   --region REGION         S3 region for RGW (default: us-east-1)
   --rgw-region REGION     Alias for --region
+  --rgw-endpoint URL      RGW endpoint: http(s)://HOST[:PORT] (FQDN recommended)
+                          Example: --rgw-endpoint https://rgw.example.com:443
+                          Used as-is; takes priority over auto-detection
+                          Without it, an FQDN is resolved; if that fails, the IP or
+                          short name is used with a warning
+                          ODF mode: specify a name that routes to the RGW route
+                          (the Host header must match the route host)
 
 ${COLOR_BOLD}HTTPS/TLS OPTIONS${COLOR_RESET}
   --ca-bundle-path PATH   Path to custom CA certificate bundle for HTTPS endpoints
@@ -2303,6 +2323,10 @@ if [ "$RESUME_MODE" = false ] && [ "$START_PHASE" -eq 1 ] && [ -f "$STATE_FILE" 
     SAVED_PHASE=$(sed -n '1p' "$STATE_FILE" 2>/dev/null || echo "")
     if [[ "$SAVED_PHASE" =~ ^[0-9]+$ ]] && [ "$SAVED_PHASE" -gt 1 ]; then
         START_PHASE="$SAVED_PHASE"
+        # Phase 1 is skipped, so restore the RGW endpoint it detected
+        MAIN_RGW_ENDPOINT=$(sed -n '14p' "$STATE_FILE")
+        RGW_PROTOCOL=$(sed -n '15p' "$STATE_FILE")
+        [ -z "$RGW_PROTOCOL" ] && RGW_PROTOCOL="http"
         print_info "Auto-resuming from saved setup-storage phase ${START_PHASE}"
     fi
 fi
@@ -2727,6 +2751,102 @@ restore_rgw_endpoint() {
 }
 
 ###############################################################################
+# RGW HOST RESOLUTION HELPERS
+###############################################################################
+is_ipv4_address() {
+    [[ "$1" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ ]]
+}
+
+is_fqdn() {
+    [[ "$1" == *.* ]] && ! is_ipv4_address "$1"
+}
+
+# Warn that the RGW host is not an FQDN. For HTTPS, the certificate SAN is
+# unlikely to match an IP address or a short name.
+warn_rgw_host_not_fqdn() {
+    local host="$1" reason="$2"
+    print_warning "RGW host '${host}' is not an FQDN (${reason})"
+    if [ "$RGW_PROTOCOL" = "https" ]; then
+        print_warning "The RGW certificate SAN is unlikely to match '${host}'; TLS verification may fail."
+        print_warning "Use --rgw-endpoint https://<FQDN>[:PORT] to specify a name that is listed in the certificate SAN."
+    fi
+}
+
+# Use --rgw-endpoint (http(s)://HOST[:PORT]) as-is: the scheme goes to RGW_PROTOCOL
+# and the rest to MAIN_RGW_ENDPOINT, so that ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}
+# reproduces the specified value.
+apply_rgw_endpoint_override() {
+    RGW_PROTOCOL="${RGW_ENDPOINT_OVERRIDE%%://*}"
+    MAIN_RGW_ENDPOINT="${RGW_ENDPOINT_OVERRIDE#*://}"
+}
+
+# Print the first name getent returns for a host name or IP address, only if it is an FQDN.
+lookup_fqdn_via_getent() {
+    local name=""
+    command -v getent &>/dev/null || return 0
+    name=$(getent hosts "$1" 2>/dev/null | awk 'NR==1 {print $2}' || true)
+    if [ -n "$name" ] && is_fqdn "$name"; then
+        echo "$name"
+    fi
+    return 0
+}
+
+# Native mode: make RGW_HOST an FQDN where possible.
+# Order: 1) FQDN resolution  2) IP address / short name with a warning
+# Resolution depends on the name service of this host and on 'ceph orch host ls', so the
+# result is not guaranteed to match the name visible from an external cluster.
+resolve_rgw_host_fqdn() {
+    local host="$RGW_HOST" ip="" fqdn="" host_ls_json="" addr=""
+
+    # Nothing detected: leave it to the final validation
+    if [ -z "$host" ]; then
+        return 0
+    fi
+
+    if is_fqdn "$host"; then
+        return 0
+    fi
+
+    # 1) Try to resolve an FQDN
+    if is_ipv4_address "$host"; then
+        ip="$host"
+    else
+        fqdn=$(lookup_fqdn_via_getent "$host")
+        # ceph orch host ls: addr is either an FQDN or an IP address
+        host_ls_json=$(ceph orch host ls -f json 2>/dev/null || echo "")
+        if [ -n "$host_ls_json" ]; then
+            addr=$(echo "$host_ls_json" \
+                | jq -r --arg h "$host" '.[] | select(.hostname == $h) | .addr' 2>/dev/null \
+                | head -1 || true)
+            [ "$addr" = "null" ] && addr=""
+            if is_ipv4_address "$addr"; then
+                ip="$addr"
+            elif [ -z "$fqdn" ] && [ -n "$addr" ] && is_fqdn "$addr"; then
+                fqdn="$addr"
+            fi
+        fi
+    fi
+
+    # Reverse lookup when only an IP address is known
+    if [ -z "$fqdn" ] && [ -n "$ip" ]; then
+        fqdn=$(lookup_fqdn_via_getent "$ip")
+    fi
+
+    if [ -n "$fqdn" ]; then
+        print_info "Resolved RGW host '${host}' to FQDN '${fqdn}'"
+        RGW_HOST="$fqdn"
+        return 0
+    fi
+
+    # 2) Fall back to the IP address (from ceph orch host ls) or the short name
+    if [ -n "$ip" ]; then
+        RGW_HOST="$ip"
+    fi
+    warn_rgw_host_not_fqdn "$RGW_HOST" "could not resolve an FQDN for '${host}'"
+    return 0
+}
+
+###############################################################################
 # PHASE 1: PRE-FLIGHT CHECKS
 ###############################################################################
 if should_skip_phase 1; then
@@ -2892,6 +3012,14 @@ else
                 print_error "Could not find main RGW endpoint (tried routes and service)"
                 exit 1
             fi
+
+            # --rgw-endpoint is used as-is instead of the detected route/service endpoint
+            if [ -n "$RGW_ENDPOINT_OVERRIDE" ]; then
+                print_info "Using RGW endpoint from --rgw-endpoint: ${RGW_ENDPOINT_OVERRIDE} (detected: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT})"
+                apply_rgw_endpoint_override
+            elif ! is_fqdn "$MAIN_RGW_ENDPOINT"; then
+                warn_rgw_host_not_fqdn "$MAIN_RGW_ENDPOINT" "route/service host is not an FQDN"
+            fi
             
             print_info "RGW endpoint found: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}"
             if [ -n "$RGW_HTTP_ENDPOINT" ]; then
@@ -3052,6 +3180,9 @@ else
                 fi
             fi
             
+            # Prefer an FQDN for the endpoint (resolved FQDN > IP / short name)
+            resolve_rgw_host_fqdn
+
             # Final validation
             if [ -z "$RGW_HOST" ] || [ "$RGW_HOST" = "localhost" ] || [ "$RGW_HOST" = "127.0.0.1" ]; then
                 print_error "Invalid RGW hostname detected: '${RGW_HOST}'"
@@ -3067,6 +3198,12 @@ else
             
             # Construct endpoint
             MAIN_RGW_ENDPOINT="${RGW_HOST}:${RGW_PORT}"
+
+            # --rgw-endpoint is used as-is instead of the detected endpoint
+            if [ -n "$RGW_ENDPOINT_OVERRIDE" ]; then
+                print_info "Using RGW endpoint from --rgw-endpoint: ${RGW_ENDPOINT_OVERRIDE} (detected: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT})"
+                apply_rgw_endpoint_override
+            fi
             
             print_info "RGW endpoint detected: ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}"
             
@@ -3082,7 +3219,8 @@ else
             show_progress_bar "Checking endpoint" 5 &
             progress_pid=$!
             
-            http_code=$(curl -k -s -o /dev/null -w "%{http_code}" --connect-timeout 5 "${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}/" 2>/dev/null)
+            # '|| true': an unreachable endpoint is only a warning (set -e would exit on curl failure)
+            http_code=$(curl -k -s -o /dev/null -w "%{http_code}" --connect-timeout 5 "${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}/" 2>/dev/null || true)
             
             # Stop progress bar
             kill "$progress_pid" 2>/dev/null || true
@@ -3599,10 +3737,12 @@ else
         STRING_TO_SIGN="PUT\n\n\n${DATE}\n/${BACKING_BUCKET}"
         SIGNATURE=$(echo -en "${STRING_TO_SIGN}" | openssl sha1 -hmac "${RGW_SECRET_KEY}" -binary | base64)
         
+        # '|| true': a failed request (e.g. unreachable endpoint) is handled below as HTTP 000
+        # (set -e would exit on curl failure)
         BUCKET_CREATE_RESULT=$(curl -k -s -w "\n%{http_code}" -X PUT "${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}/${BACKING_BUCKET}" \
             -H "Host: ${MAIN_RGW_ENDPOINT}" \
             -H "Date: ${DATE}" \
-            -H "Authorization: AWS ${RGW_ACCESS_KEY}:${SIGNATURE}")
+            -H "Authorization: AWS ${RGW_ACCESS_KEY}:${SIGNATURE}" || true)
         
         HTTP_CODE=$(echo "$BUCKET_CREATE_RESULT" | tail -1)
         RESPONSE_BODY=$(echo "$BUCKET_CREATE_RESULT" | sed '$d')
