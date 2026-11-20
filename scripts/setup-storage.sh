@@ -419,6 +419,8 @@ ${COLOR_BOLD}OBJECT STORAGE (OPTIONAL)${COLOR_RESET}
   --rgw-realm REALM       RGW realm name for multi-realm clusters (native mode)
                           Required when the cluster has multiple realms; without it the
                           script fails and lists the available realms
+                          The script fails (it does not fall back to another RGW/zone) if no RGW
+                          daemon named 'rgw.REALM.*' or no single zone for the realm is found
                           Example: --rgw-realm realm-ocp1
 
 ${COLOR_BOLD}HTTPS/TLS OPTIONS${COLOR_RESET}
@@ -1250,32 +1252,43 @@ detect_rgw_zone() {
     # and `zone list`'s "default_info" is a UUID (not a zone name), so resolve the
     # realm id and select the zone whose realm_id matches it.
     if [ -n "${RGW_REALM}" ]; then
-        local realm_id zone_name zone_realm_id detected_zone=""
+        local realm_id zone_name zone_realm_id detected_zone="" matched_zones=""
         realm_id=$(ceph_exec radosgw-admin realm get --rgw-realm="${RGW_REALM}" 2>/dev/null \
                    | jq -r '.id' 2>/dev/null || echo "")
         [ "$realm_id" = "null" ] && realm_id=""
-        
-        if [ -n "$realm_id" ]; then
-            zone_list=$(ceph_exec radosgw-admin zone list 2>/dev/null || echo "")
-            while IFS= read -r zone_name; do
-                [ -n "$zone_name" ] || continue
-                zone_realm_id=$(ceph_exec radosgw-admin zone get --rgw-zone="${zone_name}" 2>/dev/null \
-                                | jq -r '.realm_id' 2>/dev/null || echo "")
-                if [ "$zone_realm_id" = "$realm_id" ]; then
-                    detected_zone="$zone_name"
-                    break
-                fi
-            done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
+
+        # The user explicitly chose the realm, so never guess: fail if the realm or
+        # its zone cannot be resolved unambiguously. Callers must handle the non-zero
+        # return (e.g. `zone=$(detect_rgw_zone) || exit 1`).
+        if [ -z "$realm_id" ]; then
+            print_error "RGW realm '${RGW_REALM}' was not found (radosgw-admin realm get returned no id)."
+            return 1
         fi
-        
-        if [ -n "$detected_zone" ]; then
-            print_debug "Using zone '${detected_zone}' for realm '${RGW_REALM}' (realm_id=${realm_id})" >&2
-            echo "$detected_zone"
-        else
-            print_warning "Could not find a zone for realm '${RGW_REALM}', deriving from realm name" >&2
-            echo "${RGW_REALM/realm-/zone-}"
+
+        zone_list=$(ceph_exec radosgw-admin zone list 2>/dev/null || echo "")
+        while IFS= read -r zone_name; do
+            [ -n "$zone_name" ] || continue
+            zone_realm_id=$(ceph_exec radosgw-admin zone get --rgw-zone="${zone_name}" 2>/dev/null \
+                            | jq -r '.realm_id' 2>/dev/null || echo "")
+            if [ "$zone_realm_id" = "$realm_id" ]; then
+                [ -n "$detected_zone" ] || detected_zone="$zone_name"
+                matched_zones+="${matched_zones:+, }${zone_name}"
+            fi
+        done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
+
+        if [ -z "$detected_zone" ]; then
+            print_error "No RGW zone belongs to realm '${RGW_REALM}' (realm_id=${realm_id})."
+            return 1
         fi
-        return
+        if [ "$matched_zones" != "$detected_zone" ]; then
+            print_error "Multiple RGW zones belong to realm '${RGW_REALM}': ${matched_zones}."
+            print_error "Selecting a zone within a realm is not supported by this script."
+            return 1
+        fi
+
+        print_debug "Using zone '${detected_zone}' for realm '${RGW_REALM}' (realm_id=${realm_id})" >&2
+        echo "$detected_zone"
+        return 0
     fi
     
     # Get list of zones
@@ -1339,6 +1352,29 @@ require_rgw_realm_if_ambiguous() {
         exit 1
     fi
 }
+
+# Select one line from `ceph orch ps --daemon-type rgw` output (read from stdin).
+# Without --rgw-realm: the first RGW daemon. With --rgw-realm: only a daemon whose
+# name starts with "rgw.<realm>." (the trailing dot keeps "realm-ocp1" from matching
+# "realm-ocp10"); no match is an error because the realm was chosen explicitly.
+# NOTE: stdout is captured by callers via $(...), so the caller must check the
+# return status (e.g. `line=$(select_rgw_service_line <<<"$ps") || exit 1`).
+select_rgw_service_line() {
+    local services line
+    services=$(grep -v "^NAME" || true)
+    if [ -n "${RGW_REALM}" ]; then
+        line=$(echo "$services" | awk -v p="rgw.${RGW_REALM}." 'index($1, p) == 1 { print; exit }')
+        if [ -z "$line" ]; then
+            print_error "No RGW service found for realm '${RGW_REALM}' in 'ceph orch ps --daemon-type rgw'." >&2
+            print_error "Expected a daemon named 'rgw.${RGW_REALM}.<zone>.<host>.<id>'. Set MAIN_RGW_ENDPOINT manually to override." >&2
+            return 1
+        fi
+    else
+        line=$(echo "$services" | head -1)
+    fi
+    echo "$line"
+}
+
 
 # Print the name of the zonegroup that contains zone $1 (empty if none is found).
 # NOTE: stdout is captured by callers via $(...).
@@ -1601,7 +1637,7 @@ update_tenant_storage() {
         
         # Detect RGW zone (same as provision mode)
         local rgw_zone
-        rgw_zone=$(detect_rgw_zone)
+        rgw_zone=$(detect_rgw_zone) || exit 1
         print_info "Detected RGW zone: ${rgw_zone}"
         
         # Realm/zonegroup/zone flags for every radosgw-admin call below
@@ -2304,7 +2340,7 @@ if [ "$DELETE_MODE" = true ]; then
     # Scope radosgw-admin calls to the --rgw-realm zone (empty when --rgw-realm is not given)
     RGW_SCOPE_ARGS=()
     if [ -n "$RGW_REALM" ]; then
-        rgw_zone=$(detect_rgw_zone)
+        rgw_zone=$(detect_rgw_zone) || exit 1
         init_rgw_scope "$rgw_zone"
         print_info "Using RGW realm: ${RGW_REALM} (zonegroup: ${RGW_ZONEGROUP:-unknown}, zone: ${rgw_zone})"
     fi
@@ -2584,32 +2620,43 @@ detect_rgw_zone() {
     # and `zone list`'s "default_info" is a UUID (not a zone name), so resolve the
     # realm id and select the zone whose realm_id matches it.
     if [ -n "${RGW_REALM}" ]; then
-        local realm_id zone_name zone_realm_id detected_zone=""
+        local realm_id zone_name zone_realm_id detected_zone="" matched_zones=""
         realm_id=$(ceph_exec radosgw-admin realm get --rgw-realm="${RGW_REALM}" 2>/dev/null \
                    | jq -r '.id' 2>/dev/null || echo "")
         [ "$realm_id" = "null" ] && realm_id=""
-        
-        if [ -n "$realm_id" ]; then
-            zone_list=$(ceph_exec radosgw-admin zone list 2>/dev/null || echo "")
-            while IFS= read -r zone_name; do
-                [ -n "$zone_name" ] || continue
-                zone_realm_id=$(ceph_exec radosgw-admin zone get --rgw-zone="${zone_name}" 2>/dev/null \
-                                | jq -r '.realm_id' 2>/dev/null || echo "")
-                if [ "$zone_realm_id" = "$realm_id" ]; then
-                    detected_zone="$zone_name"
-                    break
-                fi
-            done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
+
+        # The user explicitly chose the realm, so never guess: fail if the realm or
+        # its zone cannot be resolved unambiguously. Callers must handle the non-zero
+        # return (e.g. `zone=$(detect_rgw_zone) || exit 1`).
+        if [ -z "$realm_id" ]; then
+            print_error "RGW realm '${RGW_REALM}' was not found (radosgw-admin realm get returned no id)."
+            return 1
         fi
-        
-        if [ -n "$detected_zone" ]; then
-            print_debug "Using zone '${detected_zone}' for realm '${RGW_REALM}' (realm_id=${realm_id})" >&2
-            echo "$detected_zone"
-        else
-            print_warning "Could not find a zone for realm '${RGW_REALM}', deriving from realm name" >&2
-            echo "${RGW_REALM/realm-/zone-}"
+
+        zone_list=$(ceph_exec radosgw-admin zone list 2>/dev/null || echo "")
+        while IFS= read -r zone_name; do
+            [ -n "$zone_name" ] || continue
+            zone_realm_id=$(ceph_exec radosgw-admin zone get --rgw-zone="${zone_name}" 2>/dev/null \
+                            | jq -r '.realm_id' 2>/dev/null || echo "")
+            if [ "$zone_realm_id" = "$realm_id" ]; then
+                [ -n "$detected_zone" ] || detected_zone="$zone_name"
+                matched_zones+="${matched_zones:+, }${zone_name}"
+            fi
+        done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
+
+        if [ -z "$detected_zone" ]; then
+            print_error "No RGW zone belongs to realm '${RGW_REALM}' (realm_id=${realm_id})."
+            return 1
         fi
-        return
+        if [ "$matched_zones" != "$detected_zone" ]; then
+            print_error "Multiple RGW zones belong to realm '${RGW_REALM}': ${matched_zones}."
+            print_error "Selecting a zone within a realm is not supported by this script."
+            return 1
+        fi
+
+        print_debug "Using zone '${detected_zone}' for realm '${RGW_REALM}' (realm_id=${realm_id})" >&2
+        echo "$detected_zone"
+        return 0
     fi
     
     # Get list of zones
@@ -2844,7 +2891,8 @@ ensure_runtime_dependencies() {
 
 # Detect MAIN_RGW_ENDPOINT (and RGW_PROTOCOL) when Phase 1 was skipped.
 # ODF mode: OpenShift route (HTTP preferred) or CephObjectStore service endpoint.
-# Native mode: first RGW daemon reported by the Ceph orchestrator.
+# Native mode: first RGW daemon reported by the Ceph orchestrator, or the one
+# for --rgw-realm when given (fails if none matches).
 # Leaves MAIN_RGW_ENDPOINT unchanged if nothing can be detected.
 detect_rgw_endpoint() {
     local svc host port store
@@ -2865,7 +2913,7 @@ detect_rgw_endpoint() {
         fi
         [ -n "$host" ] && MAIN_RGW_ENDPOINT="$host"
     else
-        svc=$(ceph_exec ceph orch ps --daemon-type rgw 2>/dev/null | grep -v "^NAME" | head -1 || true)
+        svc=$(ceph_exec ceph orch ps --daemon-type rgw 2>/dev/null | select_rgw_service_line) || exit 1
         if [ -n "$svc" ]; then
             host=$(echo "$svc" | awk '{print $2}')
             port=$(echo "$svc" | awk '{print $3}' | grep -oE '[0-9]+$' || true)
@@ -3160,7 +3208,7 @@ else
                 
                 if [ "$RGW_COUNT" -gt 1 ]; then
                     if [ -n "${RGW_REALM}" ]; then
-                        print_info "Multiple RGW services detected (${RGW_COUNT}). Selecting the one matching realm '${RGW_REALM}'..."
+                        print_info "Multiple RGW services detected (${RGW_COUNT}). Selecting the one for realm '${RGW_REALM}'..."
                     else
                         print_warning "Multiple RGW services detected (${RGW_COUNT}). Using the first one."
                         print_warning "To specify a different RGW, set MAIN_RGW_ENDPOINT manually."
@@ -3170,19 +3218,14 @@ else
                 fi
                 
                 # Extract hostname and port from the RGW service.
-                # If --rgw-realm was specified, prefer the service whose name contains the realm.
+                # If --rgw-realm was specified, only the service named rgw.<realm>.* is
+                # accepted (no fallback to another RGW); otherwise the first one is used.
                 # Format: rgw.ocmirror.sc5-ceph01.deuuvy  sc5-ceph01  *:8000  running...
                 #         rgw.realm-ocp1.zone-ocp1.hase-st2.xxx  hase-st2  *:8080  running...
-                RGW_SERVICE_INFO=""
+                RGW_SERVICE_INFO=$(echo "$RGW_SERVICES" | select_rgw_service_line) || exit 1
                 if [ -n "${RGW_REALM}" ]; then
-                    RGW_SERVICE_INFO=$(echo "$RGW_SERVICES" | grep -F "${RGW_REALM}" | head -1 || true)
-                    if [ -z "$RGW_SERVICE_INFO" ]; then
-                        print_warning "No RGW service found for realm '${RGW_REALM}', falling back to the first RGW."
-                    else
-                        print_debug "Selected RGW service for realm '${RGW_REALM}': ${RGW_SERVICE_INFO}"
-                    fi
+                    print_debug "Selected RGW service for realm '${RGW_REALM}': ${RGW_SERVICE_INFO}"
                 fi
-                [ -z "$RGW_SERVICE_INFO" ] && RGW_SERVICE_INFO=$(echo "$RGW_SERVICES" | head -1)
                 
                 if [ -n "$RGW_SERVICE_INFO" ]; then
                     RGW_HOST=$(echo "$RGW_SERVICE_INFO" | awk '{print $2}')
@@ -3535,7 +3578,7 @@ else
         require_rgw_realm_if_ambiguous
 
         # Detect the correct RGW zone
-        RGW_ZONE=$(detect_rgw_zone)
+        RGW_ZONE=$(detect_rgw_zone) || exit 1
         print_info "Detected RGW zone: ${RGW_ZONE}"
 
         if [ -n "${RGW_REALM}" ]; then
