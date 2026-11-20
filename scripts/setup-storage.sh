@@ -42,6 +42,10 @@
 #   ./setup-storage.sh --tenant staging --rbd-quota 1T --rgw-user-quota 2T \
 #     --rgw-region us-east-1 --mode odf --output-dir ~/staging-configs
 #
+#   # Block + Object storage on a multi-realm Ceph cluster (native mode)
+#   ./setup-storage.sh --tenant dev-team --rbd-quota 500G --rgw-user-quota 1T \
+#     --rgw-realm realm-ocp1 --mode native --output-dir ~/ceph-configs
+#
 #   # Block + Object storage with custom region and CA bundle
 #   ./setup-storage.sh --tenant prod-eu --rbd-quota 2T --rgw-user-quota 5T \
 #     --rgw-region eu-west-1 --ca-bundle-path /etc/ssl/certs/company-ca.crt \
@@ -100,6 +104,9 @@ LOG_LEVEL="INFO"
 CEPH_MON_HOST=""
 CEPH_FSID=""
 RGW_REGION=""  # Will be set based on deployment or default to "default"
+RGW_REALM=""   # RGW realm for multi-realm clusters (e.g. realm-ocp1)
+RGW_ZONEGROUP=""  # RGW zonegroup; resolved from the detected zone when --rgw-realm is given
+RGW_SCOPE_ARGS=() # radosgw-admin scope flags (--rgw-realm/--rgw-zonegroup/--rgw-zone), see init_rgw_scope
 RGW_PROTOCOL="http"
 MAIN_RGW_ENDPOINT=""
 ENABLE_OBJECT_STORAGE=false
@@ -282,6 +289,8 @@ ${RGW_REGION}
 ${ENABLE_OBJECT_STORAGE}
 ${ENABLE_BLOCK_STORAGE}
 ${CUSTOM_CA_BUNDLE_PATH}
+${RGW_REALM}
+${RGW_ZONEGROUP}
 STATE
     print_debug "State saved: phase=$1 tenant=${TENANT_NAME} mode=${MODE}"
 }
@@ -301,6 +310,16 @@ load_state() {
         ENABLE_OBJECT_STORAGE=$(sed -n '11p' "$STATE_FILE")
         ENABLE_BLOCK_STORAGE=$(sed -n '12p' "$STATE_FILE")
         CUSTOM_CA_BUNDLE_PATH=$(sed -n '13p' "$STATE_FILE")
+        # Line 14 was added later; keep a value given on the command line over an empty/old state
+        _st_realm=$(sed -n '14p' "$STATE_FILE")
+        [ -z "$RGW_REALM" ] && RGW_REALM="$_st_realm"
+        # Line 15 (zonegroup) was added after line 14. Only trust it when the realm
+        # in effect is the one it was saved with.
+        _st_zg=$(sed -n '15p' "$STATE_FILE")
+        if [ -z "$RGW_ZONEGROUP" ] && [ "$RGW_REALM" = "$_st_realm" ]; then
+            RGW_ZONEGROUP="$_st_zg"
+        fi
+        unset _st_realm _st_zg
         [ -z "$LOG_LEVEL" ] && LOG_LEVEL="INFO"
         [ -z "$RGW_REGION" ] && RGW_REGION="default"
         [ -z "$ENABLE_OBJECT_STORAGE" ] && ENABLE_OBJECT_STORAGE=false
@@ -352,6 +371,8 @@ while [[ $# -gt 0 ]]; do
             STORAGECLUSTER_NAME="$2"; shift 2 ;;
         --region|--rgw-region)
             RGW_REGION="$2"; shift 2 ;;
+        --rgw-realm)
+            RGW_REALM="$2"; shift 2 ;;
         --ca-bundle-path)
             CUSTOM_CA_BUNDLE_PATH="$2"; shift 2 ;;
         --resume)
@@ -395,6 +416,12 @@ ${COLOR_BOLD}OBJECT STORAGE (OPTIONAL)${COLOR_RESET}
                           Note: Requires --rbd-quota for NooBaa PostgreSQL PVC
   --region REGION         S3 region for RGW (default: us-east-1)
   --rgw-region REGION     Alias for --region
+  --rgw-realm REALM       RGW realm name for multi-realm clusters (native mode)
+                          Required when the cluster has multiple realms; without it the
+                          script fails and lists the available realms
+                          The script fails (it does not fall back to another RGW/zone) if no RGW
+                          daemon named 'rgw.REALM.*' or no single zone for the realm is found
+                          Example: --rgw-realm realm-ocp1
 
 ${COLOR_BOLD}HTTPS/TLS OPTIONS${COLOR_RESET}
   --ca-bundle-path PATH   Path to custom CA certificate bundle for HTTPS endpoints
@@ -456,8 +483,14 @@ ${COLOR_BOLD}EXAMPLES${COLOR_RESET}
   # Block + Object storage (auto-detects namespace and storage cluster)
   $0 --tenant dev-team --rbd-quota 500G --rgw-user-quota 1T --output-dir ~/odf-configs --mode odf
   
+  # Block + Object storage on a multi-realm cluster (--rgw-realm is required when several realms exist)
+  $0 --tenant dev-team --rbd-quota 500G --rgw-user-quota 1T --rgw-realm realm-ocp1 --output-dir ~/ceph-configs --mode native
+  
   # Update tenant quotas
   $0 --tenant customer-a --rbd-quota 2T --rgw-user-quota 2T --output-dir ~/ceph-configs --mode odf --update
+  
+  # Update RGW quota on a multi-realm cluster
+  $0 --tenant dev-team --rgw-user-quota 2T --rgw-realm realm-ocp1 --output-dir ~/ceph-configs --mode native --update
   
   # Block storage with manual namespace/cluster override
   $0 --tenant prod-app --rbd-quota 2T --output-dir ~/prod-configs --mode odf \
@@ -469,6 +502,9 @@ ${COLOR_BOLD}EXAMPLES${COLOR_RESET}
   
   # Delete tenant storage (with customer warning prompts)
   $0 --tenant customer-a --output-dir ~/ceph-configs --mode odf --delete
+  
+  # Delete tenant storage on a multi-realm cluster
+  $0 --tenant dev-team --rgw-realm realm-ocp1 --output-dir ~/ceph-configs --mode native --delete
 
 ${COLOR_BOLD}SECURITY${COLOR_RESET}
   - Always set umask 077 before running this script
@@ -1208,7 +1244,52 @@ detect_rgw_zone() {
     local zone_list
     local default_zone
     
-    print_debug "Detecting RGW zone..."
+    # NOTE: stdout is captured by callers via $(...), so all logging goes to stderr.
+    print_debug "Detecting RGW zone..." >&2
+    
+    # If --rgw-realm was specified, pick the zone that belongs to that realm.
+    # `zone get --rgw-realm=<realm>` does not filter by realm on some clusters,
+    # and `zone list`'s "default_info" is a UUID (not a zone name), so resolve the
+    # realm id and select the zone whose realm_id matches it.
+    if [ -n "${RGW_REALM}" ]; then
+        local realm_id zone_name zone_realm_id detected_zone="" matched_zones=""
+        realm_id=$(ceph_exec radosgw-admin realm get --rgw-realm="${RGW_REALM}" 2>/dev/null \
+                   | jq -r '.id' 2>/dev/null || echo "")
+        [ "$realm_id" = "null" ] && realm_id=""
+
+        # The user explicitly chose the realm, so never guess: fail if the realm or
+        # its zone cannot be resolved unambiguously. Callers must handle the non-zero
+        # return (e.g. `zone=$(detect_rgw_zone) || exit 1`).
+        if [ -z "$realm_id" ]; then
+            print_error "RGW realm '${RGW_REALM}' was not found (radosgw-admin realm get returned no id)."
+            return 1
+        fi
+
+        zone_list=$(ceph_exec radosgw-admin zone list 2>/dev/null || echo "")
+        while IFS= read -r zone_name; do
+            [ -n "$zone_name" ] || continue
+            zone_realm_id=$(ceph_exec radosgw-admin zone get --rgw-zone="${zone_name}" 2>/dev/null \
+                            | jq -r '.realm_id' 2>/dev/null || echo "")
+            if [ "$zone_realm_id" = "$realm_id" ]; then
+                [ -n "$detected_zone" ] || detected_zone="$zone_name"
+                matched_zones+="${matched_zones:+, }${zone_name}"
+            fi
+        done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
+
+        if [ -z "$detected_zone" ]; then
+            print_error "No RGW zone belongs to realm '${RGW_REALM}' (realm_id=${realm_id})."
+            return 1
+        fi
+        if [ "$matched_zones" != "$detected_zone" ]; then
+            print_error "Multiple RGW zones belong to realm '${RGW_REALM}': ${matched_zones}."
+            print_error "Selecting a zone within a realm is not supported by this script."
+            return 1
+        fi
+
+        print_debug "Using zone '${detected_zone}' for realm '${RGW_REALM}' (realm_id=${realm_id})" >&2
+        echo "$detected_zone"
+        return 0
+    fi
     
     # Get list of zones
     zone_list=$(ceph_exec radosgw-admin zone list 2>&1 || echo "")
@@ -1227,16 +1308,103 @@ detect_rgw_zone() {
         return
     fi
     
-    # Get default zone
+    # Get default zone. "default_info" is the zone's UUID, not its name, so
+    # resolve the name by matching it against each zone's id.
     default_zone=$(echo "$zone_list" | sed -n 's/.*"default_info":[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
     
     if [ -n "$default_zone" ]; then
-        print_debug "Using default zone from zone list"
-        echo "default"
-    else
-        print_debug "No specific zone detected, using 'default'"
-        echo "default"
+        local zn zid
+        while IFS= read -r zn; do
+            [ -n "$zn" ] || continue
+            zid=$(ceph_exec radosgw-admin zone get --rgw-zone="${zn}" 2>/dev/null \
+                  | jq -r '.id' 2>/dev/null || echo "")
+            if [ "$zid" = "$default_zone" ]; then
+                print_debug "Resolved default zone '${zn}' from default_info (${default_zone})" >&2
+                echo "$zn"
+                return
+            fi
+        done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
     fi
+    
+    print_debug "No specific zone detected, using 'default'" >&2
+    echo "default"
+}
+
+
+###############################################################################
+# Fail with a clear message when several RGW realms exist and --rgw-realm was
+# not given. Must be called from the main flow (not inside $(...)) so that the
+# exit terminates the script. Single-realm clusters are unaffected.
+###############################################################################
+require_rgw_realm_if_ambiguous() {
+    [ -n "${RGW_REALM}" ] && return 0
+
+    local realm_json realm_names realm_count
+    realm_json=$(ceph_exec radosgw-admin realm list 2>/dev/null || echo "")
+    realm_names=$(echo "$realm_json" | jq -r '.realms[]?' 2>/dev/null || echo "")
+    realm_count=$(echo "$realm_names" | grep -c . || true)
+
+    if [ "$realm_count" -gt 1 ]; then
+        echo "ERROR: Multiple RGW realms found (${realm_count}) and --rgw-realm was not specified." >&2
+        echo "       Available realms:" >&2
+        echo "$realm_names" | sed 's/^/         - /' >&2
+        echo "       Re-run with --rgw-realm <name> to select the target realm." >&2
+        exit 1
+    fi
+}
+
+# Select one line from `ceph orch ps --daemon-type rgw` output (read from stdin).
+# Without --rgw-realm: the first RGW daemon. With --rgw-realm: only a daemon whose
+# name starts with "rgw.<realm>." (the trailing dot keeps "realm-ocp1" from matching
+# "realm-ocp10"); no match is an error because the realm was chosen explicitly.
+# NOTE: stdout is captured by callers via $(...), so the caller must check the
+# return status (e.g. `line=$(select_rgw_service_line <<<"$ps") || exit 1`).
+select_rgw_service_line() {
+    local services line
+    services=$(grep -v "^NAME" || true)
+    if [ -n "${RGW_REALM}" ]; then
+        line=$(echo "$services" | awk -v p="rgw.${RGW_REALM}." 'index($1, p) == 1 { print; exit }')
+        if [ -z "$line" ]; then
+            print_error "No RGW service found for realm '${RGW_REALM}' in 'ceph orch ps --daemon-type rgw'." >&2
+            print_error "Expected a daemon named 'rgw.${RGW_REALM}.<zone>.<host>.<id>'. Set MAIN_RGW_ENDPOINT manually to override." >&2
+            return 1
+        fi
+    else
+        line=$(echo "$services" | head -1)
+    fi
+    echo "$line"
+}
+
+
+# Print the name of the zonegroup that contains zone $1 (empty if none is found).
+# NOTE: stdout is captured by callers via $(...).
+detect_rgw_zonegroup() {
+    local zone="$1" zg_name
+    while IFS= read -r zg_name; do
+        [ -n "$zg_name" ] || continue
+        if ceph_exec radosgw-admin zonegroup get --rgw-zonegroup="${zg_name}" 2>/dev/null \
+            | jq -e --arg z "$zone" '[.zones[]?.name] | index($z)' >/dev/null 2>&1; then
+            echo "$zg_name"
+            return 0
+        fi
+    done < <(ceph_exec radosgw-admin zonegroup list 2>/dev/null | jq -r '.zonegroups[]?' 2>/dev/null)
+    return 0
+}
+
+# Set RGW_SCOPE_ARGS for the radosgw-admin calls that target one realm/zonegroup/zone.
+# $1 = zone name. --rgw-realm / --rgw-zonegroup are added only when known, so a
+# single-realm run without --rgw-realm passes just --rgw-zone, as before.
+# When --rgw-realm is given and no zonegroup is known yet, it is resolved from the zone.
+init_rgw_scope() {
+    local zone="$1"
+    if [ -n "${RGW_REALM}" ] && [ -z "${RGW_ZONEGROUP}" ]; then
+        RGW_ZONEGROUP=$(detect_rgw_zonegroup "$zone")
+    fi
+    RGW_SCOPE_ARGS=()
+    if [ -n "${RGW_REALM}" ]; then RGW_SCOPE_ARGS+=(--rgw-realm="${RGW_REALM}"); fi
+    if [ -n "${RGW_ZONEGROUP}" ]; then RGW_SCOPE_ARGS+=(--rgw-zonegroup="${RGW_ZONEGROUP}"); fi
+    RGW_SCOPE_ARGS+=(--rgw-zone="${zone}")
+    return 0
 }
 
 ###############################################################################
@@ -1469,15 +1637,18 @@ update_tenant_storage() {
         
         # Detect RGW zone (same as provision mode)
         local rgw_zone
-        rgw_zone=$(detect_rgw_zone)
+        rgw_zone=$(detect_rgw_zone) || exit 1
         print_info "Detected RGW zone: ${rgw_zone}"
         
+        # Realm/zonegroup/zone flags for every radosgw-admin call below
+        init_rgw_scope "${rgw_zone}"
+        
         # Check if RGW user exists (with zone parameter)
-        if ceph_exec radosgw-admin user info --uid="${rgw_user}" --rgw-zone="${rgw_zone}" &>/dev/null; then
+        if ceph_exec radosgw-admin user info --uid="${rgw_user}" "${RGW_SCOPE_ARGS[@]}" &>/dev/null; then
             # Get current quota and usage
             print_info "Analyzing current quota and usage..."
             local user_info
-            user_info=$(ceph_exec radosgw-admin user info --uid="${rgw_user}" --rgw-zone="${rgw_zone}" 2>/dev/null || echo "")
+            user_info=$(ceph_exec radosgw-admin user info --uid="${rgw_user}" "${RGW_SCOPE_ARGS[@]}" 2>/dev/null || echo "")
             
             local current_quota_bytes=0
             local current_quota_display="unlimited"
@@ -1500,7 +1671,7 @@ update_tenant_storage() {
             
             # Get current usage from stats
             local stats_output
-            stats_output=$(ceph_exec radosgw-admin user stats --uid="${rgw_user}" --rgw-zone="${rgw_zone}" 2>/dev/null || echo "")
+            stats_output=$(ceph_exec radosgw-admin user stats --uid="${rgw_user}" "${RGW_SCOPE_ARGS[@]}" 2>/dev/null || echo "")
             
             local current_usage_bytes=0
             local current_usage_str="0"
@@ -1600,8 +1771,8 @@ update_tenant_storage() {
                 print_info "Setting new RGW user quota: ${RGW_USER_QUOTA}"
                 local quota_bytes
                 quota_bytes=$(convert_to_bytes "$RGW_USER_QUOTA")
-                if ceph_exec radosgw-admin quota set --uid="${rgw_user}" --quota-scope=user --max-size="${quota_bytes}" --rgw-zone="${rgw_zone}"; then
-                    if ceph_exec radosgw-admin quota enable --uid="${rgw_user}" --quota-scope=user --rgw-zone="${rgw_zone}"; then
+                if ceph_exec radosgw-admin quota set --uid="${rgw_user}" --quota-scope=user --max-size="${quota_bytes}" "${RGW_SCOPE_ARGS[@]}"; then
+                    if ceph_exec radosgw-admin quota enable --uid="${rgw_user}" --quota-scope=user "${RGW_SCOPE_ARGS[@]}"; then
                         print_success "RGW user quota updated to ${RGW_USER_QUOTA}"
                         updated=true
                     else
@@ -1778,7 +1949,7 @@ validate_tenant_exists() {
         # Check for any remaining artifacts
         local has_artifacts=false
         
-        if ceph_exec radosgw-admin user info --uid="${rgw_user}" &>/dev/null || \
+        if ceph_exec radosgw-admin user info --uid="${rgw_user}" "${RGW_SCOPE_ARGS[@]}" &>/dev/null || \
            ceph_exec ceph auth get "client.${tenant}" &>/dev/null || \
            [ -f "${OUTPUT_DIR}/${tenant}-external-config.json" ]; then
             has_artifacts=true
@@ -1973,14 +2144,14 @@ delete_rgw_resources() {
     print_header "Deleting RGW Resources"
     
     # Check if RGW user exists
-    if ceph_exec radosgw-admin user info --uid="${rgw_user}" &>/dev/null; then
+    if ceph_exec radosgw-admin user info --uid="${rgw_user}" "${RGW_SCOPE_ARGS[@]}" &>/dev/null; then
         # Delete backing bucket first
         print_info "Deleting backing bucket: ${backing_bucket}"
-        ceph_exec radosgw-admin bucket rm --bucket="${backing_bucket}" --purge-objects 2>/dev/null || print_warning "Bucket not found or already deleted"
+        ceph_exec radosgw-admin bucket rm --bucket="${backing_bucket}" "${RGW_SCOPE_ARGS[@]}" --purge-objects 2>/dev/null || print_warning "Bucket not found or already deleted"
         
         # Delete RGW user
         print_info "Deleting RGW user: ${rgw_user}"
-        if ceph_exec radosgw-admin user rm --uid="${rgw_user}" --purge-data; then
+        if ceph_exec radosgw-admin user rm --uid="${rgw_user}" "${RGW_SCOPE_ARGS[@]}" --purge-data; then
             print_success "RGW user deleted"
         else
             print_warning "Failed to delete RGW user"
@@ -2163,6 +2334,17 @@ if [ "$DELETE_MODE" = true ]; then
         print_info "Using toolbox pod: ${TOOLBOX_POD}"
     fi
     
+    # Multiple realms without --rgw-realm: fail and list the available realms
+    require_rgw_realm_if_ambiguous
+
+    # Scope radosgw-admin calls to the --rgw-realm zone (empty when --rgw-realm is not given)
+    RGW_SCOPE_ARGS=()
+    if [ -n "$RGW_REALM" ]; then
+        rgw_zone=$(detect_rgw_zone) || exit 1
+        init_rgw_scope "$rgw_zone"
+        print_info "Using RGW realm: ${RGW_REALM} (zonegroup: ${RGW_ZONEGROUP:-unknown}, zone: ${rgw_zone})"
+    fi
+
     # Run delete operation
     delete_tenant_storage "$TENANT_NAME"
     delete_result=$?
@@ -2251,6 +2433,9 @@ if [ "$UPDATE_MODE" = true ]; then
         print_info "Using toolbox pod: ${TOOLBOX_POD}"
     fi
     
+    # Multiple realms without --rgw-realm: fail and list the available realms
+    [ -n "$RGW_USER_QUOTA" ] && require_rgw_realm_if_ambiguous
+
     # Run update operation
     # Temporarily disable 'set -e' to allow return 2 without exiting the script
     set +e
@@ -2389,6 +2574,7 @@ if [ "$ENABLE_OBJECT_STORAGE" = true ]; then
     print_info "RGW User Quota:   ${RGW_USER_QUOTA}"
     print_info "Backing Bucket:   ${BACKING_BUCKET}"
     print_info "RGW Region:       ${RGW_REGION}"
+    if [ -n "${RGW_REALM}" ]; then print_info "RGW Realm:        ${RGW_REALM}"; fi
     print_info "Pool PGs:         ${POOL_PGS}"
     print_info "Output Dir:       ${OUTPUT_DIR}"
     print_info "Log File:         ${LOG_FILE}"
@@ -2411,6 +2597,13 @@ else
 fi
 echo ""
 
+# Fail early (before any provisioning) when multiple RGW realms exist and
+# --rgw-realm was not specified. In odf mode the toolbox pod is not known yet,
+# so the check is repeated at the start of Phase 5.
+if [ "$ENABLE_OBJECT_STORAGE" = true ] && [ "$MODE" = "native" ]; then
+    require_rgw_realm_if_ambiguous
+fi
+
 ###############################################################################
 # HELPER FUNCTIONS
 ###############################################################################
@@ -2419,7 +2612,52 @@ detect_rgw_zone() {
     local zone_list
     local default_zone
     
-    print_debug "Detecting RGW zone..."
+    # NOTE: stdout is captured by callers via $(...), so all logging goes to stderr.
+    print_debug "Detecting RGW zone..." >&2
+    
+    # If --rgw-realm was specified, pick the zone that belongs to that realm.
+    # `zone get --rgw-realm=<realm>` does not filter by realm on some clusters,
+    # and `zone list`'s "default_info" is a UUID (not a zone name), so resolve the
+    # realm id and select the zone whose realm_id matches it.
+    if [ -n "${RGW_REALM}" ]; then
+        local realm_id zone_name zone_realm_id detected_zone="" matched_zones=""
+        realm_id=$(ceph_exec radosgw-admin realm get --rgw-realm="${RGW_REALM}" 2>/dev/null \
+                   | jq -r '.id' 2>/dev/null || echo "")
+        [ "$realm_id" = "null" ] && realm_id=""
+
+        # The user explicitly chose the realm, so never guess: fail if the realm or
+        # its zone cannot be resolved unambiguously. Callers must handle the non-zero
+        # return (e.g. `zone=$(detect_rgw_zone) || exit 1`).
+        if [ -z "$realm_id" ]; then
+            print_error "RGW realm '${RGW_REALM}' was not found (radosgw-admin realm get returned no id)."
+            return 1
+        fi
+
+        zone_list=$(ceph_exec radosgw-admin zone list 2>/dev/null || echo "")
+        while IFS= read -r zone_name; do
+            [ -n "$zone_name" ] || continue
+            zone_realm_id=$(ceph_exec radosgw-admin zone get --rgw-zone="${zone_name}" 2>/dev/null \
+                            | jq -r '.realm_id' 2>/dev/null || echo "")
+            if [ "$zone_realm_id" = "$realm_id" ]; then
+                [ -n "$detected_zone" ] || detected_zone="$zone_name"
+                matched_zones+="${matched_zones:+, }${zone_name}"
+            fi
+        done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
+
+        if [ -z "$detected_zone" ]; then
+            print_error "No RGW zone belongs to realm '${RGW_REALM}' (realm_id=${realm_id})."
+            return 1
+        fi
+        if [ "$matched_zones" != "$detected_zone" ]; then
+            print_error "Multiple RGW zones belong to realm '${RGW_REALM}': ${matched_zones}."
+            print_error "Selecting a zone within a realm is not supported by this script."
+            return 1
+        fi
+
+        print_debug "Using zone '${detected_zone}' for realm '${RGW_REALM}' (realm_id=${realm_id})" >&2
+        echo "$detected_zone"
+        return 0
+    fi
     
     # Get list of zones
     zone_list=$(ceph_exec radosgw-admin zone list 2>&1 || echo "")
@@ -2438,16 +2676,26 @@ detect_rgw_zone() {
         return
     fi
     
-    # Get default zone
+    # Get default zone. "default_info" is the zone's UUID, not its name, so
+    # resolve the name by matching it against each zone's id.
     default_zone=$(echo "$zone_list" | sed -n 's/.*"default_info":[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)
     
     if [ -n "$default_zone" ]; then
-        print_debug "Using default zone from zone list"
-        echo "default"
-    else
-        print_debug "No specific zone detected, using 'default'"
-        echo "default"
+        local zn zid
+        while IFS= read -r zn; do
+            [ -n "$zn" ] || continue
+            zid=$(ceph_exec radosgw-admin zone get --rgw-zone="${zn}" 2>/dev/null \
+                  | jq -r '.id' 2>/dev/null || echo "")
+            if [ "$zid" = "$default_zone" ]; then
+                print_debug "Resolved default zone '${zn}' from default_info (${default_zone})" >&2
+                echo "$zn"
+                return
+            fi
+        done < <(echo "$zone_list" | jq -r '.zones[]?' 2>/dev/null)
     fi
+    
+    print_debug "No specific zone detected, using 'default'" >&2
+    echo "default"
 }
 
 extract_json_string_field() {
@@ -2643,7 +2891,8 @@ ensure_runtime_dependencies() {
 
 # Detect MAIN_RGW_ENDPOINT (and RGW_PROTOCOL) when Phase 1 was skipped.
 # ODF mode: OpenShift route (HTTP preferred) or CephObjectStore service endpoint.
-# Native mode: first RGW daemon reported by the Ceph orchestrator.
+# Native mode: first RGW daemon reported by the Ceph orchestrator, or the one
+# for --rgw-realm when given (fails if none matches).
 # Leaves MAIN_RGW_ENDPOINT unchanged if nothing can be detected.
 detect_rgw_endpoint() {
     local svc host port store
@@ -2664,7 +2913,7 @@ detect_rgw_endpoint() {
         fi
         [ -n "$host" ] && MAIN_RGW_ENDPOINT="$host"
     else
-        svc=$(ceph_exec ceph orch ps --daemon-type rgw 2>/dev/null | grep -v "^NAME" | head -1 || true)
+        svc=$(ceph_exec ceph orch ps --daemon-type rgw 2>/dev/null | select_rgw_service_line) || exit 1
         if [ -n "$svc" ]; then
             host=$(echo "$svc" | awk '{print $2}')
             port=$(echo "$svc" | awk '{print $3}' | grep -oE '[0-9]+$' || true)
@@ -2958,15 +3207,25 @@ else
                 RGW_COUNT=$(echo "$RGW_SERVICES" | grep -c "rgw\." || echo "0")
                 
                 if [ "$RGW_COUNT" -gt 1 ]; then
-                    print_warning "Multiple RGW services detected (${RGW_COUNT}). Using the first one."
-                    print_warning "To specify a different RGW, set MAIN_RGW_ENDPOINT manually."
-                    print_warning "Note: Ensure the selected RGW is network-accessible from the tenant plane."
-                    print_warning "You may need to verify network connectivity and firewall rules."
+                    if [ -n "${RGW_REALM}" ]; then
+                        print_info "Multiple RGW services detected (${RGW_COUNT}). Selecting the one for realm '${RGW_REALM}'..."
+                    else
+                        print_warning "Multiple RGW services detected (${RGW_COUNT}). Using the first one."
+                        print_warning "To specify a different RGW, set MAIN_RGW_ENDPOINT manually."
+                        print_warning "Note: Ensure the selected RGW is network-accessible from the tenant plane."
+                        print_warning "You may need to verify network connectivity and firewall rules."
+                    fi
                 fi
                 
-                # Extract hostname and port from first RGW service
+                # Extract hostname and port from the RGW service.
+                # If --rgw-realm was specified, only the service named rgw.<realm>.* is
+                # accepted (no fallback to another RGW); otherwise the first one is used.
                 # Format: rgw.ocmirror.sc5-ceph01.deuuvy  sc5-ceph01  *:8000  running...
-                RGW_SERVICE_INFO=$(echo "$RGW_SERVICES" | head -1)
+                #         rgw.realm-ocp1.zone-ocp1.hase-st2.xxx  hase-st2  *:8080  running...
+                RGW_SERVICE_INFO=$(echo "$RGW_SERVICES" | select_rgw_service_line) || exit 1
+                if [ -n "${RGW_REALM}" ]; then
+                    print_debug "Selected RGW service for realm '${RGW_REALM}': ${RGW_SERVICE_INFO}"
+                fi
                 
                 if [ -n "$RGW_SERVICE_INFO" ]; then
                     RGW_HOST=$(echo "$RGW_SERVICE_INFO" | awk '{print $2}')
@@ -3316,16 +3575,30 @@ else
         print_header "PHASE 5: Create RGW User in Main RGW"
         print_header "============================================================"
         echo ""
+        require_rgw_realm_if_ambiguous
+
         # Detect the correct RGW zone
-        RGW_ZONE=$(detect_rgw_zone)
+        RGW_ZONE=$(detect_rgw_zone) || exit 1
         print_info "Detected RGW zone: ${RGW_ZONE}"
+
+        if [ -n "${RGW_REALM}" ]; then
+            print_info "Using RGW realm: ${RGW_REALM}"
+        fi
+
+        # Realm/zonegroup/zone flags — passed to every radosgw-admin call in this phase
+        init_rgw_scope "${RGW_ZONE}"
+        if [ -n "${RGW_ZONEGROUP}" ]; then
+            print_info "Using RGW zonegroup: ${RGW_ZONEGROUP}"
+        fi
+        # Persist the resolved zonegroup so --resume uses the same one
+        save_phase 5
         
         print_info "Creating RGW user: ${RGW_USER_NAME} (in main RGW zone: ${RGW_ZONE})"
         
         # Check if user already exists first (check in the correct zone)
-        if ceph_exec radosgw-admin user info --uid="${RGW_USER_NAME}" --rgw-zone="${RGW_ZONE}" &>/dev/null; then
+        if ceph_exec radosgw-admin user info --uid="${RGW_USER_NAME}" "${RGW_SCOPE_ARGS[@]}" &>/dev/null; then
             print_warning "RGW user '${RGW_USER_NAME}' already exists in zone '${RGW_ZONE}' — fetching credentials"
-            RGW_USER_INFO=$(ceph_exec radosgw-admin user info --uid="${RGW_USER_NAME}" --rgw-zone="${RGW_ZONE}" 2>&1)
+            RGW_USER_INFO=$(ceph_exec radosgw-admin user info --uid="${RGW_USER_NAME}" "${RGW_SCOPE_ARGS[@]}" 2>&1)
             RGW_ACCESS_KEY=$(echo "$RGW_USER_INFO" | jq -r '.keys[0].access_key' 2>/dev/null || echo "")
             RGW_SECRET_KEY=$(echo "$RGW_USER_INFO" | jq -r '.keys[0].secret_key' 2>/dev/null || echo "")
             
@@ -3341,7 +3614,7 @@ else
                 --uid="${RGW_USER_NAME}" \
                 --display-name="${TENANT_NAME} NooBaa User" \
                 --max-buckets=1000 \
-                --rgw-zone="${RGW_ZONE}" \
+                "${RGW_SCOPE_ARGS[@]}" \
                 --caps="buckets=*;users=*;usage=*;metadata=*" 2>&1 || echo "COMMAND_FAILED")
             
             if echo "$RGW_USER_OUTPUT" | grep -q "COMMAND_FAILED"; then
@@ -3369,7 +3642,7 @@ else
             if [ -z "$RGW_ACCESS_KEY" ] || [ -z "$RGW_SECRET_KEY" ]; then
                 # Try to get existing keys if creation reported "already exists"
                 print_warning "Could not extract keys from creation output, fetching user info"
-                RGW_USER_INFO=$(ceph_exec radosgw-admin user info --uid="${RGW_USER_NAME}" --rgw-zone="${RGW_ZONE}" 2>&1)
+                RGW_USER_INFO=$(ceph_exec radosgw-admin user info --uid="${RGW_USER_NAME}" "${RGW_SCOPE_ARGS[@]}" 2>&1)
                 RGW_ACCESS_KEY=$(echo "$RGW_USER_INFO" | jq -r '.keys[0].access_key' 2>/dev/null || echo "")
                 RGW_SECRET_KEY=$(echo "$RGW_USER_INFO" | jq -r '.keys[0].secret_key' 2>/dev/null || echo "")
                 
@@ -3391,7 +3664,7 @@ else
         ceph_exec radosgw-admin caps add \
             --uid="${RGW_USER_NAME}" \
             --caps="buckets=*;users=*;usage=*;metadata=*" \
-            --rgw-zone="${RGW_ZONE}" &>/dev/null || {
+            "${RGW_SCOPE_ARGS[@]}" &>/dev/null || {
             print_warning "Could not add capabilities (user may already have them)"
         }
         
@@ -3406,7 +3679,7 @@ else
         ceph_exec radosgw-admin quota set \
             --quota-scope=user \
             --uid="${RGW_USER_NAME}" \
-            --rgw-zone="${RGW_ZONE}" \
+            "${RGW_SCOPE_ARGS[@]}" \
             --max-size="${RGW_QUOTA_BYTES}" 2>&1 || {
             print_error "Failed to set quota for RGW user ${RGW_USER_NAME}"
             exit 1
@@ -3417,7 +3690,7 @@ else
         ceph_exec radosgw-admin quota enable \
             --quota-scope=user \
             --uid="${RGW_USER_NAME}" \
-            --rgw-zone="${RGW_ZONE}" 2>&1 || {
+            "${RGW_SCOPE_ARGS[@]}" 2>&1 || {
             print_error "Failed to enable quota for RGW user ${RGW_USER_NAME}"
             exit 1
         }
@@ -3430,6 +3703,14 @@ else
             detect_rgw_endpoint
         fi
         
+        # Realm/zonegroup lines are emitted only when known (single-realm output unchanged)
+        RGW_SCOPE_CRED_LINES=""
+        if [ -n "${RGW_REALM}" ]; then
+            RGW_SCOPE_CRED_LINES+="RGW_REALM=${RGW_REALM}"$'\n'
+            [ -n "${RGW_ZONEGROUP}" ] && RGW_SCOPE_CRED_LINES+="RGW_ZONEGROUP=${RGW_ZONEGROUP}"$'\n'
+            RGW_SCOPE_CRED_LINES+="RGW_ZONE=${RGW_ZONE}"$'\n'
+        fi
+
         # Save RGW credentials
         RGW_CREDS_FILE="${OUTPUT_DIR}/${TENANT_NAME}-rgw-credentials.txt"
         cat > "$RGW_CREDS_FILE" <<RGWCREDS
@@ -3442,7 +3723,7 @@ RGW_ACCESS_KEY=${RGW_ACCESS_KEY}
 RGW_SECRET_KEY=${RGW_SECRET_KEY}
 RGW_ENDPOINT=${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}
 RGW_REGION=${RGW_REGION}
-RGW_QUOTA=${RGW_USER_QUOTA}
+${RGW_SCOPE_CRED_LINES}RGW_QUOTA=${RGW_USER_QUOTA}
 RGW_QUOTA_BYTES=${RGW_QUOTA_BYTES}
 BACKING_BUCKET=${BACKING_BUCKET}
 
@@ -4007,6 +4288,14 @@ else
         restore_rgw_endpoint
     fi
 
+    # Realm/zonegroup lines (with trailing newline) only when --rgw-realm is in effect
+    RGW_SCOPE_SUMMARY_LINES=""
+    if [ -n "${RGW_REALM}" ]; then
+        RGW_SCOPE_SUMMARY_LINES="RGW Realm:         ${RGW_REALM}"$'\n'
+        [ -n "${RGW_ZONEGROUP}" ] && RGW_SCOPE_SUMMARY_LINES+="RGW Zonegroup:     ${RGW_ZONEGROUP}"$'\n'
+        [ -n "${RGW_ZONE:-}" ] && RGW_SCOPE_SUMMARY_LINES+="RGW Zone:          ${RGW_ZONE}"$'\n'
+    fi
+    
     if [ "$MODE" = "odf" ]; then
         CLUSTER_INFO=$(oc whoami --show-server)
     else
@@ -4038,7 +4327,7 @@ RGW Quota:         ${RGW_USER_QUOTA}
 Backing Bucket:    ${BACKING_BUCKET}
 RGW Endpoint:      ${RGW_PROTOCOL}://${MAIN_RGW_ENDPOINT}
 RGW Region:        ${RGW_REGION}
-
+${RGW_SCOPE_SUMMARY_LINES}
 GENERATED FILES
 ---------------
 External Config:   ${OUTPUT_JSON}  (HAND OVER THIS FILE)
